@@ -5,13 +5,13 @@
     <div class="ibox-content">
         <div class="seo-container">
             <div class="meta-title">
-                {{ old('meta_title', $postCatalogue->meta_title ?? '') ? old('meta_title', $postCatalogue->meta_title ?? '') : '[Tiêu đề của SEO]' }}
+                {{ old('meta_title', $post->meta_title ?? '') ? old('meta_title', $post->meta_title ?? '') : '[Tiêu đề của SEO]' }}
             </div>
             <div class="canonical">
-                {{ old('canonical', isset($postCatalogue) && $postCatalogue->canonical ? config('app.url') . $postCatalogue->canonical . config('app.general.suffix') : false) ?: '[Đường dẫn SEO]' }}
+                {{ old('canonical', isset($post) && $post->canonical ? config('app.url') . $post->canonical . config('app.general.suffix') : false) ?: '[Đường dẫn SEO]' }}
             </div>
             <div class="meta-description">
-                {{ old('meta-description', $postCatalogue->meta_description ?? '') ? old('meta-description', $postCatalogue->meta_description ?? '') : '[Mô tả của SEO]' }}
+                {{ old('meta-description', $post->meta_description ?? '') ? old('meta-description', $post->meta_description ?? '') : '[Mô tả của SEO]' }}
             </div>
         </div>
         <div class="seo-wrapper">
@@ -24,9 +24,8 @@
                                 <span class="count-meta-title">0 ký tự</span>
                             </div>
                         </label>
-                        <input type="text" name="meta_title"
-                            value="{{ old('meta_title', $postCatalogue->meta_title ?? '') }}" class="form-control"
-                            placeholder="" autocomplete="off" />
+                        <input type="text" name="meta_title" value="{{ old('meta_title', $post->meta_title ?? '') }}"
+                            class="form-control" placeholder="" autocomplete="off" />
                     </div>
                 </div>
             </div>
@@ -37,7 +36,7 @@
                             <span>Từ khóa SEO</span>
                         </label>
                         <input type="text" name="meta_keyword"
-                            value="{{ old('meta_keyword', $postCatalogue->meta_keyword ?? '') }}" class="form-control"
+                            value="{{ old('meta_keyword', $post->meta_keyword ?? '') }}" class="form-control"
                             placeholder="" autocomplete="off" />
                     </div>
                 </div>
@@ -51,7 +50,7 @@
                                 <span class="count-meta-description">0 ký tự</span>
                             </div>
                         </label>
-                        <textarea type="text" name="meta_description" class="form-control" placeholder="" autocomplete="off">{{ old('meta_description', $postCatalogue->meta_description ?? '') }}</textarea>
+                        <textarea type="text" name="meta_description" class="form-control" placeholder="" autocomplete="off">{{ old('meta_description', $post->meta_description ?? '') }}</textarea>
                     </div>
                 </div>
             </div>
@@ -63,7 +62,7 @@
                         </label>
                         <div class="input-wrapper">
                             <input type="text" name="canonical"
-                                value="{{ old('canonical', $postCatalogue->canonical ?? '') }}" class="form-control"
+                                value="{{ old('canonical', $post->canonical ?? '') }}" class="form-control"
                                 placeholder="" autocomplete="off" />
                             <span class="baseUrl">{{ config('app.url') }}</span>
                         </div>

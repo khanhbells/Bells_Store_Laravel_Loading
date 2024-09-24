@@ -326,3 +326,7 @@ input[name=canonical] {
 .hidden {
     display: none;
 }
+
+.fs15 {
+    font-size: 15px;
+}

@@ -29,6 +29,7 @@ class StoreUserRequest extends FormRequest
             'user_catalogue_id' => 'gt:0', //gt bat buoc phai lon hon 0
             'password' => 'required|string|min:6',
             're_password' => 'required|string|same:password',
+            'birthday' => 'required',
         ];
     }
     public function messages(): array
@@ -45,6 +46,7 @@ class StoreUserRequest extends FormRequest
             'password.required' => 'Bạn chưa nhập vào mật khẩu!',
             're_password.same' => 'Mật khẩu không khớp!',
             're_password.required' => 'Nhập lại mật khẩu không được để trống!',
+            'birthday.required' => 'Ngày sinh không được để trống'
         ];
     }
 }

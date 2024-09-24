@@ -27,7 +27,7 @@ return [
                 ],
                 [
                     'title' => 'Bài viết',
-                    'route' => 'user.index' // chỉ dùng tên route
+                    'route' => 'post.index' // chỉ dùng tên route
                 ],
             ]
         ],
