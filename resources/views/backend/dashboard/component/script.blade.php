@@ -5,6 +5,7 @@
 <script src="{{ asset('backend/js/inspinia.js') }}"></script>
 <script src="{{ asset('backend/js/plugins/pace/pace.min.js') }}"></script>
 <script src="{{ asset('backend/library/library.js') }}"></script>
+<script src="{{ asset('backend/plugin/jquery-ui.js') }}"></script>
 
 
 

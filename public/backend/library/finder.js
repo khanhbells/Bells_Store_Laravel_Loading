@@ -2,6 +2,7 @@
     "use strict";
     var HT = {};
 
+    //gan thu vien cua ckeditor
     HT.setupCkeditor = () => {
         if ($('.ck-editor')) {
             $('.ck-editor').each(function () {
@@ -11,6 +12,14 @@
                 HT.ckeditor4(elemetId, elementHeight)
             })
         }
+    }
+
+    // bat su kien cho album
+    HT.uploadAlbum = () => {
+        $(document).on('click', '.upload-picture', function (e) {
+            HT.browServerAlbum();
+            e.preventDefault()
+        })
     }
     HT.multipleUploadImageCkeditor = () => {
         $(document).on('click', '.multipleUploadImageCkeditor', function (e) {
@@ -110,12 +119,50 @@
         };
         finder.popup();
     };
+    HT.browServerAlbum = () => {
+        var type = 'Images';
+        var finder = new CKFinder();
+
+        finder.resourceType = type;
+        finder.selectActionFunction = function (fileUrl, data, allFiles) {
+            let html = '';
+            for (var i = 0; i < allFiles.length; i++) {
+                var image = allFiles[i].url
+                html += ' <li class="ui-state-default" >'
+                html += ' <div class="thumb">'
+                html += ' <span class="span image img-scaledown">'
+                html += '  <img src="' + image + '" alt="' + image + '">'
+                html += '  <input type="hidden" name="album[]" value="' + image + '">'
+                html += ' </span>'
+                html += ' <button class="delete-image"><i class="fa fa-trash"></i></button>'
+                html += '  </div>'
+                html += ' </li>'
+            }
+            $('.click-to-upload').addClass('hidden')
+            $('#sortable').append(html)
+            $('.upload-list').removeClass('hidden')
+        }
+        finder.popup();
+    }
+
+    HT.deletePicture = () => {
+        $(document).on('click', '.delete-image', function () {
+            let _this = $(this)
+            _this.parents('.ui-state-default').remove();
+            if ($('.ui-state-default').length == 0) {
+                $('.click-to-upload').removeClass('hidden')
+                $('.upload-list').addClass('hidden')
+            }
+        })
+    }
 
     $(document).ready(function () {
         HT.uploadImageToInput();
         HT.setupCkeditor();
         HT.uploadImageAvatar();
         HT.multipleUploadImageCkeditor();
+        HT.uploadAlbum();
+        HT.deletePicture();
     });
 
 })(jQuery);

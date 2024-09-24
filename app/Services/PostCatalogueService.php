@@ -71,7 +71,17 @@ class PostCatalogueService extends BaseService implements PostCatalogueServiceIn
         try {
             $payload = $request->only($this->payload());
             $payload['user_id'] = Auth::id();
-            // Loại bỏ phần '/laravelversion1.com' khỏi đường dẫn của ảnh
+
+            // Xử lý album - loại bỏ '/laravelversion1.com/public' khỏi các đường dẫn
+            if (isset($payload['album'])) {
+                $albumArray = $payload['album'];
+                foreach ($albumArray as &$image) {
+                    $image = str_replace('/laravelversion1.com/public', '', $image); // Loại bỏ tiền tố
+                }
+                $payload['album'] = json_encode($albumArray); // Mã hóa lại thành chuỗi JSON
+            }
+
+            // Loại bỏ phần '/laravelversion1.com' khỏi đường dẫn của ảnh chính (nếu có)
             if (isset($payload['image'])) {
                 $payload['image'] = str_replace('/laravelversion1.com/public', '', $payload['image']);
             }
@@ -81,13 +91,12 @@ class PostCatalogueService extends BaseService implements PostCatalogueServiceIn
             if ($postCatalogue->id > 0) {
                 $payloadLanguage = $request->only($this->payloadLanguage());
                 $payloadLanguage['canonical'] = Str::slug($payloadLanguage['canonical']);
-                // dd($payloadLanguage);
                 $payloadLanguage['language_id'] = $this->language;
                 $payloadLanguage['post_catalogue_id'] = $postCatalogue->id;
 
                 $language = $this->postCatalogueRepository->createLanguagePivot($postCatalogue, $payloadLanguage);
-                // dd($language);
             }
+
             $this->nestedset->Get('level ASC, order ASC');
             $this->nestedset->Recursive(0, $this->nestedset->Set());
             $this->nestedset->Action();
@@ -97,12 +106,14 @@ class PostCatalogueService extends BaseService implements PostCatalogueServiceIn
         } catch (Exception $e) {
             DB::rollBack();
 
+            // In ra lỗi để debug
+            dd($e);
+
             // Ghi lỗi vào log
             Log::error($e->getMessage());
 
             // Trả về mã lỗi 500
             abort(500, 'Đã xảy ra lỗi trong quá trình tạo bản ghi.');
-            return false;
         }
     }
     // --------------------------------------------------------------------------------
@@ -113,6 +124,21 @@ class PostCatalogueService extends BaseService implements PostCatalogueServiceIn
         try {
             $postCatalogue = $this->postCatalogueRepository->findById($id);
             $payload = $request->only($this->payload());
+            if (isset($payload['album'])) {
+                $albumArray = $payload['album']; // Mảng chứa các ảnh
+                foreach ($albumArray as &$image) {
+                    // Kiểm tra và xử lý đường dẫn ảnh
+                    if (strpos($image, 'http://localhost:81/laravelversion1.com/public') !== false) {
+                        // Nếu ảnh có URL đầy đủ
+                        $image = str_replace('http://localhost:81/laravelversion1.com/public', '', $image);
+                    } elseif (strpos($image, '/laravelversion1.com/public') !== false) {
+                        // Nếu ảnh chỉ có tiền tố tương đối
+                        $image = str_replace('/laravelversion1.com/public', '', $image);
+                    }
+                }
+                $payload['album'] = json_encode($albumArray); // Mã hóa lại thành chuỗi JSON
+            }
+            // dd($payload['album']);
             // Kiểm tra và xử lý cả hai trường hợp ảnh có tiền tố 'http://localhost:81/laravelversion1.com/public' hoặc '/laravelversion1.com/public'
             if (isset($payload['image'])) {
                 if (strpos($payload['image'], 'http://localhost:81/laravelversion1.com/public') !== false) {
@@ -197,34 +223,13 @@ class PostCatalogueService extends BaseService implements PostCatalogueServiceIn
             return false;
         }
     }
-    // private function changeUserStatus($post, $value)
-    // {
-    //     DB::beginTransaction();
-    //     try {
-    //         $array = [];
-    //         if (isset($post['modelId'])) {
-    //             $array[] = $post['modelId'];
-    //         } else {
-    //             $array = $post['id'];
-    //         }
-    //         $payload[$post['field']] = $value;
-    //         $this->UserRepository->updateByWhereIn('user_catalogue_id', $array, $payload);
-    //         DB::commit();
-    //         return true;
-    //     } catch (Exception $e) {
-    //         DB::rollBack();
-    //         echo $e->getMessage();
-    //         die();
-    //         return false;
-    //     }
-    // }
     private function paginateselect()
     {
         return ['post_catalogues.id', 'post_catalogues.publish', 'post_catalogues.image', 'post_catalogues.level', 'post_catalogues.order', 'tb2.name', 'tb2.canonical'];
     }
     private function payload()
     {
-        return ['parent_id', 'follow', 'publish', 'image'];
+        return ['parent_id', 'follow', 'publish', 'image', 'album'];
     }
     private function payloadLanguage()
     {

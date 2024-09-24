@@ -72,13 +72,15 @@ class PostCatalogueController extends Controller
     }
     public function edit($id)
     {
-        $dropdown = $this->nestedset->Dropdown();
+
         $postCatalogue = $this->postCatalogueRepository->getPostCatalogueById($id, $this->language);
         $config = $this->configData();
+        $dropdown = $this->nestedset->Dropdown();
         $template = 'backend.post.catalogue.store';
         $config['seo'] = config('app.postcatalogue');
         $config['method'] = 'edit';
-        return view('backend.dashboard.layout', compact('template', 'config', 'postCatalogue', 'dropdown'));
+        $album = json_decode($postCatalogue->album);
+        return view('backend.dashboard.layout', compact('template', 'config', 'postCatalogue', 'dropdown', 'album'));
     }
     //--------------------------------------------------------------
     public function update($id, UpdatePostCatalogueRequest $request)
