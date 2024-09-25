@@ -16,13 +16,20 @@
             </div>
             <div class="action">
                 <div class="uk-flex uk-flex-middle">
+                    @php
+                        $publish = request('publish') ?: old('publish', -1); // Mặc định là -1 nếu không có giá trị nào được chọn
+                        $postCatalogueId = request('post_catalogue_id') ?: old('post_catalogue_id');
+                    @endphp
                     <select name="publish" class="form-control mr10 setupSelect2">
-                        @php
-                            $publish = request('publish') ?: old('publish', -1); // Mặc định là -1 nếu không có giá trị nào được chọn
-                        @endphp
-
                         @foreach (config('app.general.publish') as $key => $val)
                             <option value="{{ $key }}" {{ $publish == $key ? 'selected' : '' }}>
+                                {{ $val }}
+                            </option>
+                        @endforeach
+                    </select>
+                    <select name="post_catalogue_id" class="form-control mr10 setupSelect2">
+                        @foreach ($dropdown as $key => $val)
+                            <option {{ $postCatalogueId == $key ? 'selected' : '' }} value="{{ $key }}">
                                 {{ $val }}
                             </option>
                         @endforeach

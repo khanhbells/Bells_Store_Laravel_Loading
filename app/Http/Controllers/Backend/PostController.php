@@ -11,6 +11,8 @@ use Illuminate\Http\Request;
 use App\Services\Interfaces\PostServiceInterface as PostService;
 use App\Repositories\Interfaces\PostRepositoryInterface as PostRepository;
 use App\Classes\Nestedsetbie;
+use App\Models\Post;
+
 // use App\Repositories\Interfaces\languageRepositoryInterface as LanguageRepository;
 //Neu muon view hieu duoc controller thi phai compact
 class PostController extends Controller
@@ -44,12 +46,13 @@ class PostController extends Controller
             'css' => [
                 'backend/css/plugins/switchery/switchery.css',
                 'https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css'
-            ]
+            ],
+            'model' => 'Post'
         ];
         $config['seo'] = config('app.post');
-        // dd($config['seo']);
         $template = 'backend.post.post.index';
-        return view('backend.dashboard.layout', compact('template', 'config', 'posts'));
+        $dropdown = $this->nestedset->Dropdown();
+        return view('backend.dashboard.layout', compact('template', 'config', 'dropdown', 'posts'));
     }
     public function create()
     {
@@ -97,7 +100,7 @@ class PostController extends Controller
         $template = 'backend.post.post.delete';
         return view('backend.dashboard.layout', compact('template', 'post', 'config'));
     }
-    public function destroy($id, DeletePostRequest $request)
+    public function destroy($id)
     {
         if ($this->postService->destroy($id)) {
             return redirect()->route('post.index')->with('success', 'Xóa bản ghi thành công');
@@ -118,5 +121,10 @@ class PostController extends Controller
                 'https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css'
             ]
         ];
+    }
+    public function catalogue($post)
+    {
+        dd($post->post_catalogues);
+        // foreach($post as $key->$val)
     }
 }

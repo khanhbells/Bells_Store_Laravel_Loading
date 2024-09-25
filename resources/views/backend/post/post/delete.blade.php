@@ -16,10 +16,10 @@
                 <div class="panel-head">
                     <div class="panel-title">Thông tin chung</div>
                     <div class="panel-description">
-                        <p class="text-danger">- Bạn có chắc chắn muốn xóa nhóm bài viết:
+                        <p class="text-danger">- Bạn có chắc chắn muốn xóa bài viết:
                             <strong>{{ $post->name }}</strong>
                         </p>
-                        <p class="text-danger"><strong>- Lưu ý: Hãy cẩn thận khi xóa nhóm bài viết! </strong></p>
+                        <p class="text-danger"><strong>- Lưu ý: Hãy cẩn thận khi xóa bài viết! </strong></p>
                     </div>
                 </div>
             </div>

@@ -22,8 +22,8 @@ interface BaseRepositoryInterface
         array $orderBy = ['id', 'DESC'],
         array $join = [],
         array $relations = [],
+        array $rawQuery = [],
     );
     public function updateByWhereIn($whereInField = '', array $whereIn = [], array $payload = []);
-    public function createLanguagePivot($model, array $payload = []);
-    public function getPostById(int $id = 0, $language_id = 0);
+    public function createPivot($model, array $payload = [], string $relation = '');
 }

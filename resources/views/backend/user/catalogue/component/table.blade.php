@@ -29,7 +29,8 @@
                     <td class="text-center js-switch-{{ $userCatalogue->id }}">
                         <input type="checkbox" value="{{ $userCatalogue->publish }}"
                             {{ $userCatalogue->publish == 2 ? 'checked' : '' }} class="js-switch  status"
-                            data-field="publish" data-model="UserCatalogue" data-modelId="{{ $userCatalogue->id }}" />
+                            data-field="publish" data-model="{{ $config['model'] }}"
+                            data-modelId="{{ $userCatalogue->id }}" />
                     </td>
                     <td class="text-center">
                         <a href="{{ route('user.catalogue.edit', $userCatalogue->id) }}" class="btn btn-success"><i
