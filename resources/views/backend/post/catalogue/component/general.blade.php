@@ -1,7 +1,7 @@
 <div class="row mb15">
     <div class="col-lg-12">
         <div class="form-row">
-            <label for="" class="control-label text-left">Tiêu đề nhóm bài viết
+            <label for="" class="control-label text-left">{{ __('message.title') }}
                 <span class="text-danger">(*)</span>
             </label>
             <input type="text" name="name" value="{{ old('name', $postCatalogue->name ?? '') }}" class="form-control"
@@ -12,7 +12,7 @@
 <div class="row mb30">
     <div class="col-lg-12">
         <div class="form-row">
-            <label for="" class="control-label text-left">Mô tả ngắn
+            <label for="" class="control-label text-left">{{ __('message.description') }}
                 <span class="text-danger">(*)</span>
             </label>
             <textarea type="text" name="description" class="form-control ck-editor" placeholder="" autocomplete="off"
@@ -24,10 +24,11 @@
     <div class="col-lg-12">
         <div class="form-row">
             <div class="uk-flex uk-flex-middle uk-flex-space-between">
-                <label for="" class="control-label text-left">Nội dung
+                <label for="" class="control-label text-left">{{ __('message.content') }}
                     <span class="text-danger">(*)</span>
                 </label>
-                <a href="" class="multipleUploadImageCkeditor" data-target="content">Upload nhiều hình ảnh</a>
+                <a href="" class="multipleUploadImageCkeditor"
+                    data-target="content">{{ __('message.uploadImages') }}</a>
             </div>
             <textarea type="text" name="content" class="form-control ck-editor" placeholder="" autocomplete="off" id="content"
                 data-height="500">{{ old('content', $postCatalogue->content ?? '') }}</textarea>

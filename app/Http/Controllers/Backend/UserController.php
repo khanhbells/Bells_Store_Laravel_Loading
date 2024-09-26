@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Http\Requests\StoreUserRequest;
 use App\Http\Requests\UpdateUserRequest;
 use Illuminate\Http\Request;
+use App\Models\UserCatalogue;
 // use App\Models\User;
 use App\Services\Interfaces\UserServiceInterface as UserService;
 use App\Repositories\Interfaces\ProvinceRepositoryInterface as ProvinceRepository;
@@ -48,13 +49,14 @@ class UserController extends Controller
     public function create()
     {
         $provinces = $this->provinceRepository->all();
-        // dd($provinces);
-        // dd($province);
+        $userCatalogues = UserCatalogue::where('publish', 2)->get(); // Lấy danh sách nhóm thành viên đã được publish
         $config = $this->configData();
         $config['seo'] = config('app.user');
         $config['method'] = 'create';
         $template = 'backend.user.user.store';
-        return view('backend.dashboard.layout', compact('template', 'config', 'provinces'));
+
+        // Truyền userCatalogues vào view
+        return view('backend.dashboard.layout', compact('template', 'config', 'provinces', 'userCatalogues'));
     }
     public function store(StoreUserRequest $request)
     {
@@ -68,6 +70,7 @@ class UserController extends Controller
         $user = $this->userRepository->findById($id);
         // dd($user);
         $provinces = $this->provinceRepository->all();
+        $userCatalogues = UserCatalogue::where('publish', 2)->get();
         // dd($provinces);
         // dd($province);
         $config = $this->configData();
@@ -75,7 +78,7 @@ class UserController extends Controller
 
         $config['seo'] = config('app.user');
         $config['method'] = 'edit';
-        return view('backend.dashboard.layout', compact('template', 'config', 'provinces', 'user'));
+        return view('backend.dashboard.layout', compact('template', 'config', 'provinces', 'user', 'userCatalogues'));
     }
     public function update($id, UpdateUserRequest $request)
     {

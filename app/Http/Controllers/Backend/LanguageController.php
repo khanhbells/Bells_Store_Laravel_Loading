@@ -9,6 +9,7 @@ use Illuminate\Http\Request;
 // use App\Models\User;
 use App\Services\Interfaces\LanguageServiceInterface as LanguageService;
 use App\Repositories\Interfaces\LanguageRepositoryInterface as LanguageRepository;
+use Illuminate\Support\Facades\App;
 // use App\Repositories\Interfaces\languageRepositoryInterface as LanguageRepository;
 //Neu muon view hieu duoc controller thi phai compact
 class LanguageController extends Controller
@@ -101,5 +102,14 @@ class LanguageController extends Controller
                 'backend/library/finder.js',
             ],
         ];
+    }
+    public function switchBackendLanguage($id)
+    {
+        $language = $this->languageRepository->findById($id);
+        if ($this->languageService->switch($id)) {
+            session(['app_locale' => $language->canonical]);
+            App::setLocale($language->canonical);
+        }
+        return redirect()->back();
     }
 }

@@ -369,3 +369,15 @@ a {
     color: #333;
     margin-right: 10px;
 }
+
+.language-item {
+    height: 60px;
+    padding: 0;
+    margin-left: 10px;
+    /* padding-left: 0 !important;
+    padding-right: 0 !important; */
+}
+
+.language-item.active {
+    background: #1ab394;
+}

@@ -5,10 +5,11 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
+use App\Traits\QueryScopes;
 
 class PostCatalogue extends Model
 {
-    use HasFactory, SoftDeletes;
+    use HasFactory, SoftDeletes, QueryScopes;
     protected $fillable = [
         'parent_id',
         'lft',
@@ -43,5 +44,12 @@ class PostCatalogue extends Model
             return false;
         }
         return true;
+    }
+    public function scopeKeyword($query, $keyword)
+    {
+        if (!empty($keyword)) {
+            $query->where('name', 'LIKE', '%' . $keyword . '%');
+        }
+        return $query;
     }
 }

@@ -4,9 +4,9 @@
             <th style="width:50px;">
                 <input type="checkbox" value="" id="checkAll" class="input-checkbox">
             </th>
-            <th>Tên nhóm</th>
-            <th class="text-center" style="width:100px;">Tình trạng</th>
-            <th class="text-center" style="width:100px;">Thao tác</th>
+            <th>{{ __('message.tableName') }}</th>
+            <th class="text-center" style="width:100px;">{{ __('message.tableStatus') }}</th>
+            <th class="text-center" style="width:100px;">{{ __('message.tableAction') }}</th>
         </tr>
     </thead>
     <tbody>

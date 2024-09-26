@@ -13,9 +13,12 @@ return new class extends Migration
      */
     public function up()
     {
-        Schema::table('users', function (Blueprint $table) {
-            $table->bigInteger(('user_catalogue_id'))->default(2);
-        });
+        // Kiểm tra nếu cột chưa tồn tại để tránh lỗi duplicate
+        if (!Schema::hasColumn('users', 'user_catalogue_id')) {
+            Schema::table('users', function (Blueprint $table) {
+                $table->bigInteger('user_catalogue_id')->default(2);
+            });
+        }
     }
 
     /**

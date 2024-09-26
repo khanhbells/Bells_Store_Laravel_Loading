@@ -50,10 +50,6 @@
                                 </div>
                             </div>
                         </div>
-                        @php
-                            $userCatalogue = ['[Chọn nhóm thành viên]', 'Quản trị viên', 'Cộng tác viên'];
-
-                        @endphp
                         <div class="row mb15">
                             <div class="col-lg-6">
                                 <div class="form-row">
@@ -61,11 +57,14 @@
                                         <span class="text-danger">(*)</span>
                                     </label>
                                     <select name="user_catalogue_id" class="form-control setupSelect2">
-                                        @foreach ($userCatalogue as $key => $item)
+                                        @if (isset($user->user_catalogue_id) == null)
+                                            <option value="">[Chọn nhóm thành viên]</option>
+                                        @endif
+                                        @foreach ($userCatalogues as $item)
                                             <option
-                                                {{ $key == old('user_catalogue_id', isset($user->user_catalogue_id) ? $user->user_catalogue_id : '') ? 'selected' : '' }}
-                                                value="{{ $key }}">
-                                                {{ $item }}</option>
+                                                {{ $item->id == old('user_catalogue_id', isset($user->user_catalogue_id) ? $user->user_catalogue_id : '') ? 'selected' : '' }}
+                                                value="{{ $item->id }}">
+                                                {{ $item->name }}</option>
                                         @endforeach
                                     </select>
                                 </div>

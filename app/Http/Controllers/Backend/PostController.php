@@ -21,7 +21,7 @@ class PostController extends Controller
     protected $postRepository;
     protected $nestedset;
     protected $language;
-    public function __construct(PostService $postService, PostRepository $postRepository, Nestedsetbie $nestedset)
+    public function __construct(PostService $postService, PostRepository $postRepository)
     {
         $this->postService = $postService;
         $this->postRepository = $postRepository;
@@ -35,9 +35,6 @@ class PostController extends Controller
     public function index(Request $request)
     {
         $posts = $this->postService->paginate($request);
-        // dd($posts); //hien thi thanh vien
-
-
         $config = [
             'js' => [
                 'backend/js/plugins/switchery/switchery.js',
@@ -56,8 +53,6 @@ class PostController extends Controller
     }
     public function create()
     {
-        // dd($provinces);
-        // dd($province);
         $config = $this->configData();
         $config['seo'] = config('app.post');
         $config['method'] = 'create';
