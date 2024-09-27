@@ -5,6 +5,7 @@ namespace App\Services;
 use App\Services\Interfaces\PostCatalogueServiceInterface;
 use App\Services\BaseService;
 use App\Repositories\Interfaces\PostCatalogueRepositoryInterface as PostCatalogueRepository;
+use App\Repositories\Interfaces\RouterRepositoryInterface as RouterRepository;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Carbon;
@@ -24,7 +25,9 @@ class PostCatalogueService extends BaseService implements PostCatalogueServiceIn
     protected $postCatalogueRepository;
     protected $nestedset;
     protected $language;
-    public function __construct(PostCatalogueRepository $postCatalogueRepository, Nestedsetbie $nestedset)
+    protected $routerRepository;
+    protected $controllerName = 'PostCatalogueController';
+    public function __construct(PostCatalogueRepository $postCatalogueRepository, Nestedsetbie $nestedset, RouterRepository $routerRepository)
     {
         $this->language = $this->currentLanguage();
         $this->postCatalogueRepository = $postCatalogueRepository;
@@ -33,17 +36,19 @@ class PostCatalogueService extends BaseService implements PostCatalogueServiceIn
             'foreignkey' => 'post_catalogue_id',
             'language_id' => $this->language,
         ]);
+        $this->routerRepository = $routerRepository;
     }
 
     public function paginate($request)
     {
-        $condition['keyword'] = addslashes($request->input('keyword'));
-        $condition['publish'] = $request->input('publish', -1);
-        $condition['where'] = [
-            ['tb2.language_id', '=', $this->language]
-        ];
         $perPage = $request->integer('perpage');
-        // dd($condition);
+        $condition = [
+            'keyword' => addslashes($request->input('keyword')),
+            'publish' => $request->input('publish', -1),
+            'where' => [
+                ['tb2.language_id', '=', $this->language]
+            ]
+        ];
         $postCatalogues = $this->postCatalogueRepository->pagination(
             $this->paginateselect(),
             $condition,
@@ -67,40 +72,13 @@ class PostCatalogueService extends BaseService implements PostCatalogueServiceIn
     public function create(Request $request)
     {
         DB::beginTransaction();
-
         try {
-            $payload = $request->only($this->payload());
-            $payload['user_id'] = Auth::id();
-
-            // Xử lý album - loại bỏ '/laravelversion1.com/public' khỏi các đường dẫn
-            if (isset($payload['album'])) {
-                $albumArray = $payload['album'];
-                foreach ($albumArray as &$image) {
-                    $image = str_replace('/laravelversion1.com/public', '', $image); // Loại bỏ tiền tố
-                }
-                $payload['album'] = json_encode($albumArray); // Mã hóa lại thành chuỗi JSON
-            }
-
-            // Loại bỏ phần '/laravelversion1.com' khỏi đường dẫn của ảnh chính (nếu có)
-            if (isset($payload['image'])) {
-                $payload['image'] = str_replace('/laravelversion1.com/public', '', $payload['image']);
-            }
-
-            // Tạo bản ghi
-            $postCatalogue = $this->postCatalogueRepository->create($payload);
+            $postCatalogue = $this->createCatalogue($request);
             if ($postCatalogue->id > 0) {
-                $payloadLanguage = $request->only($this->payloadLanguage());
-                $payloadLanguage['canonical'] = Str::slug($payloadLanguage['canonical']);
-                $payloadLanguage['language_id'] = $this->language;
-                $payloadLanguage['post_catalogue_id'] = $postCatalogue->id;
-
-                $language = $this->postCatalogueRepository->createPivot($postCatalogue, $payloadLanguage, 'languages');
+                $this->updateLanguageForCatalogue($postCatalogue, $request);
+                $this->createRouter($postCatalogue, $request, $this->controllerName);
+                $this->nestedset();
             }
-
-            $this->nestedset->Get('level ASC, order ASC');
-            $this->nestedset->Recursive(0, $this->nestedset->Set());
-            $this->nestedset->Action();
-
             DB::commit();
             return true;
         } catch (Exception $e) {
@@ -120,50 +98,14 @@ class PostCatalogueService extends BaseService implements PostCatalogueServiceIn
     public function update($id, Request $request)
     {
         DB::beginTransaction();
-
         try {
             $postCatalogue = $this->postCatalogueRepository->findById($id);
-            $payload = $request->only($this->payload());
-            if (isset($payload['album'])) {
-                $albumArray = $payload['album']; // Mảng chứa các ảnh
-                foreach ($albumArray as &$image) {
-                    // Kiểm tra và xử lý đường dẫn ảnh
-                    if (strpos($image, 'http://localhost:81/laravelversion1.com/public') !== false) {
-                        // Nếu ảnh có URL đầy đủ
-                        $image = str_replace('http://localhost:81/laravelversion1.com/public', '', $image);
-                    } elseif (strpos($image, '/laravelversion1.com/public') !== false) {
-                        // Nếu ảnh chỉ có tiền tố tương đối
-                        $image = str_replace('/laravelversion1.com/public', '', $image);
-                    }
-                }
-                $payload['album'] = json_encode($albumArray); // Mã hóa lại thành chuỗi JSON
-            }
-            // dd($payload['album']);
-            // Kiểm tra và xử lý cả hai trường hợp ảnh có tiền tố 'http://localhost:81/laravelversion1.com/public' hoặc '/laravelversion1.com/public'
-            if (isset($payload['image'])) {
-                if (strpos($payload['image'], 'http://localhost:81/laravelversion1.com/public') !== false) {
-                    // Nếu ảnh có URL đầy đủ (khi người dùng không sửa ảnh)
-                    $payload['image'] = str_replace('http://localhost:81/laravelversion1.com/public', '', $payload['image']);
-                } elseif (strpos($payload['image'], '/laravelversion1.com/public') !== false) {
-                    // Nếu ảnh chỉ có tiền tố tương đối (khi người dùng sửa ảnh)
-                    $payload['image'] = str_replace('/laravelversion1.com/public', '', $payload['image']);
-                }
-            }
-            // dd($payload['image']); // Kiểm tra xem đường dẫn ảnh đã được chỉnh sửa đúng chưa
-            // dd($payload);
-            $flag = $this->postCatalogueRepository->update($id, $payload);
-
+            $flag = $this->updateCatalogue($postCatalogue, $request);
             if ($flag) {
-                $payloadLanguage = $request->only($this->payloadLanguage());
-                $payloadLanguage['language_id'] = $this->language;
-                $payloadLanguage['post_catalogue_id'] = $id;
-                $postCatalogue->languages()->detach([$payloadLanguage['language_id'], $id]);
-                $reponse = $this->postCatalogueRepository->createPivot($postCatalogue, $payloadLanguage, 'languages');
-                $this->nestedset->Get('level ASC, order ASC');
-                $this->nestedset->Recursive(0, $this->nestedset->Set());
-                $this->nestedset->Action();
+                $this->updateLanguageForCatalogue($postCatalogue, $request);
+                $this->updateRouter($postCatalogue, $request, $this->controllerName);
+                $this->nestedset();
             }
-
             DB::commit();
             return true;
         } catch (Exception $e) {
@@ -222,6 +164,54 @@ class PostCatalogueService extends BaseService implements PostCatalogueServiceIn
             die();
             return false;
         }
+    }
+
+    private function createCatalogue($request)
+    {
+        $payload = $request->only($this->payload());
+        // Xử lý album - loại bỏ '/laravelversion1.com/public' khỏi các đường dẫn
+        if (isset($payload['album'])) {
+            $payload['album'] = $this->formatAlbum($payload['album']);
+        }
+        // Kiểm tra xem image có được truyền không
+        if (isset($payload['image'])) {
+            $payload['image'] = $this->formatImage($payload['image']);
+        }
+        $payload['user_id'] = Auth::id();
+
+        // Tạo bản ghi
+        $postCatalogue = $this->postCatalogueRepository->create($payload);
+        return $postCatalogue;
+    }
+    private function updateCatalogue($postCatalogue, $request)
+    {
+        $payload = $request->only($this->payload());
+        // Xử lý album - loại bỏ '/laravelversion1.com/public' khỏi các đường dẫn
+        if (isset($payload['album'])) {
+            $payload['album'] = $this->formatAlbum($payload['album']);
+        }
+        // Kiểm tra xem image có được truyền không
+        if (isset($payload['image'])) {
+            $payload['image'] = $this->formatImage($payload['image']);
+        }
+        $flag = $this->postCatalogueRepository->update($postCatalogue->id, $payload);
+        return $flag;
+    }
+
+    public function updateLanguageForCatalogue($postCatalogue, $request)
+    {
+        $payload = $this->formatLanguagePayload($postCatalogue, $request);
+        $postCatalogue->languages()->detach([$this->language, $postCatalogue->id]);
+        $language = $this->postCatalogueRepository->createPivot($postCatalogue, $payload, 'languages');
+        return $language;
+    }
+    private function formatLanguagePayload($postCatalogue, $request)
+    {
+        $payload = $request->only($this->payloadLanguage());
+        $payload['canonical'] = Str::slug($payload['canonical']);
+        $payload['language_id'] = $this->language;
+        $payload['post_catalogue_id'] = $postCatalogue->id;
+        return $payload;
     }
     private function paginateselect()
     {

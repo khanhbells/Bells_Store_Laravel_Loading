@@ -24,6 +24,40 @@ use App\Http\Controllers\Backend\PostController;
 Route::get('/', function () {
     return view('welcome');
 });
+//Login
+Route::get('admin', [AuthController::class, 'index'])->name('auth.admin')->middleware('login');
+Route::get('logout', [AuthController::class, 'logout'])->name('auth.logout');
+Route::post('login', [AuthController::class, 'login'])->name('auth.login');
+//Register
+Route::get('register', [AuthController::class, 'register'])->name('auth.register')->middleware('login');
+Route::post('store', [AuthController::class, 'store'])->name('register.store')->middleware('login');
+//Ajax
+Route::get('ajax/location/getLocation', [LocationController::class, 'getLocation'])->name('ajax.location.index');
+Route::post('ajax/dashboard/changeStatus', [AjaxDashboardController::class, 'changeStatus'])->name('ajax.dashboard.changeStatus');
+Route::post('ajax/dashboard/changeStatusAll', [AjaxDashboardController::class, 'changeStatusAll'])->name('ajax.dashboard.changeStatusAll');
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 // BACKEND ROUTES
 Route::group(['middleware' => ['admin', 'locale']], function () {
     //Dashboard
@@ -79,15 +113,4 @@ Route::group(['middleware' => ['admin', 'locale']], function () {
         Route::get('{id}/delete', [PostController::class, 'delete'])->where(['id' => '[0-9]+'])->name('post.delete');
         Route::post('{id}/destroy', [PostController::class, 'destroy'])->where(['id' => '[0-9]+'])->name('post.destroy');
     });
-    //Ajax
-    Route::get('ajax/location/getLocation', [LocationController::class, 'getLocation'])->name('ajax.location.index');
-    Route::post('ajax/dashboard/changeStatus', [AjaxDashboardController::class, 'changeStatus'])->name('ajax.dashboard.changeStatus');
-    Route::post('ajax/dashboard/changeStatusAll', [AjaxDashboardController::class, 'changeStatusAll'])->name('ajax.dashboard.changeStatusAll');
 });
-//Login
-Route::get('admin', [AuthController::class, 'index'])->name('auth.admin')->middleware('login');
-Route::get('logout', [AuthController::class, 'logout'])->name('auth.logout');
-Route::post('login', [AuthController::class, 'login'])->name('auth.login');
-//Register
-Route::get('register', [AuthController::class, 'register'])->name('auth.register')->middleware('login');
-Route::post('store', [AuthController::class, 'store'])->name('register.store')->middleware('login');

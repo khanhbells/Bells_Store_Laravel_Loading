@@ -5,6 +5,7 @@ namespace App\Services;
 use App\Services\Interfaces\PostServiceInterface;
 use App\Services\BaseService;
 use App\Repositories\Interfaces\PostRepositoryInterface as PostRepository;
+use App\Repositories\Interfaces\RouterRepositoryInterface as RouterRepository;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Carbon;
@@ -22,10 +23,13 @@ class PostService extends BaseService implements PostServiceInterface
 {
     protected $postRepository;
     protected $language;
-    public function __construct(PostRepository $postRepository)
+    protected $routerRepository;
+    public function __construct(PostRepository $postRepository, RouterRepository $routerRepository)
     {
         $this->language = $this->currentLanguage();
         $this->postRepository = $postRepository;
+        $this->routerRepository = $routerRepository;
+        $this->controllerName = 'PostController';
     }
     public function paginate($request)
     {
@@ -64,6 +68,7 @@ class PostService extends BaseService implements PostServiceInterface
             if ($post->id > 0) {
                 $this->uploadLanguageForPost($post, $request);
                 $this->updateCatalogueForpost($post, $request);
+                $this->createRouter($post, $request, $this->controllerName);
             }
 
             DB::commit();
@@ -88,6 +93,7 @@ class PostService extends BaseService implements PostServiceInterface
             if ($this->uploadPost($post, $request)) {
                 $this->uploadLanguageForPost($post, $request);
                 $this->updateCatalogueForPost($post, $request);
+                $this->updateRouter($post, $request, $this->controllerName);
             }
             DB::commit();
             return true;
@@ -162,26 +168,7 @@ class PostService extends BaseService implements PostServiceInterface
         return $post;
     }
 
-    private function formatAlbum($albumArray)
-    {
-        foreach ($albumArray as &$image) {
-            if (strpos($image, 'http://localhost:81/laravelversion1.com/public') !== false) {
-                $image = str_replace('http://localhost:81/laravelversion1.com/public', '', $image);
-            } elseif (strpos($image, '/laravelversion1.com/public') !== false) {
-                $image = str_replace('/laravelversion1.com/public', '', $image);
-            }
-        }
-        return (!empty($albumArray)) ? json_encode($albumArray) : ''; // Mã hóa lại thành chuỗi JSON
-    }
-    private function formatImage($image)
-    {
-        if (strpos($image, 'http://localhost:81/laravelversion1.com/public') !== false) {
-            return str_replace('http://localhost:81/laravelversion1.com/public', '', $image);
-        } elseif (strpos($image, '/laravelversion1.com/public') !== false) {
-            return str_replace('/laravelversion1.com/public', '', $image);
-        }
-        return $image;
-    }
+
     private function formatLanguagePayload($payload, $postId)
     {
         $payload['canonical'] = Str::slug($payload['canonical']);

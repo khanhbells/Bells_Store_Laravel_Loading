@@ -13,8 +13,12 @@ return new class extends Migration
      */
     public function up()
     {
-        Schema::table('post_catalogues', function (Blueprint $table) {
-            $table->renameColumn('parentid', 'parent_id');
+        Schema::create('routers', function (Blueprint $table) {
+            $table->id();
+            $table->string('canonical')->unique();
+            $table->unsignedBigInteger('content_id');
+            $table->string('controllers');
+            $table->timestamps();
         });
     }
 
@@ -25,8 +29,6 @@ return new class extends Migration
      */
     public function down()
     {
-        Schema::table('post_catalogues', function (Blueprint $table) {
-            $table->renameColumn('parentid', 'parent_id');
-        });
+        Schema::dropIfExists('routers');
     }
 };

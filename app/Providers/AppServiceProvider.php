@@ -18,6 +18,9 @@ class AppServiceProvider extends ServiceProvider
         'App\Services\UserCatalogueService',
         'App\Repositories\Interfaces\UserCatalogueRepositoryInterface' =>
         'App\Repositories\UserCatalogueRepository',
+
+
+
         //Language
         'App\Services\Interfaces\LanguageServiceInterface' =>
         'App\Services\LanguageService',
@@ -38,6 +41,9 @@ class AppServiceProvider extends ServiceProvider
         'App\Repositories\ProvinceRepository',
         'App\Repositories\Interfaces\DistrictRepositoryInterface' =>
         'App\Repositories\DistrictRepository',
+        //Router
+        'App\Repositories\Interfaces\RouterRepositoryInterface' =>
+        'App\Repositories\RouterRepository',
     ];
     /**
      * Register any application services.

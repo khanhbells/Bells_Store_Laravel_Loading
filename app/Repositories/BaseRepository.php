@@ -33,15 +33,17 @@ class BaseRepository implements BaseRepositoryInterface
         array $relations = [],
         array $rawQuery = []
     ) {
-        $query = $this->model->select($column)->distinct();
-        return $query->keyword($condition['keyword'] ?? null)
-            ->publish($condition['publish'] ?? null)
-            ->customWhere($condition['where'] ?? null)
-            ->customWhereRaw($rawQuery['whereRaw'] ?? null)
-            ->relationCount($relations ?? null)
-            ->customJoin($join ?? null)
-            ->customOrderBy($orderBy ?? null)
-            ->paginate($perPage)->withQueryString()->withPath(env('APP_URL') . $extend['path']);
+        $query = $this->model->select($column)->distinct(); // Bắt đầu truy vấn, chọn các cột và loại bỏ các dòng trùng lặp
+        return $query->keyword($condition['keyword'] ?? null) // Áp dụng tìm kiếm theo từ khóa
+            ->publish($condition['publish'] ?? null) // Lọc theo publish
+            ->customWhere($condition['where'] ?? null) // Áp dụng các điều kiện where tùy chỉnh
+            ->customWhereRaw($rawQuery['whereRaw'] ?? null) // Áp dụng truy vấn thô (raw query)
+            ->relationCount($relations ?? null) // Lấy kèm số lượng của các quan hệ (relations)
+            ->customJoin($join ?? null) // Join các bảng khác
+            ->customOrderBy($orderBy ?? null) // Sắp xếp kết quả theo điều kiện orderBy
+            ->paginate($perPage) // Thực hiện phân trang
+            ->withQueryString() // Giữ lại các query string của URL
+            ->withPath(env('APP_URL') . $extend['path']); // Thêm đường dẫn cho phân trang
     }
 
     public function all()
@@ -88,6 +90,15 @@ class BaseRepository implements BaseRepositoryInterface
     public function findById(int $modelId, array $column = ['*'], array $relation = [])
     {
         return $this->model->select($column)->with($relation)->findOrFail($modelId);
+    }
+
+    public function findByCondition($condition = [])
+    {
+        $query = $this->model->newQuery();
+        foreach ($condition as $key => $val) {
+            $query->where($val[0], $val[1], $val[2]);
+        }
+        return $query->first();
     }
 
     public function createPivot($model, array $payload = [], string $relation = '')

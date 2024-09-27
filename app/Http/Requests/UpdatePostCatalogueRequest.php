@@ -25,7 +25,7 @@ class UpdatePostCatalogueRequest extends FormRequest
     {
         return [
             'name' => 'required',
-            'canonical' => 'required|unique:post_catalogue_language,canonical,' . $this->id . ',post_catalogue_id',
+            'canonical' => 'required|unique:routers,canonical,' . $this->id . ',module_id',
         ];
     }
     public function messages(): array

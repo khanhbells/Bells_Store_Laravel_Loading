@@ -43,14 +43,12 @@ class UserService implements UserServiceInterface
         DB::beginTransaction();
 
         try {
-
             $payload = $request->except(['_token', 'send', 're_password']);
-
             $payload['birthday'] = $this->convertBirthdayDate($payload['birthday']);
             $payload['password'] = Hash::make($payload['password']);
+            // dd($payload);
             $user = $this->userRepository->create($payload);
 
-            // dd($payload);
             DB::commit();
             return true;
         } catch (Exception $e) {

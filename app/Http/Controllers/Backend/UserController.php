@@ -26,6 +26,7 @@ class UserController extends Controller
     }
     public function index(Request $request)
     {
+        // dd($request);
         $users = $this->userService->paginate($request);
         // dd($users); //hien thi thanh vien
 
