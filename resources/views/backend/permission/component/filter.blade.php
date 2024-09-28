@@ -1,4 +1,4 @@
-<form action="{{ route('user.catalogue.index') }}" method="">
+<form action="{{ route('permission.index') }}" method="">
     <div class="filter-wrapper">
         <div class="uk-flex uk-flex-middle uk-flex-space-between">
             <div class="perpage">
@@ -38,13 +38,8 @@
                             </span>
                         </div>
                     </div>
-                    <div class="uk-flex uk-flex-middle">
-                        <a href="{{ route('user.catalogue.permissison') }}" class="btn btn-warning mr10"><i
-                                class="fa fa-key mr5"></i>Phân quyền</a>
-                        <a href="{{ route('user.catalogue.create') }}" class="btn btn-danger"><i
-                                class="fa fa-plus mr5"></i>Thêm mới
-                            nhóm thành viên</a>
-                    </div>
+                    <a href="{{ route('permission.create') }}" class="btn btn-danger"><i class="fa fa-plus mr5"></i>Thêm
+                        mới quyền</a>
                 </div>
             </div>
         </div>

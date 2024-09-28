@@ -28,8 +28,10 @@ class UserCatalogueService implements UserCatalogueServiceInterface
 
     public function paginate($request)
     {
-        $condition['keyword'] = addslashes($request->input('keyword'));
-        $condition['publish'] = $request->input('publish', -1);
+        $condition = [
+            'keyword' => addslashes($request->input('keyword')),
+            'publish' => $request->input('publish', -1)
+        ];
         $perPage = $request->integer('perpage');
         // dd($condition);
         $userCatalogues = $this->UserCatalogueRepository->pagination(
@@ -92,6 +94,33 @@ class UserCatalogueService implements UserCatalogueServiceInterface
             return false;
         }
     }
+    public function setPermission($request)
+    {
+        DB::beginTransaction();
+        try {
+            $permissions = $request->input('permission', []); // Nếu không có quyền nào được gửi lên, trả về mảng rỗng
+            //$permissions[1]
+            // Duyệt qua tất cả các nhóm userCatalogue có trong hệ thống
+            $userCatalogues = $this->UserCatalogueRepository->all();
+            foreach ($userCatalogues as $userCatalogue) {
+                if (isset($permissions[$userCatalogue->id])) {
+                    // Nếu có quyền nào đó được chọn cho userCatalogue, đồng bộ chúng
+                    $userCatalogue->permissions()->sync($permissions[$userCatalogue->id]);
+                } else {
+                    // Nếu không có quyền nào được chọn (hoặc tất cả đã bị bỏ tích), xóa hết các quyền liên kết
+                    $userCatalogue->permissions()->detach();
+                }
+            }
+
+            DB::commit();
+            return true;
+        } catch (Exception $e) {
+            DB::rollBack();
+            echo $e->getMessage();
+            die();
+            return false;
+        }
+    }
     public function updateStatus($post = [])
     {
         DB::beginTransaction();
@@ -145,6 +174,7 @@ class UserCatalogueService implements UserCatalogueServiceInterface
             return false;
         }
     }
+
     private function paginateselect()
     {
         return ['id', 'name', 'description', 'publish'];

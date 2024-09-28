@@ -4,7 +4,7 @@ return [
         [
             'title' => 'Quản lý thành viên',
             'icon' => 'fa fa-user-circle-o',
-            'name' => ['user'],
+            'name' => ['user', 'permission'],
             'subModule' => [
                 [
                     'title' => 'Nhóm thành viên',
@@ -13,6 +13,10 @@ return [
                 [
                     'title' => 'Thành viên',
                     'route' => 'user.index' // chỉ dùng tên route
+                ],
+                [
+                    'title' => 'Phân quyền',
+                    'route' => 'permission.index' // chỉ dùng tên route
                 ],
             ]
         ],
@@ -29,6 +33,7 @@ return [
                     'title' => 'Bài viết',
                     'route' => 'post.index' // chỉ dùng tên route
                 ],
+
             ]
         ],
         [

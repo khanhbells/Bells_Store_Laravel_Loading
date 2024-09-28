@@ -72,10 +72,6 @@
                                             </div>
                                         </div>
                                     </div>
-                                    @php
-                                        $userCatalogue = ['[Chọn nhóm thành viên]', 'Quản trị viên', 'Cộng tác viên'];
-
-                                    @endphp
                                     <div class="row mb15">
                                         <div class="col-lg-6">
                                             <div class="form-row">

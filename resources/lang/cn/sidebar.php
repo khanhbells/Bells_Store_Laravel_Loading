@@ -14,6 +14,10 @@ return [
                     'title' => '会员',
                     'route' => 'user.index' // 只使用路由名称
                 ],
+                [
+                    'title' => '允许',
+                    'route' => 'permission.index' // chỉ dùng tên route
+                ],
             ]
         ],
         [

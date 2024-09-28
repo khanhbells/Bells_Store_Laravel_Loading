@@ -14,6 +14,10 @@ return [
                     'title' => 'Member',
                     'route' => 'user.index' // only use route name
                 ],
+                [
+                    'title' => 'Permission',
+                    'route' => 'permission.index' // chỉ dùng tên route
+                ],
             ]
         ],
         [

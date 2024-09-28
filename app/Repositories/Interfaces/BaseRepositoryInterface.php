@@ -8,7 +8,7 @@ namespace App\Repositories\Interfaces;
  */
 interface BaseRepositoryInterface
 {
-    public function all();
+    public function all(array $relation = []);
     public function findById(int $modelId, array $column = ['*'], array $relation = []);
     public function create(array $payload = []);
     public function update(int $id = 0, array $payload = []);

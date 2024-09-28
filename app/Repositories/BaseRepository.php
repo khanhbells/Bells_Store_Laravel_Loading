@@ -46,9 +46,9 @@ class BaseRepository implements BaseRepositoryInterface
             ->withPath(env('APP_URL') . $extend['path']); // Thêm đường dẫn cho phân trang
     }
 
-    public function all()
+    public function all(array $relation = [])
     {
-        return $this->model->all();
+        return $this->model->with($relation)->get();
     }
 
     public function create(array $payload = [])

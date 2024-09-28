@@ -8,16 +8,19 @@ use Illuminate\Http\Request;
 // use App\Models\User;
 use App\Services\Interfaces\UserCatalogueServiceInterface as UserCatalogueService;
 use App\Repositories\Interfaces\UserCatalogueRepositoryInterface as UserCatalogueRepository;
+use App\Repositories\Interfaces\PermissionRepositoryInterface as PermissionRepository;
 // use App\Repositories\Interfaces\UserCatalogueRepositoryInterface as UserCatalogueRepository;
 //Neu muon view hieu duoc controller thi phai compact
 class UserCatalogueController extends Controller
 {
     protected $UserCatalogueService;
     protected $UserCatalogueRepository;
-    public function __construct(UserCatalogueService $UserCatalogueService, UserCatalogueRepository $UserCatalogueRepository)
+    protected $permissionRepository;
+    public function __construct(UserCatalogueService $UserCatalogueService, UserCatalogueRepository $UserCatalogueRepository, PermissionRepository $permissionRepository)
     {
         $this->UserCatalogueService = $UserCatalogueService;
         $this->UserCatalogueRepository = $UserCatalogueRepository;
+        $this->permissionRepository = $permissionRepository;
     }
     public function index(Request $request)
     {
@@ -89,5 +92,23 @@ class UserCatalogueController extends Controller
             return redirect()->route('user.catalogue.index')->with('success', 'Xóa bản ghi thành công');
         }
         return redirect()->route('user.catalogue.index')->with('error', 'Xóa bản ghi không thành công');
+    }
+
+    public function permission()
+    {
+
+        $userCatalogues = $this->UserCatalogueRepository->all(['permissions']);
+        $permissions = $this->permissionRepository->all();
+        $config['seo'] = __('message.userCatalogue');
+        $template = 'backend.user.catalogue.permission';
+        return view('backend.dashboard.layout', compact('template', 'userCatalogues', 'permissions', 'config'));
+    }
+    public function updatePermission(Request $request)
+    {
+        if ($this->UserCatalogueService->setPermission($request)) {
+            return redirect()->route('user.catalogue.index')->with('success', 'Cập nhật bản ghi thành công');
+        }
+        return redirect()->route('user.catalogue.index')->with('error', 'Cập nhật bản ghi không thành công');
+        // $permission = $request->input('permission');
     }
 }

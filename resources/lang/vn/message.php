@@ -16,6 +16,41 @@ return [
         ],
 
     ],
+    'userCatalogue' => [
+        'index' => [
+            'title' => 'Quản lý nhóm thành viên',
+            'table' => 'Danh sách nhóm thành viên',
+        ],
+        'create' => [
+            'title' => 'Thêm nhóm bài thành viên',
+        ],
+        'delete' => [
+            'title' => 'Xoá nhóm thành viên',
+        ],
+        'update' => [
+            'title' => 'Sửa nhóm thành viên',
+        ],
+        'permission' => [
+            'title' => 'Cập nhật quyền',
+        ],
+
+    ],
+    'permission' => [
+        'index' => [
+            'title' => 'Quản lý quyền',
+            'table' => 'Danh sách quyền',
+        ],
+        'create' => [
+            'title' => 'Thêm quyền mới',
+        ],
+        'delete' => [
+            'title' => 'Xoá quyền',
+        ],
+        'update' => [
+            'title' => 'Sửa quyền',
+        ],
+
+    ],
     'parent' => 'Chọn danh mục cha',
     'parent_notice' => '* Chọn Root nếu không có danh mục cha',
     'image' => 'Chọn ảnh đại diện',
