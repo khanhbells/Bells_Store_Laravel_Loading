@@ -24,34 +24,44 @@ class UserCatalogueController extends Controller
     }
     public function index(Request $request)
     {
-        $userCatalogues = $this->UserCatalogueService->paginate($request);
-        // dd($users); //hien thi thanh vien
+        try {
+            $this->authorize('modules', 'user.catalogue.index');
+            $userCatalogues = $this->UserCatalogueService->paginate($request);
+            // dd($users); //hien thi thanh vien
 
 
-        $config = [
-            'js' => [
-                'backend/js/plugins/switchery/switchery.js',
-                'https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js'
-            ],
-            'css' => [
-                'backend/css/plugins/switchery/switchery.css',
-                'https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css'
-            ],
-            'model' => 'UserCatalogue'
-        ];
-        $config['seo'] = config('app.usercatalogue');
-        // dd($config['seo']);
-        $template = 'backend.user.catalogue.index';
-        return view('backend.dashboard.layout', compact('template', 'config', 'userCatalogues'));
+            $config = [
+                'js' => [
+                    'backend/js/plugins/switchery/switchery.js',
+                    'https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js'
+                ],
+                'css' => [
+                    'backend/css/plugins/switchery/switchery.css',
+                    'https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css'
+                ],
+                'model' => 'UserCatalogue'
+            ];
+            $config['seo'] = config('app.usercatalogue');
+            // dd($config['seo']);
+            $template = 'backend.user.catalogue.index';
+            return view('backend.dashboard.layout', compact('template', 'config', 'userCatalogues'));
+        } catch (\Illuminate\Auth\Access\AuthorizationException $e) {
+            return redirect()->back()->with('error', 'Bạn không có quyền truy cập vào chức năng này.');
+        }
     }
     public function create()
     {
-        // dd($provinces);
-        // dd($province);
-        $config['seo'] = config('app.usercatalogue');
-        $config['method'] = 'create';
-        $template = 'backend.user.catalogue.store';
-        return view('backend.dashboard.layout', compact('template', 'config'));
+        try {
+            $this->authorize('modules', 'user.catalogue.create');
+            // dd($provinces);
+            // dd($province);
+            $config['seo'] = config('app.usercatalogue');
+            $config['method'] = 'create';
+            $template = 'backend.user.catalogue.store';
+            return view('backend.dashboard.layout', compact('template', 'config'));
+        } catch (\Illuminate\Auth\Access\AuthorizationException $e) {
+            return redirect()->back()->with('error', 'Bạn không có quyền truy cập vào chức năng này.');
+        }
     }
     public function store(StoreUserCatalogueRequest $request)
     {
@@ -62,15 +72,20 @@ class UserCatalogueController extends Controller
     }
     public function edit($id)
     {
-        $userCatalogue = $this->UserCatalogueRepository->findById($id);
-        // dd($user);
-        // dd($provinces);
-        // dd($province);
-        $template = 'backend.user.catalogue.store';
+        try {
+            $this->authorize('modules', 'user.catalogue.update');
+            $userCatalogue = $this->UserCatalogueRepository->findById($id);
+            // dd($user);
+            // dd($provinces);
+            // dd($province);
+            $template = 'backend.user.catalogue.store';
 
-        $config['seo'] = config('app.usercatalogue');
-        $config['method'] = 'edit';
-        return view('backend.dashboard.layout', compact('template', 'config', 'userCatalogue'));
+            $config['seo'] = config('app.usercatalogue');
+            $config['method'] = 'edit';
+            return view('backend.dashboard.layout', compact('template', 'config', 'userCatalogue'));
+        } catch (\Illuminate\Auth\Access\AuthorizationException $e) {
+            return redirect()->back()->with('error', 'Bạn không có quyền truy cập vào chức năng này.');
+        }
     }
     public function update($id, StoreUserCatalogueRequest $request)
     {
@@ -81,10 +96,15 @@ class UserCatalogueController extends Controller
     }
     public function delete($id)
     {
-        $config['seo'] = config('app.usercatalogue');
-        $userCatalogue = $this->UserCatalogueRepository->findById($id);
-        $template = 'backend.user.catalogue.delete';
-        return view('backend.dashboard.layout', compact('template', 'userCatalogue', 'config'));
+        try {
+            $this->authorize('modules', 'user.catalogue.destroy');
+            $config['seo'] = config('app.usercatalogue');
+            $userCatalogue = $this->UserCatalogueRepository->findById($id);
+            $template = 'backend.user.catalogue.delete';
+            return view('backend.dashboard.layout', compact('template', 'userCatalogue', 'config'));
+        } catch (\Illuminate\Auth\Access\AuthorizationException $e) {
+            return redirect()->back()->with('error', 'Bạn không có quyền truy cập vào chức năng này.');
+        }
     }
     public function destroy($id)
     {
@@ -96,12 +116,16 @@ class UserCatalogueController extends Controller
 
     public function permission()
     {
-
-        $userCatalogues = $this->UserCatalogueRepository->all(['permissions']);
-        $permissions = $this->permissionRepository->all();
-        $config['seo'] = __('message.userCatalogue');
-        $template = 'backend.user.catalogue.permission';
-        return view('backend.dashboard.layout', compact('template', 'userCatalogues', 'permissions', 'config'));
+        try {
+            $this->authorize('modules', 'user.catalogue.permission');
+            $userCatalogues = $this->UserCatalogueRepository->all(['permissions']);
+            $permissions = $this->permissionRepository->all();
+            $config['seo'] = __('message.userCatalogue');
+            $template = 'backend.user.catalogue.permission';
+            return view('backend.dashboard.layout', compact('template', 'userCatalogues', 'permissions', 'config'));
+        } catch (\Illuminate\Auth\Access\AuthorizationException $e) {
+            return redirect()->back()->with('error', 'Bạn không có quyền truy cập vào chức năng này.');
+        }
     }
     public function updatePermission(Request $request)
     {

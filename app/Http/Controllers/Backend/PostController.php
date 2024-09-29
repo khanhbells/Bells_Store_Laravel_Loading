@@ -34,31 +34,41 @@ class PostController extends Controller
     }
     public function index(Request $request)
     {
-        $posts = $this->postService->paginate($request);
-        $config = [
-            'js' => [
-                'backend/js/plugins/switchery/switchery.js',
-                'https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js'
-            ],
-            'css' => [
-                'backend/css/plugins/switchery/switchery.css',
-                'https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css'
-            ],
-            'model' => 'Post'
-        ];
-        $config['seo'] = config('app.post');
-        $template = 'backend.post.post.index';
-        $dropdown = $this->nestedset->Dropdown();
-        return view('backend.dashboard.layout', compact('template', 'config', 'dropdown', 'posts'));
+        try {
+            $this->authorize('modules', 'post.index');
+            $posts = $this->postService->paginate($request);
+            $config = [
+                'js' => [
+                    'backend/js/plugins/switchery/switchery.js',
+                    'https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js'
+                ],
+                'css' => [
+                    'backend/css/plugins/switchery/switchery.css',
+                    'https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css'
+                ],
+                'model' => 'Post'
+            ];
+            $config['seo'] = config('app.post');
+            $template = 'backend.post.post.index';
+            $dropdown = $this->nestedset->Dropdown();
+            return view('backend.dashboard.layout', compact('template', 'config', 'dropdown', 'posts'));
+        } catch (\Illuminate\Auth\Access\AuthorizationException $e) {
+            return redirect()->back()->with('error', 'Bạn không có quyền truy cập vào chức năng này.');
+        }
     }
     public function create()
     {
-        $config = $this->configData();
-        $config['seo'] = config('app.post');
-        $config['method'] = 'create';
-        $dropdown = $this->nestedset->Dropdown();
-        $template = 'backend.post.post.store';
-        return view('backend.dashboard.layout', compact('template', 'config', 'dropdown'));
+        try {
+            $this->authorize('modules', 'post.create');
+            $config = $this->configData();
+            $config['seo'] = config('app.post');
+            $config['method'] = 'create';
+            $dropdown = $this->nestedset->Dropdown();
+            $template = 'backend.post.post.store';
+            return view('backend.dashboard.layout', compact('template', 'config', 'dropdown'));
+        } catch (\Illuminate\Auth\Access\AuthorizationException $e) {
+            return redirect()->back()->with('error', 'Bạn không có quyền truy cập vào chức năng này.');
+        }
     }
     public function store(StorePostRequest $request)
     {
@@ -70,15 +80,19 @@ class PostController extends Controller
     }
     public function edit($id)
     {
-
-        $post = $this->postRepository->getPostById($id, $this->language);
-        $config = $this->configData();
-        $dropdown = $this->nestedset->Dropdown();
-        $template = 'backend.post.post.store';
-        $config['seo'] = config('app.post');
-        $config['method'] = 'edit';
-        $album = json_decode($post->album);
-        return view('backend.dashboard.layout', compact('template', 'config', 'post', 'dropdown', 'album'));
+        try {
+            $this->authorize('modules', 'post.update');
+            $post = $this->postRepository->getPostById($id, $this->language);
+            $config = $this->configData();
+            $dropdown = $this->nestedset->Dropdown();
+            $template = 'backend.post.post.store';
+            $config['seo'] = config('app.post');
+            $config['method'] = 'edit';
+            $album = json_decode($post->album);
+            return view('backend.dashboard.layout', compact('template', 'config', 'post', 'dropdown', 'album'));
+        } catch (\Illuminate\Auth\Access\AuthorizationException $e) {
+            return redirect()->back()->with('error', 'Bạn không có quyền truy cập vào chức năng này.');
+        }
     }
     //--------------------------------------------------------------
     public function update($id, UpdatePostRequest $request)
@@ -90,10 +104,15 @@ class PostController extends Controller
     }
     public function delete($id)
     {
-        $config['seo'] = config('app.post');
-        $post = $this->postRepository->getPostById($id, $this->language);
-        $template = 'backend.post.post.delete';
-        return view('backend.dashboard.layout', compact('template', 'post', 'config'));
+        try {
+            $this->authorize('modules', 'post.destroy');
+            $config['seo'] = config('app.post');
+            $post = $this->postRepository->getPostById($id, $this->language);
+            $template = 'backend.post.post.delete';
+            return view('backend.dashboard.layout', compact('template', 'post', 'config'));
+        } catch (\Illuminate\Auth\Access\AuthorizationException $e) {
+            return redirect()->back()->with('error', 'Bạn không có quyền truy cập vào chức năng này.');
+        }
     }
     public function destroy($id)
     {

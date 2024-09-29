@@ -26,38 +26,46 @@ class UserController extends Controller
     }
     public function index(Request $request)
     {
-        // dd($request);
-        $users = $this->userService->paginate($request);
-        // dd($users); //hien thi thanh vien
-
-
-        $config = [
-            'js' => [
-                'backend/js/plugins/switchery/switchery.js',
-                'https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js'
-            ],
-            'css' => [
-                'backend/css/plugins/switchery/switchery.css',
-                'https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css'
-            ],
-            'model' => 'User'
-        ];
-        $config['seo'] = config('app.user');
-        // dd($config['seo']);
-        $template = 'backend.user.user.index';
-        return view('backend.dashboard.layout', compact('template', 'config', 'users'));
+        try {
+            $this->authorize('modules', 'user.index');
+            // dd($request);
+            $users = $this->userService->paginate($request);
+            // dd($users); //hien thi thanh vien
+            $config = [
+                'js' => [
+                    'backend/js/plugins/switchery/switchery.js',
+                    'https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js'
+                ],
+                'css' => [
+                    'backend/css/plugins/switchery/switchery.css',
+                    'https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css'
+                ],
+                'model' => 'User'
+            ];
+            $config['seo'] = config('app.user');
+            // dd($config['seo']);
+            $template = 'backend.user.user.index';
+            return view('backend.dashboard.layout', compact('template', 'config', 'users'));
+        } catch (\Illuminate\Auth\Access\AuthorizationException $e) {
+            return redirect()->back()->with('error', 'Bạn không có quyền truy cập vào chức năng này.');
+        }
     }
     public function create()
     {
-        $provinces = $this->provinceRepository->all();
-        $userCatalogues = UserCatalogue::where('publish', 2)->get(); // Lấy danh sách nhóm thành viên đã được publish
-        $config = $this->configData();
-        $config['seo'] = config('app.user');
-        $config['method'] = 'create';
-        $template = 'backend.user.user.store';
+        try {
+            $this->authorize('modules', 'user.create');
+            $provinces = $this->provinceRepository->all();
+            $userCatalogues = UserCatalogue::where('publish', 2)->get(); // Lấy danh sách nhóm thành viên đã được publish
+            $config = $this->configData();
+            $config['seo'] = config('app.user');
+            $config['method'] = 'create';
+            $template = 'backend.user.user.store';
 
-        // Truyền userCatalogues vào view
-        return view('backend.dashboard.layout', compact('template', 'config', 'provinces', 'userCatalogues'));
+            // Truyền userCatalogues vào view
+            return view('backend.dashboard.layout', compact('template', 'config', 'provinces', 'userCatalogues'));
+        } catch (\Illuminate\Auth\Access\AuthorizationException $e) {
+            return redirect()->back()->with('error', 'Bạn không có quyền truy cập vào chức năng này.');
+        }
     }
     public function store(StoreUserRequest $request)
     {
@@ -68,18 +76,23 @@ class UserController extends Controller
     }
     public function edit($id)
     {
-        $user = $this->userRepository->findById($id);
-        // dd($user);
-        $provinces = $this->provinceRepository->all();
-        $userCatalogues = UserCatalogue::where('publish', 2)->get();
-        // dd($provinces);
-        // dd($province);
-        $config = $this->configData();
-        $template = 'backend.user.user.store';
+        try {
+            $this->authorize('modules', 'user.update');
+            $user = $this->userRepository->findById($id);
+            // dd($user);
+            $provinces = $this->provinceRepository->all();
+            $userCatalogues = UserCatalogue::where('publish', 2)->get();
+            // dd($provinces);
+            // dd($province);
+            $config = $this->configData();
+            $template = 'backend.user.user.store';
 
-        $config['seo'] = config('app.user');
-        $config['method'] = 'edit';
-        return view('backend.dashboard.layout', compact('template', 'config', 'provinces', 'user', 'userCatalogues'));
+            $config['seo'] = config('app.user');
+            $config['method'] = 'edit';
+            return view('backend.dashboard.layout', compact('template', 'config', 'provinces', 'user', 'userCatalogues'));
+        } catch (\Illuminate\Auth\Access\AuthorizationException $e) {
+            return redirect()->back()->with('error', 'Bạn không có quyền truy cập vào chức năng này.');
+        }
     }
     public function update($id, UpdateUserRequest $request)
     {
@@ -90,10 +103,15 @@ class UserController extends Controller
     }
     public function delete($id)
     {
-        $config['seo'] = config('app.user');
-        $user = $this->userRepository->findById($id);
-        $template = 'backend.user.user.delete';
-        return view('backend.dashboard.layout', compact('template', 'user', 'config'));
+        try {
+            $this->authorize('modules', 'user.destroy');
+            $config['seo'] = config('app.user');
+            $user = $this->userRepository->findById($id);
+            $template = 'backend.user.user.delete';
+            return view('backend.dashboard.layout', compact('template', 'user', 'config'));
+        } catch (\Illuminate\Auth\Access\AuthorizationException $e) {
+            return redirect()->back()->with('error', 'Bạn không có quyền truy cập vào chức năng này.');
+        }
     }
     public function destroy($id)
     {

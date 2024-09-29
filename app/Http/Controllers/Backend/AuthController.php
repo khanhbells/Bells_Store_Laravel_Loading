@@ -29,8 +29,13 @@ class AuthController extends Controller
             'email' => $request->input('email'),
             'password' => $request->input('password')
         ];
-        // dd($credentials); //debug
         if (Auth::attempt($credentials)) {
+            $user = Auth::user();
+            if ($user->user_catalogue_id == 4) {
+                Auth::logout(); // Đăng xuất ngay lập tức để không giữ session đăng nhập
+                return redirect()->route('auth.admin')->with('error', 'Xin lỗi chúng tôi đang trong quá trình xây dựng trang bán hàng. Vui lòng quay lại sau!');
+            }
+
             return redirect()->route('dashboard.index')->with('success', 'Đăng nhập thành công');
         } else {
             return redirect()->route('auth.admin')->with('error', 'Email hoặc mật khẩu không chính xác');

@@ -40,6 +40,11 @@ class User extends Authenticatable
     {
         return $this->belongsTo(UserCatalogue::class, 'user_catalogue_id', 'id');
     }
+    public function hasPermission($permissionCanonical)
+    {
+        return $this->user_catalogues->permissions->contains('canonical', $permissionCanonical);
+    }
+
 
     /**
      * The attributes that should be hidden for serialization.

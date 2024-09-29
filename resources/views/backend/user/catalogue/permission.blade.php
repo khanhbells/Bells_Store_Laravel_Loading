@@ -15,7 +15,10 @@
                             <tr>
                                 <th class="text-center">Tên quyền</th>
                                 @foreach ($userCatalogues as $userCatalogue)
-                                    <th class="text-center">{{ $userCatalogue->name }}</th>
+                                    @if ($userCatalogue->id != 4)
+                                        <!-- Nếu id khác 4 thì hiển thị -->
+                                        <th class="text-center">{{ $userCatalogue->name }}</th>
+                                    @endif
                                 @endforeach
                             </tr>
                             @foreach ($permissions as $permission)
@@ -25,12 +28,14 @@
                                             <span style="color: red;">({{ $permission->canonical }})</span></a>
                                     </td>
                                     @foreach ($userCatalogues as $userCatalogue)
-                                        <td>
-                                            <input
-                                                {{ collect($userCatalogue->permissions)->contains('id', $permission->id) ? 'checked' : '' }}
-                                                type="checkbox" name="permission[{{ $userCatalogue->id }}][]"
-                                                value="{{ $permission->id }}" class="form-control">
-                                        </td>
+                                        @if ($userCatalogue->id != 4)
+                                            <td>
+                                                <input
+                                                    {{ collect($userCatalogue->permissions)->contains('id', $permission->id) ? 'checked' : '' }}
+                                                    type="checkbox" name="permission[{{ $userCatalogue->id }}][]"
+                                                    value="{{ $permission->id }}" class="form-control">
+                                            </td>
+                                        @endif
                                     @endforeach
                                 </tr>
                             @endforeach

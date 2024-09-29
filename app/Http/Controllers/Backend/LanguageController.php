@@ -23,35 +23,43 @@ class LanguageController extends Controller
     }
     public function index(Request $request)
     {
-        $languages = $this->languageService->paginate($request);
-        // dd($languages); //hien thi thanh vien
-
-
-        $config = [
-            'js' => [
-                'backend/js/plugins/switchery/switchery.js',
-                'https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js'
-            ],
-            'css' => [
-                'backend/css/plugins/switchery/switchery.css',
-                'https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css'
-            ],
-            'model' => 'Language'
-        ];
-        $config['seo'] = config('app.language');
-        // dd($config['seo']);
-        $template = 'backend.language.index';
-        return view('backend.dashboard.layout', compact('template', 'config', 'languages'));
+        try {
+            $this->authorize('modules', 'language.index');
+            $languages = $this->languageService->paginate($request);
+            // dd($languages); //hien thi thanh vienƯ
+            $config = [
+                'js' => [
+                    'backend/js/plugins/switchery/switchery.js',
+                    'https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js'
+                ],
+                'css' => [
+                    'backend/css/plugins/switchery/switchery.css',
+                    'https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css'
+                ],
+                'model' => 'Language'
+            ];
+            $config['seo'] = config('app.language');
+            // dd($config['seo']);
+            $template = 'backend.language.index';
+            return view('backend.dashboard.layout', compact('template', 'config', 'languages'));
+        } catch (\Illuminate\Auth\Access\AuthorizationException $e) {
+            return redirect()->back()->with('error', 'Bạn không có quyền truy cập vào chức năng này.');
+        }
     }
     public function create()
     {
-        // dd($provinces);
-        // dd($province);
-        $config = $this->configData();
-        $config['seo'] = config('app.language');
-        $config['method'] = 'create';
-        $template = 'backend.language.store';
-        return view('backend.dashboard.layout', compact('template', 'config'));
+        try {
+            $this->authorize('modules', 'language.create');
+            // dd($provinces);
+            // dd($province);
+            $config = $this->configData();
+            $config['seo'] = config('app.language');
+            $config['method'] = 'create';
+            $template = 'backend.language.store';
+            return view('backend.dashboard.layout', compact('template', 'config'));
+        } catch (\Illuminate\Auth\Access\AuthorizationException $e) {
+            return redirect()->back()->with('error', 'Bạn không có quyền truy cập vào chức năng này.');
+        }
     }
     public function store(StoreLanguageRequest $request)
     {
@@ -62,16 +70,21 @@ class LanguageController extends Controller
     }
     public function edit($id)
     {
-        $language = $this->languageRepository->findById($id);
-        $config = $this->configData();
-        // dd($language);
-        // dd($provinces);
-        // dd($province);
-        $template = 'backend.language.store';
+        try {
+            $this->authorize('modules', 'language.update');
+            $language = $this->languageRepository->findById($id);
+            $config = $this->configData();
+            // dd($language);
+            // dd($provinces);
+            // dd($province);
+            $template = 'backend.language.store';
 
-        $config['seo'] = config('app.language');
-        $config['method'] = 'edit';
-        return view('backend.dashboard.layout', compact('template', 'config', 'language'));
+            $config['seo'] = config('app.language');
+            $config['method'] = 'edit';
+            return view('backend.dashboard.layout', compact('template', 'config', 'language'));
+        } catch (\Illuminate\Auth\Access\AuthorizationException $e) {
+            return redirect()->back()->with('error', 'Bạn không có quyền truy cập vào chức năng này.');
+        }
     }
     public function update($id, UpdateLanguageRequest $request)
     {
@@ -82,10 +95,15 @@ class LanguageController extends Controller
     }
     public function delete($id)
     {
-        $config['seo'] = config('app.language');
-        $language = $this->languageRepository->findById($id);
-        $template = 'backend.language.delete';
-        return view('backend.dashboard.layout', compact('template', 'language', 'config'));
+        try {
+            $this->authorize('modules', 'language.destroy');
+            $config['seo'] = config('app.language');
+            $language = $this->languageRepository->findById($id);
+            $template = 'backend.language.delete';
+            return view('backend.dashboard.layout', compact('template', 'language', 'config'));
+        } catch (\Illuminate\Auth\Access\AuthorizationException $e) {
+            return redirect()->back()->with('error', 'Bạn không có quyền truy cập vào chức năng này.');
+        }
     }
     public function destroy($id)
     {

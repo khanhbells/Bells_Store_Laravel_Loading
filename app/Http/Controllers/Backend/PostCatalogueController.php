@@ -32,36 +32,47 @@ class PostCatalogueController extends Controller
     }
     public function index(Request $request)
     {
-        $postCatalogues = $this->postCatalogueService->paginate($request);
-        // dd($postCatalogues); //hien thi thanh vien
+        try {
+            $this->authorize('modules', 'post.catalogue.index');
+
+            $postCatalogues = $this->postCatalogueService->paginate($request);
+            // dd($postCatalogues); //hien thi thanh vien
 
 
-        $config = [
-            'js' => [
-                'backend/js/plugins/switchery/switchery.js',
-                'https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js'
-            ],
-            'css' => [
-                'backend/css/plugins/switchery/switchery.css',
-                'https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css'
-            ],
-            'model' => 'PostCatalogue'
-        ];
-        $config['seo'] = __('message.postCatalogue');
-        // dd($config['seo']);
-        $template = 'backend.post.catalogue.index';
-        return view('backend.dashboard.layout', compact('template', 'config', 'postCatalogues'));
+            $config = [
+                'js' => [
+                    'backend/js/plugins/switchery/switchery.js',
+                    'https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js'
+                ],
+                'css' => [
+                    'backend/css/plugins/switchery/switchery.css',
+                    'https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css'
+                ],
+                'model' => 'PostCatalogue'
+            ];
+            $config['seo'] = __('message.postCatalogue');
+            // dd($config['seo']);
+            $template = 'backend.post.catalogue.index';
+            return view('backend.dashboard.layout', compact('template', 'config', 'postCatalogues'));
+        } catch (\Illuminate\Auth\Access\AuthorizationException $e) {
+            return redirect()->back()->with('error', 'Bạn không có quyền truy cập vào chức năng này.');
+        }
     }
     public function create()
     {
-        // dd($provinces);
-        // dd($province);
-        $config = $this->configData();
-        $config['seo'] = __('message.postCatalogue');
-        $config['method'] = 'create';
-        $dropdown = $this->nestedset->Dropdown();
-        $template = 'backend.post.catalogue.store';
-        return view('backend.dashboard.layout', compact('template', 'config', 'dropdown'));
+        try {
+            $this->authorize('modules', 'post.catalogue.create');
+            // dd($provinces);
+            // dd($province);
+            $config = $this->configData();
+            $config['seo'] = __('message.postCatalogue');
+            $config['method'] = 'create';
+            $dropdown = $this->nestedset->Dropdown();
+            $template = 'backend.post.catalogue.store';
+            return view('backend.dashboard.layout', compact('template', 'config', 'dropdown'));
+        } catch (\Illuminate\Auth\Access\AuthorizationException $e) {
+            return redirect()->back()->with('error', 'Bạn không có quyền truy cập vào chức năng này.');
+        }
     }
     public function store(StorePostCatalogueRequest $request)
     {
@@ -73,15 +84,19 @@ class PostCatalogueController extends Controller
     }
     public function edit($id)
     {
-
-        $postCatalogue = $this->postCatalogueRepository->getPostCatalogueById($id, $this->language);
-        $config = $this->configData();
-        $dropdown = $this->nestedset->Dropdown();
-        $template = 'backend.post.catalogue.store';
-        $config['seo'] = __('message.postCatalogue');
-        $config['method'] = 'edit';
-        $album = json_decode($postCatalogue->album);
-        return view('backend.dashboard.layout', compact('template', 'config', 'postCatalogue', 'dropdown', 'album'));
+        try {
+            $this->authorize('modules', 'post.catalogue.update');
+            $postCatalogue = $this->postCatalogueRepository->getPostCatalogueById($id, $this->language);
+            $config = $this->configData();
+            $dropdown = $this->nestedset->Dropdown();
+            $template = 'backend.post.catalogue.store';
+            $config['seo'] = __('message.postCatalogue');
+            $config['method'] = 'edit';
+            $album = json_decode($postCatalogue->album);
+            return view('backend.dashboard.layout', compact('template', 'config', 'postCatalogue', 'dropdown', 'album'));
+        } catch (\Illuminate\Auth\Access\AuthorizationException $e) {
+            return redirect()->back()->with('error', 'Bạn không có quyền truy cập vào chức năng này.');
+        }
     }
     //--------------------------------------------------------------
     public function update($id, UpdatePostCatalogueRequest $request)
@@ -93,10 +108,15 @@ class PostCatalogueController extends Controller
     }
     public function delete($id)
     {
-        $config['seo'] = __('message.postCatalogue');
-        $postCatalogue = $this->postCatalogueRepository->getPostCatalogueById($id, $this->language);
-        $template = 'backend.post.catalogue.delete';
-        return view('backend.dashboard.layout', compact('template', 'postCatalogue', 'config'));
+        try {
+            $this->authorize('modules', 'post.catalogue.destroy');
+            $config['seo'] = __('message.postCatalogue');
+            $postCatalogue = $this->postCatalogueRepository->getPostCatalogueById($id, $this->language);
+            $template = 'backend.post.catalogue.delete';
+            return view('backend.dashboard.layout', compact('template', 'postCatalogue', 'config'));
+        } catch (\Illuminate\Auth\Access\AuthorizationException $e) {
+            return redirect()->back()->with('error', 'Bạn không có quyền truy cập vào chức năng này.');
+        }
     }
     public function destroy($id, DeletePostCatalogueRequest $request)
     {
