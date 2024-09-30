@@ -63,6 +63,31 @@ class BaseService implements BaseServiceInterface
         $this->nestedset->Recursive(0, $this->nestedset->Set());
         $this->nestedset->Action();
     }
+    public function updateRouter($model, $request, $controllerName)
+    {
+        // Định dạng payload cho router
+        $payload = $this->formatRouterPayload($model, $request, $controllerName);
+
+        // Điều kiện để tìm router trong database
+        $condition = [
+            ['module_Id', '=', $model->id],
+            ['controllers', '=', 'App\Http\Controller\Frontend\\' . $controllerName . ''],
+        ];
+
+        // Tìm router theo điều kiện
+        $router = $this->routerRepository->findByCondition($condition);
+        // Nếu router tồn tại, thực hiện cập nhật
+        if ($router) {
+            $res = $this->routerRepository->update($router->id, $payload);
+        }
+        // Nếu router không tồn tại, thực hiện thêm mới
+        else {
+            $payload['module_Id'] = $model->id; // Gán giá trị module_Id vào payload nếu cần thiết
+            $payload['controllers'] = 'App\Http\Controller\Frontend\\' . $controllerName; // Gán controllers vào payload
+            $res = $this->routerRepository->create($payload); // Thêm bản ghi mới
+        }
+        return $res;
+    }
     public function formatRouterPayload($model, $request, $controllerName)
     {
         $router = [
@@ -78,16 +103,5 @@ class BaseService implements BaseServiceInterface
         $router = $this->formatRouterPayload($model, $request, $controllerName);
         // dd($router);
         $this->routerRepository->create($router);
-    }
-    public function updateRouter($model, $request, $controllerName)
-    {
-        $payload = $this->formatRouterPayload($model, $request, $controllerName);
-        $condition = [
-            ['module_Id', '=', $model->id],
-            ['controllers', '=', 'App\Http\Controller\Frontend\\' . $controllerName . ''],
-        ];
-        $router = $this->routerRepository->findByCondition($condition);
-        $res = $this->routerRepository->update($router->id, $payload);
-        return $res;
     }
 }

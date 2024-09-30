@@ -28,11 +28,11 @@
             <div class="col-lg-12">
                 <div class="form-row">
                     <span class="image img-cover image-target">
-                        <img src="{{ old('image', isset($postCatalogue) ? asset($postCatalogue->image) : asset('backend/img/not_found.jpg')) }}"
+                        <img src="{{ old('image', isset($postCatalogue) && $postCatalogue->image != null ? asset($postCatalogue->image) : asset('backend/img/not_found.jpg')) }}"
                             alt="">
                     </span>
                     <input type="hidden" name="image"
-                        value="{{ old('image', isset($postCatalogue) ? asset($postCatalogue->image) : '') }}">
+                        value="{{ old('image', isset($postCatalogue) && $postCatalogue->image != null ? asset($postCatalogue->image) : '') }}">
                 </div>
 
             </div>

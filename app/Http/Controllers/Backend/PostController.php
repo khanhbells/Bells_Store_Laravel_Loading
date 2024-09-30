@@ -11,6 +11,7 @@ use Illuminate\Http\Request;
 use App\Services\Interfaces\PostServiceInterface as PostService;
 use App\Repositories\Interfaces\PostRepositoryInterface as PostRepository;
 use App\Classes\Nestedsetbie;
+use App\Models\Language;
 use App\Models\Post;
 
 // use App\Repositories\Interfaces\languageRepositoryInterface as LanguageRepository;
@@ -23,20 +24,31 @@ class PostController extends Controller
     protected $language;
     public function __construct(PostService $postService, PostRepository $postRepository)
     {
+        $this->middleware(function ($request, $next) {
+            $locale = app()->getLocale();
+            $language = Language::where('canonical', $locale)->first();
+            $this->language = $language->id;
+            $this->initialize();
+            return $next($request);
+        });
         $this->postService = $postService;
         $this->postRepository = $postRepository;
+        $this->initialize();
+    }
+    public function initialize()
+    {
         $this->nestedset = new Nestedsetbie([
             'table' => 'post_catalogues',
             'foreignkey' => 'post_catalogue_id',
             'language_id' => 1,
         ]);
-        $this->language = $this->currentLanguage();
     }
     public function index(Request $request)
     {
         try {
             $this->authorize('modules', 'post.index');
-            $posts = $this->postService->paginate($request);
+            $languageId = $this->language;
+            $posts = $this->postService->paginate($request, $this->language);
             $config = [
                 'js' => [
                     'backend/js/plugins/switchery/switchery.js',
@@ -51,7 +63,7 @@ class PostController extends Controller
             $config['seo'] = config('app.post');
             $template = 'backend.post.post.index';
             $dropdown = $this->nestedset->Dropdown();
-            return view('backend.dashboard.layout', compact('template', 'config', 'dropdown', 'posts'));
+            return view('backend.dashboard.layout', compact('template', 'config', 'dropdown', 'posts', 'languageId'));
         } catch (\Illuminate\Auth\Access\AuthorizationException $e) {
             return redirect()->back()->with('error', 'Bạn không có quyền truy cập vào chức năng này.');
         }
@@ -73,7 +85,7 @@ class PostController extends Controller
     public function store(StorePostRequest $request)
     {
         // dd($request);
-        if ($this->postService->create($request)) {
+        if ($this->postService->create($request, $this->language)) {
             return redirect()->route('post.index')->with('success', 'Thêm mới bản ghi thành công');
         }
         return redirect()->route('post.index')->with('error', 'Thêm mới bản ghi không thành công');
@@ -97,7 +109,7 @@ class PostController extends Controller
     //--------------------------------------------------------------
     public function update($id, UpdatePostRequest $request)
     {
-        if ($this->postService->update($id, $request)) {
+        if ($this->postService->update($id, $request, $this->language)) {
             return redirect()->route('post.index')->with('success', 'Cập nhật bản ghi thành công');
         }
         return redirect()->route('post.index')->with('error', 'Cập nhật bản ghi không thành công');

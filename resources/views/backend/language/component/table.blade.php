@@ -13,8 +13,8 @@
         </tr>
     </thead>
     <tbody>
-        @if (isset($languages) && is_object($languages))
-            @foreach ($languages as $language)
+        @if (isset($languages_translate) && is_object($languages_translate))
+            @foreach ($languages_translate as $language)
                 <tr>
                     <td><input type="checkbox" value="{{ $language->id }}" class="input-checkbox checkBoxItem">
                     </td>
@@ -47,7 +47,7 @@
         @endif
     </tbody>
 </table>
-{{ $languages->links('pagination::bootstrap-4') }}
+{{ $languages_translate->links('pagination::bootstrap-4') }}
 <script>
     var changeStatusUrl = "{{ url('ajax/dashboard/changeStatus') }}";
     var changeStatusAllUrl = "{{ url('ajax/dashboard/changeStatusAll') }}";

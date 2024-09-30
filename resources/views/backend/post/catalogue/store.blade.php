@@ -26,11 +26,15 @@
                         <h5>{{ __('message.tableHeading') }}</h5>
                     </div>
                     <div class="ibox-content">
-                        @include('backend.post.catalogue.component.general')
+                        @include('backend.dashboard.component.content', [
+                            'model' => $postCatalogue ?? null,
+                        ])
                     </div>
                 </div>
                 @include('backend.dashboard.component.album')
-                @include('backend.post.catalogue.component.seo')
+                @include('backend.dashboard.component.seo', [
+                    'model' => $postCatalogue ?? null,
+                ])
             </div>
             <div class="col-lg-3">
                 @include('backend.post.catalogue.component.aside')

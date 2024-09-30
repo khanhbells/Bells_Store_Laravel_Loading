@@ -5,6 +5,7 @@
                 <input type="checkbox" value="" id="checkAll" class="input-checkbox">
             </th>
             <th>{{ __('message.tableName') }}</th>
+            @include('backend.dashboard.component.languageTh')
             <th class="text-center" style="width:100px;">{{ __('message.tableStatus') }}</th>
             <th class="text-center" style="width:100px;">{{ __('message.tableAction') }}</th>
         </tr>
@@ -18,6 +19,10 @@
                     <td>
                         {{ str_repeat('|----', $postCatalogue->level > 0 ? $postCatalogue->level - 1 : 0) . $postCatalogue->name }}
                     </td>
+                    @include('backend.dashboard.component.languageTd', [
+                        'model' => $postCatalogue,
+                        'modeling' => 'PostCatalogue',
+                    ])
                     <td class="text-center js-switch-{{ $postCatalogue->id }}">
                         <input type="checkbox" value="{{ $postCatalogue->publish }}"
                             {{ $postCatalogue->publish == 2 ? 'checked' : '' }} class="js-switch  status"

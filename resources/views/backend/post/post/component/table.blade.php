@@ -5,6 +5,7 @@
                 <input type="checkbox" value="" id="checkAll" class="input-checkbox">
             </th>
             <th>Tiêu đề</th>
+            @include('backend.dashboard.component.languageTh')
             <th style="width:80px;" class="text-center">Vị trí</th>
             <th class="text-center" style="width:100px;">Tình trạng</th>
             <th class="text-center" style="width:100px;">Thao tác</th>
@@ -26,16 +27,35 @@
                                 <div class="name"><span class="maintitle">{{ $post->name }}</span></div>
                                 <div class="catalogue">
                                     <span class="text-danger">Nhóm hiển thị: </span>
+                                    @php
+                                        $displayedNames = [];
+                                    @endphp
                                     @foreach ($post->post_catalogues as $val)
-                                        @foreach ($val->post_catalogue_language as $cat)
+                                        @php
+                                            $currentLanguageId = $languageId;
+                                            $currentLanguage = $val->post_catalogue_language->firstWhere(
+                                                'language_id',
+                                                $currentLanguageId,
+                                            );
+                                        @endphp
+                                        @if ($currentLanguage && !in_array($currentLanguage->name, $displayedNames))
                                             <a
-                                                href="{{ route('post.index', ['post_catalogue_id' => $val->id]) }}">{{ $cat->name }}</a>
-                                        @endforeach
+                                                href="{{ route('post.index', ['post_catalogue_id' => $val->id]) }}">{{ $currentLanguage->name }}</a>
+                                            @php
+                                                // Thêm tên nhóm vào mảng để tránh lặp lại
+                                                $displayedNames[] = $currentLanguage->name;
+                                            @endphp
+                                        @endif
                                     @endforeach
+
                                 </div>
                             </div>
                         </div>
                     </td>
+                    @include('backend.dashboard.component.languageTd', [
+                        'model' => $post,
+                        'modeling' => 'Post',
+                    ])
                     <td>
                         <input value="{{ $post->order }}" type="text" name="order"
                             class="form-control sort-order text-right" data-id="{{ $post->id }}"

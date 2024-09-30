@@ -39,6 +39,10 @@ class LanguageService implements LanguageServiceInterface
         // dd($languages);
         return $languages;
     }
+    private function paginateselect()
+    {
+        return ['id', 'name', 'canonical', 'publish', 'image'];
+    }
     public function create(Request $request)
     {
         DB::beginTransaction();
@@ -88,6 +92,42 @@ class LanguageService implements LanguageServiceInterface
             return false;
         }
     }
+    public function saveTranslate($option, $request)
+    {
+        DB::beginTransaction();
+        try {
+            $payload = [
+                'name' => $request->input('translate_name'),
+                'description' => $request->input('translate_description'),
+                'content' => $request->input('translate_content'),
+                'meta_title' => $request->input('translate_meta_title'),
+                'meta_keyword' => $request->input('translate_meta_keyword'),
+                'meta_description' => $request->input('translate_meta_description'),
+                'canonical' => $request->input('translate_canonical'),
+                $this->convertModelToField($option['model']) => $option['id'],
+                'language_id' => $option['languageId']
+            ];
+            $repositoryNamespage = '\App\Repositories\\' . ucfirst($option['model']) . 'Repository';
+            if (class_exists($repositoryNamespage)) {
+                $repositoryInstance = app($repositoryNamespage);
+            }
+            $model = $repositoryInstance->findById($option['id']);
+            $model->languages()->detach([$option['languageId'], $model->id]);
+            $repositoryInstance->createPivot($model, $payload, 'languages');
+            DB::commit();
+            return true;
+        } catch (Exception $e) {
+            DB::rollBack();
+            echo $e->getMessage();
+            die();
+            return false;
+        }
+    }
+    private function convertModelToField($model)
+    {
+        $temp = strtolower(preg_replace('/(?<!^)[A-Z]/', '_$0', $model));
+        return $temp . '_id';
+    }
     public function updateStatus($post = [])
     {
         DB::beginTransaction();
@@ -122,7 +162,6 @@ class LanguageService implements LanguageServiceInterface
     }
     public function switch($id)
     {
-
         DB::beginTransaction();
         try {
             $language = $this->languageRepository->update($id, ['current' => 1]);
@@ -139,9 +178,5 @@ class LanguageService implements LanguageServiceInterface
             die();
             return false;
         }
-    }
-    private function paginateselect()
-    {
-        return ['id', 'name', 'canonical', 'publish', 'image'];
     }
 }

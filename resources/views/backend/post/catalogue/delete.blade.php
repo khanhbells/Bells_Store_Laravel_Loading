@@ -44,7 +44,7 @@
         </div>
         <div class="text-right mb15">
             <button class="btn btn-danger" type="submit" name="send"
-                value="send">{{ __('message.save') }}</button>
+                value="send">{{ __('message.deleteButton') }}</button>
         </div>
     </div>
 </form>

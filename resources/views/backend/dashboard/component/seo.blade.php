@@ -5,13 +5,13 @@
     <div class="ibox-content">
         <div class="seo-container">
             <div class="meta-title">
-                {{ old('meta_title', $postCatalogue->meta_title ?? '') ? old('meta_title', $postCatalogue->meta_title ?? '') : __('message.seo_title') }}
+                {{ old('meta_title', $model->meta_title ?? '') ? old('meta_title', $model->meta_title ?? '') : __('message.seo_title') }}
             </div>
             <div class="canonical">
-                {{ old('canonical', isset($postCatalogue) && $postCatalogue->canonical ? config('app.url') . $postCatalogue->canonical . config('app.general.suffix') : false) ?: __('message.seo_canonical') }}
+                {{ old('canonical', isset($model) && $model->canonical ? config('app.url') . $model->canonical . config('app.general.suffix') : false) ?: __('message.seo_canonical') }}
             </div>
             <div class="meta-description">
-                {{ old('meta-description', $postCatalogue->meta_description ?? '') ? old('meta-description', $postCatalogue->meta_description ?? '') : __('message.seo_description') }}
+                {{ old('meta-description', $model->meta_description ?? '') ? old('meta-description', $model->meta_description ?? '') : __('message.seo_description') }}
             </div>
         </div>
         <div class="seo-wrapper">
@@ -25,8 +25,8 @@
                             </div>
                         </label>
                         <input type="text" name="meta_title"
-                            value="{{ old('meta_title', $postCatalogue->meta_title ?? '') }}" class="form-control"
-                            placeholder="" autocomplete="off" />
+                            value="{{ old('meta_title', $model->meta_title ?? '') }}" class="form-control"
+                            placeholder="" autocomplete="off" {{ isset($disabled) ? 'disabled' : '' }} />
                     </div>
                 </div>
             </div>
@@ -37,8 +37,8 @@
                             <span>{{ __('message.seo_meta_keyword') }}</span>
                         </label>
                         <input type="text" name="meta_keyword"
-                            value="{{ old('meta_keyword', $postCatalogue->meta_keyword ?? '') }}" class="form-control"
-                            placeholder="" autocomplete="off" />
+                            value="{{ old('meta_keyword', $model->meta_keyword ?? '') }}" class="form-control"
+                            placeholder="" autocomplete="off" {{ isset($disabled) ? 'disabled' : '' }} />
                     </div>
                 </div>
             </div>
@@ -51,7 +51,8 @@
                                 <span class="count-meta-description">0 {{ __('message.character') }}</span>
                             </div>
                         </label>
-                        <textarea type="text" name="meta_description" class="form-control" placeholder="" autocomplete="off">{{ old('meta_description', $postCatalogue->meta_description ?? '') }}</textarea>
+                        <textarea type="text" name="meta_description" class="form-control" placeholder="" autocomplete="off"
+                            {{ isset($disabled) ? 'disabled' : '' }}>{{ old('meta_description', $model->meta_description ?? '') }}</textarea>
                     </div>
                 </div>
             </div>
@@ -63,8 +64,9 @@
                         </label>
                         <div class="input-wrapper">
                             <input type="text" name="canonical"
-                                value="{{ old('canonical', $postCatalogue->canonical ?? '') }}" class="form-control"
-                                placeholder="" autocomplete="off" />
+                                value="{{ old('canonical', $model->canonical ?? '') }}"
+                                class="form-control seo-canonical" placeholder="" autocomplete="off"
+                                {{ isset($disabled) ? 'disabled' : '' }} />
                             <span class="baseUrl">{{ config('app.url') }}</span>
                         </div>
                     </div>

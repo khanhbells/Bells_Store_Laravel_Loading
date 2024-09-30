@@ -4,8 +4,8 @@
             <label for="" class="control-label text-left">{{ __('message.title') }}
                 <span class="text-danger">(*)</span>
             </label>
-            <input type="text" name="name" value="{{ old('name', $postCatalogue->name ?? '') }}" class="form-control"
-                placeholder="" autocomplete="off" />
+            <input type="text" name="translate_name" value="{{ old('translate_name', $model->name ?? '') }}"
+                class="form-control" placeholder="" autocomplete="off" />
         </div>
     </div>
 </div>
@@ -15,8 +15,8 @@
             <label for="" class="control-label text-left">{{ __('message.description') }}
                 <span class="text-danger">(*)</span>
             </label>
-            <textarea type="text" name="description" class="form-control ck-editor" placeholder="" autocomplete="off"
-                id="description" data-height="150">{{ old('description', $postCatalogue->description ?? '') }}</textarea>
+            <textarea type="text" name="translate_description" class="form-control ck-editor" placeholder="" autocomplete="off"
+                id="description_1" data-height="150">{{ old('description', $model->description ?? '') }}</textarea>
         </div>
     </div>
 </div>
@@ -28,10 +28,10 @@
                     <span class="text-danger">(*)</span>
                 </label>
                 <a href="" class="multipleUploadImageCkeditor"
-                    data-target="content">{{ __('message.uploadImages') }}</a>
+                    data-target="content_1">{{ __('message.uploadImages') }}</a>
             </div>
-            <textarea type="text" name="content" class="form-control ck-editor" placeholder="" autocomplete="off" id="content"
-                data-height="500">{{ old('content', $postCatalogue->content ?? '') }}</textarea>
+            <textarea type="text" name="translate_content" class="form-control ck-editor" placeholder="" autocomplete="off"
+                id="content_1" data-height="500">{{ old('content', $model->content ?? '') }}</textarea>
         </div>
     </div>
 </div>

@@ -101,6 +101,7 @@ class PostCatalogueController extends Controller
     //--------------------------------------------------------------
     public function update($id, UpdatePostCatalogueRequest $request)
     {
+        // dd($request);
         if ($this->postCatalogueService->update($id, $request)) {
             return redirect()->route('post.catalogue.index')->with('success', 'Cập nhật bản ghi thành công');
         }

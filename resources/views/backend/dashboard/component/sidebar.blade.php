@@ -1,5 +1,6 @@
 @php
     $segment = request()->segment(1);
+    // dd($segment);
 @endphp
 <nav class="navbar-default navbar-static-side" role="navigation">
     <div class="sidebar-collapse">

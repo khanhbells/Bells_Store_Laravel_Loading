@@ -10,8 +10,8 @@ use Illuminate\Http\Request;
  */
 interface PostServiceInterface extends BaseServiceInterface
 {
-    public function paginate($request);
-    public function create(Request $request);
-    public function update($id, Request $request);
+    public function paginate($request, $languageId);
+    public function create(Request $request, $languageId);
+    public function update($id, Request $request, $languageId);
     public function destroy($id);
 }

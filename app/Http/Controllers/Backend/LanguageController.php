@@ -4,11 +4,14 @@ namespace App\Http\Controllers\Backend;
 
 use App\Http\Controllers\Controller;
 use App\Http\Requests\StoreLanguageRequest;
+use App\Http\Requests\TranslateRequest;
 use App\Http\Requests\UpdateLanguageRequest;
 use Illuminate\Http\Request;
-// use App\Models\User;
+// use Language;
 use App\Services\Interfaces\LanguageServiceInterface as LanguageService;
 use App\Repositories\Interfaces\LanguageRepositoryInterface as LanguageRepository;
+
+
 use Illuminate\Support\Facades\App;
 // use App\Repositories\Interfaces\languageRepositoryInterface as LanguageRepository;
 //Neu muon view hieu duoc controller thi phai compact
@@ -25,7 +28,7 @@ class LanguageController extends Controller
     {
         try {
             $this->authorize('modules', 'language.index');
-            $languages = $this->languageService->paginate($request);
+            $languages_translate = $this->languageService->paginate($request);
             // dd($languages); //hien thi thanh vienƯ
             $config = [
                 'js' => [
@@ -41,7 +44,7 @@ class LanguageController extends Controller
             $config['seo'] = config('app.language');
             // dd($config['seo']);
             $template = 'backend.language.index';
-            return view('backend.dashboard.layout', compact('template', 'config', 'languages'));
+            return view('backend.dashboard.layout', compact('template', 'config', 'languages_translate'));
         } catch (\Illuminate\Auth\Access\AuthorizationException $e) {
             return redirect()->back()->with('error', 'Bạn không có quyền truy cập vào chức năng này.');
         }
@@ -129,5 +132,57 @@ class LanguageController extends Controller
             App::setLocale($language->canonical);
         }
         return redirect()->back();
+    }
+    public function translate($id = 0, $languageId = 0, $model = '')
+    {
+        try {
+            $repositoryInstance = $this->repositoryInstance($model);
+            $languageInstance = $this->repositoryInstance('Language');
+            $currentLanguage = $languageInstance->findByCondition([
+                ['canonical', '=', session('app_locale')]
+            ]);
+            $method = 'get' . $model . 'ById';
+            $object = $repositoryInstance->{$method}($id, $currentLanguage->id);
+            $objectTranslate = $repositoryInstance->{$method}($id, $languageId);
+            $this->authorize('modules', 'language.translate');
+            $config = [
+                'js' => [
+                    'backend/plugin/ckeditor/ckeditor.js',
+                    'backend/plugin/ckfinder_2/ckfinder.js',
+                    'backend/library/finder.js',
+                    'backend/library/seo.js',
+                    'https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js'
+                ],
+                'css' => [
+                    'https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css'
+                ]
+            ];
+            $option = [
+                'id' => $id,
+                'languageId' => $languageId,
+                'model' => $model
+            ];
+            $config['seo'] = config('app.postcatalogue');
+            $template = 'backend.language.translate';
+            return view('backend.dashboard.layout', compact('template', 'config', 'object', 'objectTranslate', 'option'));
+        } catch (\Illuminate\Auth\Access\AuthorizationException $e) {
+            return redirect()->back()->with('error', 'Bạn không có quyền truy cập vào chức năng này.');
+        }
+    }
+    public function storeTranslate(TranslateRequest $request)
+    {
+        $option = $request->input('option');
+        if ($this->languageService->saveTranslate($option, $request)) {
+            return redirect()->back()->with('success', 'Thêm mới bản ghi thành công');
+        }
+        return redirect()->back()->route('language.index')->with('error', 'Thêm mới bản ghi không thành công');
+    }
+    private function repositoryInstance($model)
+    {
+        $repositoryNamespage = '\App\Repositories\\' . ucfirst($model) . 'Repository';
+        if (class_exists($repositoryNamespage)) {
+            $repositoryInstance = app($repositoryNamespage);
+        }
+        return $repositoryInstance ?? null;
     }
 }

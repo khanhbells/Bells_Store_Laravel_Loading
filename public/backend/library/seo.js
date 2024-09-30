@@ -8,7 +8,7 @@
             let value = input.val()
             $('.meta-title').html(value)
         })
-        $('input[name=canonical]').css({
+        $('.seo-canonical').css({
             'padding-left': parseInt($('.baseUrl').outerWidth()) + 10
         })
         $('input[name=canonical]').on('keyup', function () {
