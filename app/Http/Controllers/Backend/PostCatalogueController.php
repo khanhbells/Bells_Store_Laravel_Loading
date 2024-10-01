@@ -11,6 +11,7 @@ use Illuminate\Http\Request;
 use App\Services\Interfaces\PostCatalogueServiceInterface as PostCatalogueService;
 use App\Repositories\Interfaces\PostCatalogueRepositoryInterface as PostCatalogueRepository;
 use App\Classes\Nestedsetbie;
+use App\Models\Language;
 // use App\Repositories\Interfaces\languageRepositoryInterface as LanguageRepository;
 //Neu muon view hieu duoc controller thi phai compact
 class PostCatalogueController extends Controller
@@ -21,21 +22,31 @@ class PostCatalogueController extends Controller
     protected $language;
     public function __construct(PostCatalogueService $postCatalogueService, PostCatalogueRepository $postCatalogueRepository, Nestedsetbie $nestedset)
     {
+        $this->middleware(function ($request, $next) {
+            $locale = app()->getLocale();
+            $language = Language::where('canonical', $locale)->first();
+            $this->language = $language->id;
+            $this->initialize();
+            return $next($request);
+        });
         $this->postCatalogueService = $postCatalogueService;
         $this->postCatalogueRepository = $postCatalogueRepository;
+        $this->initialize();
+    }
+    public function initialize()
+    {
         $this->nestedset = new Nestedsetbie([
             'table' => 'post_catalogues',
             'foreignkey' => 'post_catalogue_id',
-            'language_id' => 1,
+            'language_id' => $this->language,
         ]);
-        $this->language = $this->currentLanguage();
     }
     public function index(Request $request)
     {
         try {
             $this->authorize('modules', 'post.catalogue.index');
 
-            $postCatalogues = $this->postCatalogueService->paginate($request);
+            $postCatalogues = $this->postCatalogueService->paginate($request, $this->language);
             // dd($postCatalogues); //hien thi thanh vien
 
 

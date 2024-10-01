@@ -51,6 +51,22 @@ return [
         ],
 
     ],
+    'generate' => [
+        'index' => [
+            'title' => 'Quản lý module',
+            'table' => 'Danh sách module',
+        ],
+        'create' => [
+            'title' => 'Thêm module mới',
+        ],
+        'delete' => [
+            'title' => 'Xoá module',
+        ],
+        'update' => [
+            'title' => 'Sửa module',
+        ],
+
+    ],
     'parent' => 'Chọn danh mục cha',
     'parent_notice' => '* Chọn Root nếu không có danh mục cha',
     'image' => 'Chọn ảnh đại diện',

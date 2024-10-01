@@ -3,26 +3,26 @@
 namespace App\Http\Controllers\Backend;
 
 use App\Http\Controllers\Controller;
-use App\Http\Requests\StorePostRequest;
-use App\Http\Requests\UpdatePostRequest;
-use App\Http\Requests\DeletePostRequest;
+use App\Http\Requests\Store{ModuleTemplate}Request;
+use App\Http\Requests\Update{ModuleTemplate}Request;
+use App\Http\Requests\Delete{ModuleTemplate}Request;
 use Illuminate\Http\Request;
 // use App\Models\User;
-use App\Services\Interfaces\PostServiceInterface as PostService;
-use App\Repositories\Interfaces\PostRepositoryInterface as PostRepository;
+use App\Services\Interfaces\{ModuleTemplate}ServiceInterface as {ModuleTemplate}Service;
+use App\Repositories\Interfaces\{ModuleTemplate}RepositoryInterface as {ModuleTemplate}Repository;
 use App\Classes\Nestedsetbie;
 use App\Models\Language;
-use App\Models\Post;
+use App\Models\{ModuleTemplate};
 
 // use App\Repositories\Interfaces\languageRepositoryInterface as LanguageRepository;
 //Neu muon view hieu duoc controller thi phai compact
-class PostController extends Controller
+class {ModuleTemplate}Controller extends Controller
 {
-    protected $postService;
-    protected $postRepository;
+    protected ${moduleTemplate}Service;
+    protected ${moduleTemplate}Repository;
     protected $nestedset;
     protected $language;
-    public function __construct(PostService $postService, PostRepository $postRepository)
+    public function __construct({ModuleTemplate}Service ${moduleTemplate}Service, {ModuleTemplate}Repository ${moduleTemplate}Repository)
     {
         $this->middleware(function ($request, $next) {
             $locale = app()->getLocale();
@@ -31,24 +31,23 @@ class PostController extends Controller
             $this->initialize();
             return $next($request);
         });
-        $this->postService = $postService;
-        $this->postRepository = $postRepository;
+        $this->{moduleTemplate}Service = ${moduleTemplate}Service;
+        $this->{moduleTemplate}Repository = ${moduleTemplate}Repository;
         $this->initialize();
     }
     public function initialize()
     {
         $this->nestedset = new Nestedsetbie([
-            'table' => 'post_catalogues',
-            'foreignkey' => 'post_catalogue_id',
+            'table' => '{tableName}',
+            'foreignkey' => '{foreignKey}',
             'language_id' => $this->language,
         ]);
     }
     public function index(Request $request)
     {
         try {
-            $this->authorize('modules', 'post.index');
-            $languageId = $this->language;
-            $posts = $this->postService->paginate($request, $this->language);
+            $this->authorize('modules', '{moduleView}.index');
+            ${moduleTemplate}s = $this->{moduleTemplate}Service->paginate($request, $this->language);
             $config = [
                 'js' => [
                     'backend/js/plugins/switchery/switchery.js',
@@ -58,12 +57,11 @@ class PostController extends Controller
                     'backend/css/plugins/switchery/switchery.css',
                     'https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css'
                 ],
-                'model' => 'Post'
+                'model' => '{ModuleTemplate}'
             ];
-            $config['seo'] = config('app.post');
-            $template = 'backend.post.post.index';
-            $dropdown = $this->nestedset->Dropdown();
-            return view('backend.dashboard.layout', compact('template', 'config', 'dropdown', 'posts', 'languageId'));
+            $config['seo'] = __('message.{moduleTemplate}');
+            $template = 'backend.{moduleView}.index';
+            return view('backend.dashboard.layout', compact('template', 'config', '{moduleTemplate}s'));
         } catch (\Illuminate\Auth\Access\AuthorizationException $e) {
             return redirect()->back()->with('error', 'Bạn không có quyền truy cập vào chức năng này.');
         }
@@ -71,67 +69,66 @@ class PostController extends Controller
     public function create()
     {
         try {
-            $this->authorize('modules', 'post.create');
+            $this->authorize('modules', '{moduleView}.create');
             $config = $this->configData();
-            $config['seo'] = config('app.post');
+            $config['seo'] = __('message.{moduleTemplate}');
             $config['method'] = 'create';
             $dropdown = $this->nestedset->Dropdown();
-            $template = 'backend.post.post.store';
+            $template = 'backend.{moduleView}.store';
             return view('backend.dashboard.layout', compact('template', 'config', 'dropdown'));
         } catch (\Illuminate\Auth\Access\AuthorizationException $e) {
             return redirect()->back()->with('error', 'Bạn không có quyền truy cập vào chức năng này.');
         }
     }
-    public function store(StorePostRequest $request)
+    public function store(Store{ModuleTemplate}Request $request)
     {
         // dd($request);
-        if ($this->postService->create($request, $this->language)) {
-            return redirect()->route('post.index')->with('success', 'Thêm mới bản ghi thành công');
+        if ($this->{moduleTemplate}Service->create($request, $this->language)) {
+            return redirect()->route('{moduleView}.index')->with('success', 'Thêm mới bản ghi thành công');
         }
-        return redirect()->route('post.index')->with('error', 'Thêm mới bản ghi không thành công');
+        return redirect()->route('{moduleView}.index')->with('error', 'Thêm mới bản ghi không thành công');
     }
     public function edit($id)
     {
         try {
-            $this->authorize('modules', 'post.update');
-            $post = $this->postRepository->getPostById($id, $this->language);
+            $this->authorize('modules', '{moduleView}.update');
+            ${moduleTemplate} = $this->{moduleTemplate}Repository->get{ModuleTemplate}ById($id, $this->language);
             $config = $this->configData();
             $dropdown = $this->nestedset->Dropdown();
-            $template = 'backend.post.post.store';
-            $config['seo'] = config('app.post');
+            $template = 'backend.{moduleView}.store';
+            $config['seo'] = __('message.{moduleTemplate}');
             $config['method'] = 'edit';
-            $album = json_decode($post->album);
-            return view('backend.dashboard.layout', compact('template', 'config', 'post', 'dropdown', 'album'));
+            return view('backend.dashboard.layout', compact('template', 'config', '{moduleTemplate}', 'dropdown'));
         } catch (\Illuminate\Auth\Access\AuthorizationException $e) {
             return redirect()->back()->with('error', 'Bạn không có quyền truy cập vào chức năng này.');
         }
     }
     //--------------------------------------------------------------
-    public function update($id, UpdatePostRequest $request)
+    public function update($id, Update{ModuleTemplate}Request $request)
     {
-        if ($this->postService->update($id, $request, $this->language)) {
-            return redirect()->route('post.index')->with('success', 'Cập nhật bản ghi thành công');
+        if ($this->{moduleTemplate}Service->update($id, $request, $this->language)) {
+            return redirect()->route('{moduleView}.index')->with('success', 'Cập nhật bản ghi thành công');
         }
-        return redirect()->route('post.index')->with('error', 'Cập nhật bản ghi không thành công');
+        return redirect()->route('{moduleView}.index')->with('error', 'Cập nhật bản ghi không thành công');
     }
     public function delete($id)
     {
         try {
-            $this->authorize('modules', 'post.destroy');
-            $config['seo'] = config('app.post');
-            $post = $this->postRepository->getPostById($id, $this->language);
-            $template = 'backend.post.post.delete';
-            return view('backend.dashboard.layout', compact('template', 'post', 'config'));
+            $this->authorize('modules', '{moduleView}.destroy');
+            $config['seo'] = __('message.{moduleTemplate}');
+            ${moduleTemplate} = $this->{moduleTemplate}Repository->get{ModuleTemplate}ById($id, $this->language);
+            $template = 'backend.{moduleView}.delete';
+            return view('backend.dashboard.layout', compact('template', '{moduleTemplate}', 'config'));
         } catch (\Illuminate\Auth\Access\AuthorizationException $e) {
             return redirect()->back()->with('error', 'Bạn không có quyền truy cập vào chức năng này.');
         }
     }
     public function destroy($id)
     {
-        if ($this->postService->destroy($id)) {
-            return redirect()->route('post.index')->with('success', 'Xóa bản ghi thành công');
+        if ($this->{moduleTemplate}Service->destroy($id)) {
+            return redirect()->route('{moduleView}.index')->with('success', 'Xóa bản ghi thành công');
         }
-        return redirect()->route('post.index')->with('error', 'Xóa bản ghi không thành công');
+        return redirect()->route('{moduleView}.index')->with('error', 'Xóa bản ghi không thành công');
     }
     private function configData()
     {
@@ -147,10 +144,5 @@ class PostController extends Controller
                 'https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css'
             ]
         ];
-    }
-    public function catalogue($post)
-    {
-        dd($post->post_catalogues);
-        // foreach($post as $key->$val)
     }
 }

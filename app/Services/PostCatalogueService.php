@@ -29,24 +29,23 @@ class PostCatalogueService extends BaseService implements PostCatalogueServiceIn
     protected $controllerName = 'PostCatalogueController';
     public function __construct(PostCatalogueRepository $postCatalogueRepository, Nestedsetbie $nestedset, RouterRepository $routerRepository)
     {
-        $this->language = $this->currentLanguage();
         $this->postCatalogueRepository = $postCatalogueRepository;
-        $this->nestedset = new Nestedsetbie([
-            'table' => 'post_catalogues',
-            'foreignkey' => 'post_catalogue_id',
-            'language_id' => $this->language,
-        ]);
+        // $this->nestedset = new Nestedsetbie([
+        //     'table' => 'post_catalogues',
+        //     'foreignkey' => 'post_catalogue_id',
+        //     'language_id' => ,
+        // ]);
         $this->routerRepository = $routerRepository;
     }
 
-    public function paginate($request)
+    public function paginate($request, $languageId)
     {
         $perPage = $request->integer('perpage');
         $condition = [
             'keyword' => addslashes($request->input('keyword')),
             'publish' => $request->input('publish', -1),
             'where' => [
-                ['tb2.language_id', '=', $this->language]
+                ['tb2.language_id', '=', $languageId]
             ]
         ];
         $postCatalogues = $this->postCatalogueRepository->pagination(

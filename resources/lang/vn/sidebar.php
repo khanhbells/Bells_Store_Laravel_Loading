@@ -39,11 +39,15 @@ return [
         [
             'title' => 'Cấu hình chung',
             'icon' => 'fa fa-cog',
-            'name' => ['language'],
+            'name' => ['language', 'generate'],
             'subModule' => [
                 [
                     'title' => 'Ngôn ngữ',
                     'route' => 'language.index' // chỉ dùng tên route
+                ],
+                [
+                    'title' => 'Quản lý module',
+                    'route' => 'generate.index' // chỉ dùng tên route
                 ],
             ]
         ]

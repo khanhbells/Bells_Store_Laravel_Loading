@@ -387,3 +387,7 @@ a {
     height: 16px !important;
     display: inline-block !important;
 }
+
+.schema {
+    height: 350px !important;
+}
