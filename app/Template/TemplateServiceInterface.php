@@ -8,7 +8,7 @@ use Illuminate\Http\Request;
  * Interface UserServiceInterface
  * @package App\Services\Interfaces
  */
-interface PostCatalogueServiceInterface extends BaseServiceInterface
+interface {Module}ServiceInterface extends BaseServiceInterface
 {
     public function paginate($request, $languageId);
     public function create(Request $request, $languageId);

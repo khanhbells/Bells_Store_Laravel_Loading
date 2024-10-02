@@ -46,7 +46,7 @@ return [
                     'route' => 'language.index' // chỉ dùng tên route
                 ],
                 [
-                    'title' => 'Quản lý module',
+                    'title' => 'Module',
                     'route' => 'generate.index' // chỉ dùng tên route
                 ],
             ]

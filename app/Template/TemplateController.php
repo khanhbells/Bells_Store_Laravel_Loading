@@ -94,14 +94,13 @@ class {ModuleTemplate}Controller extends Controller
     {
         try {
             $this->authorize('modules', '{moduleTemplate}.update');
-            ${moduleTemplate} = $this->{moduleTemplate}Repository->get{moduleTemplate}ById($id, $this->language);
+            ${moduleTemplate} = $this->{moduleTemplate}Repository->get{ModuleTemplate}ById($id, $this->language);
             $config = $this->configData();
             $dropdown = $this->nestedset->Dropdown();
             $template = 'backend.{moduleTemplate}.{moduleTemplate}.store';
             $config['seo'] = __('message.{moduleTemplate}');
             $config['method'] = 'edit';
-            $album = json_decode(${moduleTemplate}->album);
-            return view('backend.dashboard.layout', compact('template', 'config', '{moduleTemplate}', 'dropdown', 'album'));
+            return view('backend.dashboard.layout', compact('template', 'config', '{moduleTemplate}', 'dropdown'));
         } catch (\Illuminate\Auth\Access\AuthorizationException $e) {
             return redirect()->back()->with('error', 'Bạn không có quyền truy cập vào chức năng này.');
         }

@@ -63,10 +63,10 @@ class BaseService implements BaseServiceInterface
         $this->nestedset->Recursive(0, $this->nestedset->Set());
         $this->nestedset->Action();
     }
-    public function updateRouter($model, $request, $controllerName)
+    public function updateRouter($model, $request, $controllerName, $languageId)
     {
         // Định dạng payload cho router
-        $payload = $this->formatRouterPayload($model, $request, $controllerName);
+        $payload = $this->formatRouterPayload($model, $request, $controllerName, $languageId);
 
         // Điều kiện để tìm router trong database
         $condition = [
@@ -88,19 +88,19 @@ class BaseService implements BaseServiceInterface
         }
         return $res;
     }
-    public function formatRouterPayload($model, $request, $controllerName)
+    public function formatRouterPayload($model, $request, $controllerName, $languageId)
     {
         $router = [
             'canonical' => $request->input('canonical'),
             'module_id' => $model->id,
+            'language_id' => $languageId,
             'controllers' => 'App\Http\Controller\Frontend\\' . $controllerName . '',
-
         ];
         return $router;
     }
-    public function createRouter($model, $request, $controllerName)
+    public function createRouter($model, $request, $controllerName, $languageId)
     {
-        $router = $this->formatRouterPayload($model, $request, $controllerName);
+        $router = $this->formatRouterPayload($model, $request, $controllerName, $languageId);
         // dd($router);
         $this->routerRepository->create($router);
     }

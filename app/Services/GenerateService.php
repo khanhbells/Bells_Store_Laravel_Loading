@@ -50,11 +50,14 @@ class GenerateService extends BaseService implements GenerateServiceInterface
 
         try {
             // $database = $this->makeDatabase($request);
-            $controller = $this->makeController($request);
-            // $this->makeModel();
-            // $this->makeRepository();
-            // $this->makeService();
-            // $this->makeProvider();
+            // $controller = $this->makeController($request);
+            // $model = $this->makeModel($request);
+            // $repository = $this->makeRepository($request);
+            // $service = $this->makeService($request);
+            // $provider = $this->makeProvider($request);
+
+
+
             // $this->makeRequest();
             // $this->makeView();
             // $this->makeRoute();
@@ -73,6 +76,9 @@ class GenerateService extends BaseService implements GenerateServiceInterface
             return false;
         }
     }
+
+
+    //khoi tao migration
     private function makeDatabase($request)
     {
         try {
@@ -162,6 +168,9 @@ MIGRATION;
         $temp = strtolower(preg_replace('/(?<!^)[A-Z]/', '_$0', $name));
         return $temp;
     }
+
+
+    //Khoi tao controller
     private function makeController($request)
     {
         $payload = $request->only('name', 'module_type');
@@ -190,11 +199,9 @@ MIGRATION;
                 'tableName' => $this->convertModuleNameToTableName($name) . 's',
                 'moduleView' => str_replace('_', '.', $this->convertModuleNameToTableName($name))
             ];
-            $controllerContent = str_replace('{ModuleTemplate}', $replace['ModuleTemplate'], $controllerContent);
-            $controllerContent = str_replace('{moduleTemplate}', $replace['moduleTemplate'], $controllerContent);
-            $controllerContent = str_replace('{foreignKey}', $replace['foreignKey'], $controllerContent);
-            $controllerContent = str_replace('{moduleView}', $replace['moduleView'], $controllerContent);
-            $controllerContent = str_replace('{tableName}', $replace['tableName'], $controllerContent);
+            foreach ($replace as $key => $val) {
+                $controllerContent = str_replace('{' . $key . '}', $replace[$key], $controllerContent);
+            }
             $controllerPath = base_path('app\\Http\\Controllers\\Backend\\' . $controllerName);
             FILE::put($controllerPath, $controllerContent);
             return true;
@@ -205,6 +212,192 @@ MIGRATION;
             return false;
         }
     }
+    //Khoi tao model
+    private function makeModel($request)
+    {
+        $payload = $request->only('name', 'module_type');
+        switch ($payload['module_type']) {
+            case 1:
+                $this->createModelTemplate($payload['name'], 'TemplateCatalogueModel');
+                break;
+            case 2:
+                $this->createModelTemplate($payload['name'], 'TemplateModel');
+                break;
+            default:
+                // $this->createSingleController();
+                break;
+        }
+    }
+    public function createModelTemplate($name, $modelFile)
+    {
+        try {
+            $modelName = $name . '.php';
+            $templateModelPath = base_path('app\\Template\\' . $modelFile . '.php');
+            $modelContent = file_get_contents($templateModelPath);
+            $module = $this->convertModuleNameToTableName($name);
+            $extractModule = explode('_', $module);
+            $replace = [
+                'ModuleTemplate' => $name,
+                'foreignKey' => $module . '_id',
+                'tableName' => $module . 's',
+                'relation' => $extractModule[0],
+                'pivotModel' => $name . 'Language',
+                'relationPivot' => $module . '_' . $extractModule[0],
+                'pivotTable' => $module . '_language',
+                'module' => $module,
+                'relationModel' => ucfirst($extractModule[0])
+            ];
+            foreach ($replace as $key => $val) {
+                $modelContent = str_replace('{' . $key . '}', $replace[$key], $modelContent);
+            }
+            $modelPath = base_path('app\\Models\\' . $modelName);
+            FILE::put($modelPath, $modelContent);
+            die();
+            return true;
+        } catch (Exception $e) {
+            DB::rollBack();
+            echo $e->getMessage();
+            die();
+            return false;
+        }
+    }
+    //Khoi tao repository
+    public function makeRepository($request)
+    {
+        $payload = $request->only('name', 'module_type');
+        $option = [
+            'RepositoryInterface' => 'TemplateRepositoryInterface',
+            'Repository' => 'TemplateRepository'
+        ];
+        switch ($payload['module_type']) {
+            case 1:
+                $repository = $this->initializeServiceLayer($payload['name'], $option, 'Repository', 'Repositories');
+                $repositoryInterfaceContent = $repository['layerInterfaceContent'];
+                $repositoryContent = $repository['layerContent'];
+                $module = $this->convertModuleNameToTableName($payload['name']);
+                $replace = [
+                    'Module' => $payload['name'],
+                    'tableName' => $module . 's',
+                    'pivotTableName' => $module . '_language',
+                    'foreignKey' => $module . '_id'
+                ];
+                $repositoryInterfaceContent = str_replace('{Module}', $replace['Module'], $repositoryInterfaceContent);
+                foreach ($replace as $key => $val) {
+                    $repositoryContent = str_replace('{' . $key . '}', $replace[$key], $repositoryContent);
+                }
+                FILE::put($repository['layerInterfacePath'], $repositoryInterfaceContent);
+                FILE::put($repository['layerPathPut'], $repositoryContent);
+                die();
+                break;
+            case 2:
+                echo 123;
+                // $this->createRepositoryTemplate($payload['name'], 'TemplateModel');
+                break;
+            default:
+                // $this->createSingleController();
+                break;
+        }
+    }
+
+    //Khoi tao Service
+    public function makeService($request)
+    {
+        $payload = $request->only('name', 'module_type');
+        $option = [
+            'ServiceInterface' => 'TemplateServiceInterface',
+            'Service' => 'TemplateService'
+        ];
+        switch ($payload['module_type']) {
+            case 1:
+                $service = $this->initializeServiceLayer($payload['name'], $option, 'Service', 'Services');
+                // dd($service);
+                $serviceInterfaceContent = $service['layerInterfaceContent'];
+                $serviceContent = $service['layerContent'];
+                $module = $this->convertModuleNameToTableName($payload['name']);
+                $replace = [
+                    'Module' => $payload['name'],
+                    'tableName' => $module . 's',
+                    'pivotTableName' => $module . '_language',
+                    'foreignKey' => $module . '_id',
+                    'module' => lcfirst($payload['name']),
+                    'moduleView' => str_replace('_', '.', $module)
+                ];
+                $serviceInterfaceContent = str_replace('{Module}', $replace['Module'], $serviceInterfaceContent);
+                foreach ($replace as $key => $val) {
+                    $serviceContent = str_replace('{' . $key . '}', $replace[$key], $serviceContent);
+                }
+                FILE::put($service['layerInterfacePath'], $serviceInterfaceContent);
+                FILE::put($service['layerPathPut'], $serviceContent);
+                die();
+                break;
+            case 2:
+                echo 123;
+                // $this->createRepositoryTemplate($payload['name'], 'TemplateModel');
+                break;
+            default:
+                break;
+        }
+    }
+    public function initializeServiceLayer($name, $layerFile = [], $layer = '', $folder = '')
+    {
+        try {
+            $layerInterfaceName = $name . $layer . 'Interface.php';
+            $layerName = $name . $layer . '.php';
+            $layerInterfaceRead = base_path('app\\Template\\' . $layerFile[$layer . 'Interface'] . '.php');
+            $layerPathRead = base_path('app\\Template\\' . $layerFile[$layer] . '.php');
+            $layerInterfaceContent = file_get_contents($layerInterfaceRead);
+            $layerContent = file_get_contents($layerPathRead);
+            $layerInterfacePath = base_path('app\\' . $folder . '\\Interfaces\\' . $layerInterfaceName);
+            $layerPathPut = base_path('app\\' . $folder . '\\' . $layerName);
+            return [
+                'layerInterfaceContent' => $layerInterfaceContent,
+                'layerInterfacePath' => $layerInterfacePath,
+                'layerContent' => $layerContent,
+                'layerPathPut' => $layerPathPut
+            ];
+        } catch (Exception $e) {
+            DB::rollBack();
+            echo $e->getMessage();
+            die();
+            return false;
+        }
+    }
+
+    //Khoi tao provider
+    public function makeProvider($request)
+    {
+        $payload = $request->only('name', 'module_type');
+        $name = $payload['name'];
+        switch ($payload['module_type']) {
+            case 1:
+                $provider = [
+                    'providerPath' => base_path('app/Providers/AppServiceProvider.php'),
+                    'repositoryProviderPath' => base_path('app/Providers/RepositoryServiceProvider.php')
+                ];
+                foreach ($provider as $key => $val) {
+                    $content = file_get_contents($val);
+                    $insertLine = ($key == 'providerPath') ? "'App\\Services\\Interfaces\\{$name}ServiceInterface' =>
+        'App\\Services\\{$name}Service'," : "'App\\Repositories\\Interfaces\\{$name}RepositoryInterface' =>
+        'App\\Repositories\\{$name}Repository',";
+                    $position = strpos($content, '];');
+                    if ($position !== false) {
+                        $newContent = substr_replace($content, '    ' . "//$name" . "\n" . "        " . $insertLine . "\n" . "    ", $position, 0);
+                    }
+                    FILE::put($val, $newContent);
+                }
+                die();
+                break;
+            case 2:
+                echo 123;
+                die();
+                // $this->createRepositoryTemplate($payload['name'], 'TemplateModel');
+                break;
+            default:
+                break;
+        }
+    }
+
+
     public function update($id, Request $request)
     {
         DB::beginTransaction();
