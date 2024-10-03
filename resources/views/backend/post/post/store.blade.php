@@ -35,10 +35,7 @@
             </div>
             <div class="col-lg-3">
                 @include('backend.post.post.component.aside')
-                <div class="text-right">
-                    <button class="btn btn-primary" type="submit" name="send" value="send">Lưu
-                        lại</button>
-                </div>
+                @include('backend.dashboard.component.button')
             </div>
         </div>
     </div>

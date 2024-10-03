@@ -55,11 +55,11 @@ class GenerateService extends BaseService implements GenerateServiceInterface
             // $repository = $this->makeRepository($request);
             // $service = $this->makeService($request);
             // $provider = $this->makeProvider($request);
+            // $makeRequest = $this->makeRequest($request);
+            $this->makeView($request);
 
 
 
-            // $this->makeRequest();
-            // $this->makeView();
             // $this->makeRoute();
             // $this->makeRule();
             // $this->makeLang();
@@ -366,36 +366,117 @@ MIGRATION;
     //Khoi tao provider
     public function makeProvider($request)
     {
-        $payload = $request->only('name', 'module_type');
-        $name = $payload['name'];
-        switch ($payload['module_type']) {
-            case 1:
-                $provider = [
-                    'providerPath' => base_path('app/Providers/AppServiceProvider.php'),
-                    'repositoryProviderPath' => base_path('app/Providers/RepositoryServiceProvider.php')
-                ];
-                foreach ($provider as $key => $val) {
-                    $content = file_get_contents($val);
-                    $insertLine = ($key == 'providerPath') ? "'App\\Services\\Interfaces\\{$name}ServiceInterface' =>
+        try {
+            $payload = $request->only('name', 'module_type');
+            $name = $payload['name'];
+            $provider = [
+                'providerPath' => base_path('app/Providers/AppServiceProvider.php'),
+                'repositoryProviderPath' => base_path('app/Providers/RepositoryServiceProvider.php')
+            ];
+            foreach ($provider as $key => $val) {
+                $content = file_get_contents($val);
+                $insertLine = ($key == 'providerPath') ? "'App\\Services\\Interfaces\\{$name}ServiceInterface' =>
         'App\\Services\\{$name}Service'," : "'App\\Repositories\\Interfaces\\{$name}RepositoryInterface' =>
         'App\\Repositories\\{$name}Repository',";
-                    $position = strpos($content, '];');
-                    if ($position !== false) {
-                        $newContent = substr_replace($content, '    ' . "//$name" . "\n" . "        " . $insertLine . "\n" . "    ", $position, 0);
-                    }
-                    FILE::put($val, $newContent);
+                $position = strpos($content, '];');
+                if ($position !== false) {
+                    $newContent = substr_replace($content, '    ' . "//$name" . "\n" . "        " . $insertLine . "\n" . "    ", $position, 0);
                 }
-                die();
-                break;
-            case 2:
-                echo 123;
-                die();
-                // $this->createRepositoryTemplate($payload['name'], 'TemplateModel');
-                break;
-            default:
-                break;
+                FILE::put($val, $newContent);
+            }
+            die();
+            return true;
+        } catch (Exception $e) {
+            DB::rollBack();
+            echo $e->getMessage();
+            die();
+            return false;
         }
     }
+    //Khoi tao request
+    public function makeRequest($request)
+    {
+        try {
+            // dd($request);
+            $name = $request->input('name');
+            $requestArray = ['Store' . $name . 'Request', 'Update' . $name . 'Request', 'Delete' . $name . 'Request'];
+            $requestTemplate = ['RequestTemplateStore', 'RequestTemplateUpdate', 'RequestTemplateDelete'];
+            if ($request->input('module_type') != 1) {
+                unset($requestArray[2]);
+                unset($requestTemplate[2]);
+            }
+            foreach ($requestTemplate as $key => $val) {
+                $requestPath = base_path('app/Template/' . $val . '.php');
+                $requestContent = file_get_contents($requestPath);
+                $requestContent = str_replace('{Module}', $name, $requestContent);
+                $requestPut = base_path('app/Http/Requests/' . $requestArray[$key] . '.php');
+                FILE::put($requestPut, $requestContent);
+            }
+            die();
+            return true;
+        } catch (Exception $e) {
+            DB::rollBack();
+            echo $e->getMessage();
+            die();
+            return false;
+        }
+    }
+
+    public function makeView($request)
+    {
+        try {
+            $name = $request->input('name');
+            $module = $this->convertModuleNameToTableName($name);
+            $extractModule = explode('_', $module);
+            $basePath = resource_path("views/backend/{$extractModule[0]}");
+            $folderPath = (count($extractModule) == 2) ? "$basePath/{$extractModule[1]}" : "$basePath/{$extractModule[0]}";
+            $componentPath = "$folderPath/component";
+            $this->createDirectory($folderPath);
+            $this->createDirectory($componentPath);
+            $sourcePath = base_path('app/Template/views/' . ((count($extractModule) == 2) ? 'catalogue' : 'post') . '/');
+            $viewPath = (count($extractModule) == 2) ? "{$extractModule[0]}.{$extractModule[1]}" : $extractModule[0];
+            $replacement = [
+                'view' => $viewPath,
+                'module' => lcfirst($name),
+                'Module' => $name
+            ];
+            $fileArray = ['store.blade.php', 'index.blade.php', 'delete.blade.php'];
+            $componentFile = ['aside.blade.php', 'filter.blade.php', 'table.blade.php'];
+            $this->CopAndReplaceContent($sourcePath, $folderPath, $fileArray, $replacement);
+            $this->CopAndReplaceContent("{$sourcePath}component/", $componentPath, $componentFile, $replacement);
+            die();
+            return true;
+        } catch (Exception $e) {
+            DB::rollBack();
+            echo $e->getMessage();
+            die();
+            return false;
+        }
+    }
+    public function createDirectory($path)
+    {
+        if (!FILE::exists($path)) {
+            FILE::makeDirectory($path, 0755, true);
+        }
+    }
+    public function CopAndReplaceContent(string $sourcePath, string $destinationPath, array $fileArray, array $replacement)
+    {
+        foreach ($fileArray as $key => $val) {
+            $sourceFile = $sourcePath . $val;
+            $content = file_get_contents($sourceFile);
+            $destination = "{$destinationPath}/{$fileArray[$key]}";
+            foreach ($replacement as $keyReplace => $valReplace) {
+                $content = str_replace('{' . $keyReplace . '}', $valReplace, $content);
+            }
+            if (!FILE::exists($destination)) {
+                FILE::put($destination, $content);
+            }
+        }
+    }
+
+
+
+
 
 
     public function update($id, Request $request)

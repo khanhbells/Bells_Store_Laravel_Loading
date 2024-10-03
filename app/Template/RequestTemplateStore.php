@@ -4,7 +4,7 @@ namespace App\Http\Requests;
 
 use Illuminate\Foundation\Http\FormRequest;
 
-class Update{Module}Request extends FormRequest
+class Store{Module}Request extends FormRequest
 {
     /**
      * Determine if the user is authorized to make this request.
@@ -25,7 +25,7 @@ class Update{Module}Request extends FormRequest
     {
         return [
             'name' => 'required',
-            'canonical' => 'required|unique:routers,canonical,' . $this->id . ',module_id',
+            'canonical' => 'required|unique:routers',
         ];
     }
     public function messages(): array

@@ -24,7 +24,7 @@
                         <div class="row mb15">
                             <div class="col-lg-6">
                                 <div class="form-row">
-                                    <label for="" class="control-label text-left">Tên module
+                                    <label for="" class="control-label text-left">Tên model
                                         <span class="text-danger">(*)</span>
                                     </label>
                                     <input type="text" name="name"
@@ -32,6 +32,18 @@
                                         placeholder="" autocomplete="off" />
                                 </div>
                             </div>
+                            <div class="col-lg-6">
+                                <div class="form-row">
+                                    <label for="" class="control-label text-left">Tên chức năng
+                                        <span class="text-danger">(*)</span>
+                                    </label>
+                                    <input type="text" name="module"
+                                        value="{{ old('module', $generate->module ?? '') }}" class="form-control"
+                                        placeholder="" autocomplete="off" />
+                                </div>
+                            </div>
+                        </div>
+                        <div class="row mb15">
                             <div class="col-lg-6">
                                 <div class="form-row">
                                     <label for="" class="control-label text-left">Loại module
@@ -43,6 +55,16 @@
                                         <option value="2">Module chi tiết</option>
                                         <option value="2">Module khác</option>
                                     </select>
+                                </div>
+                            </div>
+                            <div class="col-lg-6">
+                                <div class="form-row">
+                                    <label for="" class="control-label text-left">Đường dẫn
+                                        <span class="text-danger">(*)</span>
+                                    </label>
+                                    <input type="text" name="path"
+                                        value="{{ old('path', $generate->path ?? '') }}" class="form-control"
+                                        placeholder="" autocomplete="off" />
                                 </div>
                             </div>
                         </div>

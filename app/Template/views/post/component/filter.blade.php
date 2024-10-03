@@ -1,4 +1,4 @@
-<form action="{{ route('post.index') }}" method="">
+<form action="{{ route('{module}.index') }}" method="">
     <div class="filter-wrapper">
         <div class="uk-flex uk-flex-middle uk-flex-space-between">
             @include('backend.dashboard.component.perpage')
@@ -6,17 +6,17 @@
                 <div class="uk-flex uk-flex-middle">
                     @include('backend.dashboard.component.filterPublish')
                     @php
-                        $postCatalogueId = request('post_catalogue_id') ?: old('post_catalogue_id');
+                        ${module}CatalogueId = request('{module}_catalogue_id') ?: old('{module}_catalogue_id');
                     @endphp
-                    <select name="post_catalogue_id" class="form-control mr10 setupSelect2">
+                    <select name="{module}_catalogue_id" class="form-control mr10 setupSelect2">
                         @foreach ($dropdown as $key => $val)
-                            <option {{ $postCatalogueId == $key ? 'selected' : '' }} value="{{ $key }}">
+                            <option {{ ${module}CatalogueId == $key ? 'selected' : '' }} value="{{ $key }}">
                                 {{ $val }}
                             </option>
                         @endforeach
                     </select>
                     @include('backend.dashboard.component.keyword')
-                    <a href="{{ route('post.create') }}" class="btn btn-danger"><i class="fa fa-plus mr5"></i>Thêm
+                    <a href="{{ route('{module}.create') }}" class="btn btn-danger"><i class="fa fa-plus mr5"></i>Thêm
                         mới bài viết</a>
                 </div>
             </div>

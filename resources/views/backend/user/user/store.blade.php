@@ -2,15 +2,7 @@
     'title' => isset($user) ? $config['seo']['update']['title'] : $config['seo']['create']['title'],
     //'title' => $config['seo'][config['method']]['title'] ,
 ])
-@if ($errors->any())
-    <div class="alert alert-danger">
-        <ul>
-            @foreach ($errors->all() as $error)
-                <li>{{ $error }}</li>
-            @endforeach
-        </ul>
-    </div>
-@endif
+@include('backend.dashboard.component.formError')
 @php
     $url = $config['method'] == 'create' ? route('user.store') : route('user.update', $user->id);
 @endphp

@@ -10,7 +10,7 @@
                     <select name="parent_id" class="form-control setupSelect2" id="">
                         @foreach ($dropdown as $key => $val)
                             <option
-                                {{ $key == old('parent_id', isset($postCatalogue->parent_id) ? $postCatalogue->parent_id : '') ? 'selected' : '' }}
+                                {{ $key == old('parent_id', isset(${module}->parent_id) ? ${module}->parent_id : '') ? 'selected' : '' }}
                                 value="{{ $key }}">{{ $val }}</option>
                         @endforeach
                     </select>
@@ -19,4 +19,4 @@
         </div>
     </div>
 </div>
-@include('backend.dashboard.component.publish', ['model' => $postCatalogue ?? null])
+@include('backend.dashboard.component.publish', ['model' => ${module} ?? null])
