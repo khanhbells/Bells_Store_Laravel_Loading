@@ -26,7 +26,7 @@ class StoreGenerateRequest extends FormRequest
         return [
             'name' => 'required|unique:generates',
             'schema' => 'required',
-            'module_type' => 'gt:0',
+            // 'module_type' => 'gt:0',
         ];
     }
     public function messages(): array
@@ -34,7 +34,7 @@ class StoreGenerateRequest extends FormRequest
         return [
             'name.required' => 'Bạn chưa nhập vào tên module!',
             'name.unique' => 'Module đã tồn tại hãy chọn module khác!',
-            'module_type.gt' => 'Bạn phải chọn kiểu module!',
+            // 'module_type.gt' => 'Bạn phải chọn kiểu module!',
             'schema.required' => 'Bạn chưa nhập vào schema!',
         ];
     }

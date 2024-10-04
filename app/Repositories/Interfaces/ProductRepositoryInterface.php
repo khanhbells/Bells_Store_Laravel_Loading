@@ -3,12 +3,12 @@
 namespace App\Repositories\Interfaces;
 
 /**
- * Interface {Module}Interface
+ * Interface UserServiceInterface
  * @package App\Services\Interfaces
  */
-interface {Module}RepositoryInterface extends BaseRepositoryInterface
+interface ProductRepositoryInterface extends BaseRepositoryInterface
 {
-    public function get{Module}ById(int $id = 0, $language_id = 0);
+    public function getProductById(int $id = 0, $language_id = 0);
     // public function getAllPaginate();
     // public function create(array $payload = []);
     // public function findById(int $modelId, array $column = ['*'], array $relation = []);

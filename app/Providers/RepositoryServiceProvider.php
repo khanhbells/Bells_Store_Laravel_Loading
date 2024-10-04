@@ -36,6 +36,12 @@ class RepositoryServiceProvider extends ServiceProvider
         //Generate
         'App\Repositories\Interfaces\GenerateRepositoryInterface' =>
         'App\Repositories\GenerateRepository',
+        //ProductCatalogue
+        'App\Repositories\Interfaces\ProductCatalogueRepositoryInterface' =>
+        'App\Repositories\ProductCatalogueRepository',
+        //Product
+        'App\Repositories\Interfaces\ProductRepositoryInterface' =>
+        'App\Repositories\ProductRepository',
     ];
     /**
      * Register services.

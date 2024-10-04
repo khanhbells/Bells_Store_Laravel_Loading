@@ -1,5 +1,53 @@
 <?php
 return [
+    'productCatalogue' => [
+        'index' => [
+            'title' => 'Quản lý nhóm sản phẩm',
+            'table' => 'Danh sách nhóm sản phẩm',
+        ],
+        'create' => [
+            'title' => 'Thêm nhóm sản phẩm mới',
+        ],
+        'delete' => [
+            'title' => 'Xoá nhóm sản phẩm',
+        ],
+        'update' => [
+            'title' => 'Sửa nhóm sản phẩm',
+        ],
+
+    ],
+    'product' => [
+        'index' => [
+            'title' => 'Quản lý sản phẩm',
+            'table' => 'Danh sách sản phẩm',
+        ],
+        'create' => [
+            'title' => 'Thêm sản phẩm mới',
+        ],
+        'delete' => [
+            'title' => 'Xoá sản phẩm',
+        ],
+        'update' => [
+            'title' => 'Sửa sản phẩm',
+        ],
+
+    ],
+    'galleryCatalogue' => [
+        'index' => [
+            'title' => 'Quản lý nhóm hình ảnh',
+            'table' => 'Danh sách nhóm hình ảnh',
+        ],
+        'create' => [
+            'title' => 'Thêm nhóm hình ảnh mới',
+        ],
+        'delete' => [
+            'title' => 'Xoá nhóm hình ảnh',
+        ],
+        'update' => [
+            'title' => 'Sửa nhóm hình ảnh',
+        ],
+
+    ],
     'postCatalogue' => [
         'index' => [
             'title' => 'Quản lý nhóm bài viết',

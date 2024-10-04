@@ -21,6 +21,36 @@ return [
             ]
         ],
         [
+            'title' => 'Quản lý sản phẩm',
+            'icon' => 'fa fa-cube',
+            'name' => ['product'],
+            'subModule' => [
+                [
+                    'title' => 'Nhóm Sản phẩm',
+                    'route' => 'product.catalogue.index' // chỉ dùng tên route
+                ],
+                [
+                    'title' => 'Sản phẩm',
+                    'route' => 'product.index' // chỉ dùng tên route
+                ],
+            ]
+        ],
+        // [
+        //     'title' => 'Quản lý hình ảnh',
+        //     'icon' => 'fa fa-picture-o',
+        //     'name' => ['gallery'],
+        //     'subModule' => [
+        //         [
+        //             'title' => 'Nhóm hình ảnh',
+        //             'route' => 'gallery.catalogue.index' // chỉ dùng tên route
+        //         ],
+        //         [
+        //             'title' => 'Hình ảnh',
+        //             'route' => 'user.index' // chỉ dùng tên route
+        //         ],
+        //     ]
+        // ],
+        [
             'title' => 'Quản lý bài viết',
             'icon' => 'fa fa-pencil-square-o',
             'name' => ['post'],

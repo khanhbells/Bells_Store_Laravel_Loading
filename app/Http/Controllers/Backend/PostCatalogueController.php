@@ -73,8 +73,6 @@ class PostCatalogueController extends Controller
     {
         try {
             $this->authorize('modules', 'post.catalogue.create');
-            // dd($provinces);
-            // dd($province);
             $config = $this->configData();
             $config['seo'] = __('message.postCatalogue');
             $config['method'] = 'create';

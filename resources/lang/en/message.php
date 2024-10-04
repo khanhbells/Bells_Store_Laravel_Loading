@@ -1,5 +1,20 @@
 <?php
 return [
+    'productCatalogue' => [
+        'index' => [
+            'title' => 'Manage Product Groups',
+            'table' => 'Product Group List',
+        ],
+        'create' => [
+            'title' => 'Add New Product Group',
+        ],
+        'delete' => [
+            'title' => 'Delete Product Group',
+        ],
+        'update' => [
+            'title' => 'Edit Product Group',
+        ],
+    ],
     'postCatalogue' => [
         'index' => [
             'title' => 'Manage post groups',
