@@ -12,7 +12,7 @@ use App\Http\Controllers\Backend\PostCatalogueController;
 use App\Http\Controllers\Backend\PostController;
 use App\Http\Controllers\Backend\PermissionController;
 use App\Http\Controllers\Backend\GenerateController;
-use App\Models\Generate;
+//USE CONTROLLER
 
 /*
 |--------------------------------------------------------------------------
@@ -122,4 +122,5 @@ Route::group(['middleware' => ['admin', 'locale']], function () {
         Route::get('index', [GenerateController::class, 'index'])->name('generate.index');
         Route::post('{id}/destroy', [GenerateController::class, 'destroy'])->where(['id' => '[0-9]+'])->name('generate.destroy');
     });
+    //NEW MODULE
 });
