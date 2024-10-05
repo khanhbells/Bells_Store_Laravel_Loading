@@ -137,7 +137,45 @@
             })
         }
     }
+    HT.int = () => {
+        $(document).on('change keyup blur', '.int', function () {
+            let _this = $(this)
+            let value = _this.val()
+            if (value === '') {
+                $(this).val('0')
+            }
+            value = value.replace(/\./gi, "")
+            _this.val(HT.addCommas(value))
+            if (isNaN(value)) {
+                _this.val('0')
+            }
+        })
 
+        $(document).on('keydown', '.int', function (e) {
+            let _this = $(this)
+            let data = _this.val()
+            if (data == 0) {
+                let unicode = e.keyCode || e.which;
+                if (unicode != 190) {
+                    _this.val('')
+                }
+            }
+        })
+    }
+    HT.addCommas = (nStr) => {
+        nStr = String(nStr);
+        nStr = nStr.replace(/\./gi, "");
+        let str = '';
+        for (let i = nStr.length; i > 0; i -= 3) {
+            let a = ((i - 3) < 0) ? 0 : (i - 3);
+            str = nStr.slice(a, i) + '.' + str;
+        }
+        str = str.slice(0, str.length - 1);
+        return str;
+    }
+    HT.niceSelect = () => {
+        $('.niceSelect').niceSelect();
+    }
 
     $(document).ready(function () {
         HT.switchery();
@@ -147,6 +185,9 @@
         HT.checkBoxItem();
         HT.changeStatusAll();
         HT.sortui();
+        HT.int();
+        HT.niceSelect();
+
     });
 
 })(jQuery);

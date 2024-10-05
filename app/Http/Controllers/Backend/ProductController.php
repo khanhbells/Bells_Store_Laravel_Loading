@@ -10,6 +10,7 @@ use Illuminate\Http\Request;
 // use App\Models\User;
 use App\Services\Interfaces\ProductServiceInterface as ProductService;
 use App\Repositories\Interfaces\ProductRepositoryInterface as ProductRepository;
+use App\Repositories\Interfaces\AttributeCatalogueRepositoryInterface as AttributeCatalogueRepository;
 use App\Classes\Nestedsetbie;
 use App\Models\Language;
 use App\Models\Product;
@@ -22,7 +23,8 @@ class ProductController extends Controller
     protected $productRepository;
     protected $nestedset;
     protected $language;
-    public function __construct(ProductService $productService, ProductRepository $productRepository)
+    protected $attributeCatalogue;
+    public function __construct(ProductService $productService, ProductRepository $productRepository, AttributeCatalogueRepository $attributeCatalogue)
     {
         $this->middleware(function ($request, $next) {
             $locale = app()->getLocale();
@@ -33,6 +35,7 @@ class ProductController extends Controller
         });
         $this->productService = $productService;
         $this->productRepository = $productRepository;
+        $this->attributeCatalogue = $attributeCatalogue;
         $this->initialize();
     }
     public function initialize()
@@ -72,12 +75,13 @@ class ProductController extends Controller
     {
         try {
             $this->authorize('modules', 'product.create');
+            $attributeCatalogue = $this->attributeCatalogue->getAll($this->language);;
             $config = $this->configData();
             $config['seo'] = __('message.product');
             $config['method'] = 'create';
             $dropdown = $this->nestedset->Dropdown();
             $template = 'backend.product.product.store';
-            return view('backend.dashboard.layout', compact('template', 'config', 'dropdown'));
+            return view('backend.dashboard.layout', compact('template', 'config', 'dropdown', 'attributeCatalogue'));
         } catch (\Illuminate\Auth\Access\AuthorizationException $e) {
             return redirect()->back()->with('error', 'Bạn không có quyền truy cập vào chức năng này.');
         }
@@ -141,10 +145,13 @@ class ProductController extends Controller
                 'backend/plugin/ckfinder_2/ckfinder.js',
                 'backend/library/finder.js',
                 'backend/library/seo.js',
-                'https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js'
+                'backend/library/variant.js',
+                'https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js',
+                'backend/plugin/nice-select/js/jquery.nice-select.min.js'
             ],
             'css' => [
-                'https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css'
+                'https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css',
+                'backend/plugin/nice-select/css/nice-select.css'
             ]
         ];
     }

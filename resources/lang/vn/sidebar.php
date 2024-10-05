@@ -23,7 +23,7 @@ return [
         [
             'title' => 'Quản lý sản phẩm',
             'icon' => 'fa fa-cube',
-            'name' => ['product'],
+            'name' => ['product', 'attribute'],
             'subModule' => [
                 [
                     'title' => 'Nhóm Sản phẩm',
@@ -32,6 +32,14 @@ return [
                 [
                     'title' => 'Sản phẩm',
                     'route' => 'product.index' // chỉ dùng tên route
+                ],
+                [
+                    'title' => 'Loại thuộc tính',
+                    'route' => 'attribute.catalogue.index' // chỉ dùng tên route
+                ],
+                [
+                    'title' => 'Thuộc tính',
+                    'route' => 'attribute.index' // chỉ dùng tên route
                 ],
             ]
         ],

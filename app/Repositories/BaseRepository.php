@@ -60,7 +60,8 @@ class BaseRepository implements BaseRepositoryInterface
     public function update($id = 0, array $payload = [])
     {
         $model = $this->findById($id);
-        return $model->update($payload);
+
+        $model->update($payload);
     }
 
     public function updateByWhereIn($whereInField = '', array $whereIn = [], array $payload = [])
@@ -80,6 +81,15 @@ class BaseRepository implements BaseRepositoryInterface
     public function delete(int $id = 0)
     {
         return $this->findById($id)->delete();
+    }
+
+    public function forceDeleteByCondition(array $condition = [])
+    {
+        $query = $this->model->newQuery();
+        foreach ($condition as $key => $val) {
+            $query->where($val[0], $val[1], $val[2]);
+        }
+        return $query->forceDelete();
     }
 
     public function forceDelete(int $id = 0)

@@ -3,6 +3,7 @@
 namespace App\Http\Requests;
 
 use Illuminate\Foundation\Http\FormRequest;
+use Illuminate\Support\Facades\DB;
 
 class TranslateRequest extends FormRequest
 {
@@ -23,9 +24,21 @@ class TranslateRequest extends FormRequest
      */
     public function rules()
     {
+
         return [
             'translate_name' => 'required',
-            'translate_canonical' => 'required|unique:routers,canonical,' . $this->id . ',module_id',
+            'translate_canonical' => [
+                'required',
+                function ($attribute, $value, $fail) {
+                    $option = $this->input('option');
+                    $exist = DB::table('routers')->where('canonical', $value)->where(function ($query) use ($option) {
+                        $query->where('module_id', '<>', $option['id'])->orWhere('language_id', '<>', $option['languageId']);
+                    })->exists();
+                    if ($exist) {
+                        $fail('Đường dẫn đã tồn tại. Hãy chọn đường dẫn khác');
+                    }
+                }
+            ],
         ];
     }
     public function messages(): array

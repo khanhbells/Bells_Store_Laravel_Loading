@@ -30,6 +30,42 @@ return [
         'update' => [
             'title' => 'Sửa sản phẩm',
         ],
+        'information' => 'Thông tin chung',
+        'code' => 'Mã sản phẩm',
+        'made_in' => 'Xuất xứ',
+        'price' => 'Giá bán sản phẩm',
+
+    ],
+    'attributeCatalogue' => [
+        'index' => [
+            'title' => 'Quản lý loại thuộc tính',
+            'table' => 'Danh sách loại thuộc tính',
+        ],
+        'create' => [
+            'title' => 'Thêm loại thuộc tính mới',
+        ],
+        'delete' => [
+            'title' => 'Xoá loại thuộc tính',
+        ],
+        'update' => [
+            'title' => 'Sửa loại thuộc tính',
+        ],
+
+    ],
+    'attribute' => [
+        'index' => [
+            'title' => 'Quản lý thuộc tính',
+            'table' => 'Danh sách thuộc tính',
+        ],
+        'create' => [
+            'title' => 'Thêm thuộc tính mới',
+        ],
+        'delete' => [
+            'title' => 'Xoá thuộc tính',
+        ],
+        'update' => [
+            'title' => 'Sửa thuộc tính',
+        ],
 
     ],
     'galleryCatalogue' => [

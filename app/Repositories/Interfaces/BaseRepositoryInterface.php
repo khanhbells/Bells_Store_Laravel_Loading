@@ -28,4 +28,5 @@ interface BaseRepositoryInterface
     public function createPivot($model, array $payload = [], string $relation = '');
     public function updateByWhere($condition = [], array $payload = []);
     public function findByCondition($condition = []);
+    public function forceDeleteByCondition(array $condition = []);
 }

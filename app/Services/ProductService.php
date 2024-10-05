@@ -93,7 +93,6 @@ class ProductService extends BaseService implements ProductServiceInterface
         DB::beginTransaction();
         try {
             $product = $this->productRepository->findById($id);
-            // dd($product);
             if ($this->uploadProduct($product, $request)) {
                 $this->uploadLanguageForProduct($product, $request, $languageId);
                 $this->updateCatalogueForProduct($product, $request);
@@ -114,6 +113,10 @@ class ProductService extends BaseService implements ProductServiceInterface
         DB::beginTransaction();
         try {
             $product = $this->productRepository->forceDelete($id);
+            $this->routerRepository->forceDeleteByCondition([
+                ['module_id', '=', $id],
+                ['controllers', '=', 'App\Http\Controller\Frontend\ProductController']
+            ]);
             DB::commit();
             return true;
         } catch (Exception $e) {
@@ -177,8 +180,13 @@ class ProductService extends BaseService implements ProductServiceInterface
     private function uploadProduct($product, $request)
     {
         $payload = $request->only($this->payload());
-        $payload['album'] = $this->formatAlbum($payload['album']);
-        $payload['image'] = $this->formatImage($payload['image']);
+        $payload['price'] = str_replace('.', '', $payload['price']);
+        if (isset($payload['album'])) {
+            $payload['album'] = $this->formatAlbum($payload['album']);
+        }
+        if (isset($payload['image'])) {
+            $payload['image'] = $this->formatImage($payload['image']);
+        }
         // dd($payload);
         // Kiểm tra và xử lý cả hai trường hợp ảnh có tiền tố 'http://localhost:81/laravelversion1.com/public' hoặc '/laravelversion1.com/public'
 
@@ -234,7 +242,7 @@ class ProductService extends BaseService implements ProductServiceInterface
     }
     private function payload()
     {
-        return ['follow', 'publish', 'image', 'album', 'product_catalogue_id'];
+        return ['follow', 'publish', 'image', 'album', 'price', 'made_in', 'code', 'product_catalogue_id'];
     }
     private function payloadLanguage()
     {

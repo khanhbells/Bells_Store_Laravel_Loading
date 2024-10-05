@@ -130,6 +130,10 @@ class {class}CatalogueService extends BaseService implements {class}CatalogueSer
         DB::beginTransaction();
         try {
             ${module}Catalogue = $this->{module}CatalogueRepository->forceDelete($id);
+            $this->routerRepository->forceDeleteByCondition([
+                ['module_id', '=', $id],
+                ['controllers', '=', 'App\Http\Controller\Frontend\{class}CatalogueController']
+            ]);
             $this->nestedset = new Nestedsetbie([
                 'table' => '{module}_catalogues',
                 'foreignkey' => '{module}_catalogue_id',

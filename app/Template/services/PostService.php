@@ -114,6 +114,10 @@ class {class}Service extends BaseService implements {class}ServiceInterface
         DB::beginTransaction();
         try {
             ${module} = $this->{module}Repository->forceDelete($id);
+            $this->routerRepository->forceDeleteByCondition([
+                ['module_id', '=', $id],
+                ['controllers', '=', 'App\Http\Controller\Frontend\{class}CatalogueController']
+            ]);
             DB::commit();
             return true;
         } catch (Exception $e) {
@@ -177,8 +181,12 @@ class {class}Service extends BaseService implements {class}ServiceInterface
     private function upload{class}(${module}, $request)
     {
         $payload = $request->only($this->payload());
-        $payload['album'] = $this->formatAlbum($payload['album']);
-        $payload['image'] = $this->formatImage($payload['image']);
+        if (isset($payload['album'])) {
+            $payload['album'] = $this->formatAlbum($payload['album']);
+        }
+        if (isset($payload['image'])) {
+            $payload['image'] = $this->formatImage($payload['image']);
+        }
         // dd($payload);
         // Kiểm tra và xử lý cả hai trường hợp ảnh có tiền tố 'http://localhost:81/laravelversion1.com/public' hoặc '/laravelversion1.com/public'
 

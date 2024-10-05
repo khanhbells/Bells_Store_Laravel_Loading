@@ -11,6 +11,7 @@ use Illuminate\Support\Facades\Hash;
 use Exception;
 use Illuminate\Support\Facades\Auth;
 use App\Classes\Nestedsetbie;
+use Illuminate\Support\Str;
 use App\Repositories\Interfaces\RouterRepositoryInterface as RouterRepository;
 
 /**
@@ -63,6 +64,12 @@ class BaseService implements BaseServiceInterface
         $this->nestedset->Recursive(0, $this->nestedset->Set());
         $this->nestedset->Action();
     }
+    public function createRouter($model, $request, $controllerName, $languageId)
+    {
+        $router = $this->formatRouterPayload($model, $request, $controllerName, $languageId);
+        // dd($router);
+        $this->routerRepository->create($router);
+    }
     public function updateRouter($model, $request, $controllerName, $languageId)
     {
         // Định dạng payload cho router
@@ -91,17 +98,11 @@ class BaseService implements BaseServiceInterface
     public function formatRouterPayload($model, $request, $controllerName, $languageId)
     {
         $router = [
-            'canonical' => $request->input('canonical'),
+            'canonical' => Str::slug($request->input('canonical')),
             'module_id' => $model->id,
             'language_id' => $languageId,
             'controllers' => 'App\Http\Controller\Frontend\\' . $controllerName . '',
         ];
         return $router;
-    }
-    public function createRouter($model, $request, $controllerName, $languageId)
-    {
-        $router = $this->formatRouterPayload($model, $request, $controllerName, $languageId);
-        // dd($router);
-        $this->routerRepository->create($router);
     }
 }

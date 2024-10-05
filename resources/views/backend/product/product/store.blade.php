@@ -15,18 +15,19 @@
                         <h5>Thông tin chung</h5>
                     </div>
                     <div class="ibox-content">
-                        @include('backend.dashboard.component.content', [
+                        {{-- @include('backend.dashboard.component.content', [
                             'model' => $product ?? null,
-                        ])
+                        ]) --}}
                     </div>
                 </div>
-                @include('backend.dashboard.component.album')
+                {{-- @include('backend.dashboard.component.album') --}}
+                @include('backend.product.product.component.variant')
                 @include('backend.dashboard.component.seo', [
                     'model' => $product ?? null,
                 ])
             </div>
             <div class="col-lg-3">
-                @include('backend.product.product.component.aside')
+                {{-- @include('backend.product.product.component.aside') --}}
                 <div class="text-right">
                     <button class="btn btn-primary" type="submit" name="send" value="send">Lưu
                         lại</button>

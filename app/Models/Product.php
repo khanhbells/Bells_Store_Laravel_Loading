@@ -17,7 +17,10 @@ class Product extends Model
         'order',
         'user_id',
         'follow',
-        'product_catalogue_id'
+        'product_catalogue_id',
+        'price',
+        'made_in',
+        'code',
     ];
     protected $table = 'products';
     public function languages()
