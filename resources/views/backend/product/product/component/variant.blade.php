@@ -38,6 +38,19 @@
 
     </div>
 </div>
+<div class="ibox product-variant">
+    <div class="ibox-title">
+        <h5>Danh sách phiên bản</h5>
+    </div>
+    <div class="ibox-content">
+        <div class="table-responsive">
+            <table class="table table-striped variantTable">
+
+            </table>
+        </div>
+
+    </div>
+</div>
 <script>
     var attributeCatalogue =
         @json(

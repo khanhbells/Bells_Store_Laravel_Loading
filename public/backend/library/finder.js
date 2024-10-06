@@ -119,6 +119,8 @@
         };
         finder.popup();
     };
+
+    //UPLOAD PICTURE
     HT.browServerAlbum = () => {
         var type = 'Images';
         var finder = new CKFinder();

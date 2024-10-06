@@ -23,8 +23,8 @@ class ProductController extends Controller
     protected $productRepository;
     protected $nestedset;
     protected $language;
-    protected $attributeCatalogue;
-    public function __construct(ProductService $productService, ProductRepository $productRepository, AttributeCatalogueRepository $attributeCatalogue)
+    protected $attributeCatalogueRepository;
+    public function __construct(ProductService $productService, ProductRepository $productRepository, AttributeCatalogueRepository $attributeCatalogueRepository)
     {
         $this->middleware(function ($request, $next) {
             $locale = app()->getLocale();
@@ -35,7 +35,7 @@ class ProductController extends Controller
         });
         $this->productService = $productService;
         $this->productRepository = $productRepository;
-        $this->attributeCatalogue = $attributeCatalogue;
+        $this->attributeCatalogueRepository = $attributeCatalogueRepository;
         $this->initialize();
     }
     public function initialize()
@@ -75,7 +75,8 @@ class ProductController extends Controller
     {
         try {
             $this->authorize('modules', 'product.create');
-            $attributeCatalogue = $this->attributeCatalogue->getAll($this->language);;
+            $attributeCatalogue = $this->attributeCatalogueRepository->getAll($this->language);
+            ($attributeCatalogue);
             $config = $this->configData();
             $config['seo'] = __('message.product');
             $config['method'] = 'create';
@@ -143,6 +144,7 @@ class ProductController extends Controller
             'js' => [
                 'backend/plugin/ckeditor/ckeditor.js',
                 'backend/plugin/ckfinder_2/ckfinder.js',
+                'backend/js/plugins/switchery/switchery.js',
                 'backend/library/finder.js',
                 'backend/library/seo.js',
                 'backend/library/variant.js',
@@ -151,7 +153,8 @@ class ProductController extends Controller
             ],
             'css' => [
                 'https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css',
-                'backend/plugin/nice-select/css/nice-select.css'
+                'backend/plugin/nice-select/css/nice-select.css',
+                'backend/css/plugins/switchery/switchery.css'
             ]
         ];
     }
