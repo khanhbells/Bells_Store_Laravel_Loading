@@ -40,4 +40,24 @@ class AttributeController extends Controller
 
         return response()->json(array('items' => $attributeMapped));
     }
+    public function loadAttribute(Request $request)
+    {
+        $payload['attribute'] = json_decode(base64_decode($request->input('attribute')), TRUE);
+        $payload['attributeCatalogueId'] = $request->input('attributeCatalogueId');
+        $attributeArray = $payload['attribute'][$payload['attributeCatalogueId']];
+        $attributes = [];
+        if (count($attributeArray)) {
+            $attributes = $this->attributeRepository->findAttributeByIdArray($attributeArray, $this->language);
+        }
+        $temp = [];
+        if (count($attributes)) {
+            foreach ($attributes as $key => $value) {
+                $temp[] = [
+                    'id' => $value->id,
+                    'text' => $value->name
+                ];
+            }
+        }
+        return response()->json(array('items' => $temp));
+    }
 }

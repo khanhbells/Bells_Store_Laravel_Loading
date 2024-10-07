@@ -12,14 +12,15 @@
         <div class="row">
             <div class="col-lg-12">
                 <div class="variant-checkbox uk-flex uk-flex-middle">
-                    <input type="checkbox" value="" class="" name="accept" id="variantCheckbox">
+                    <input type="checkbox" value="1" class="variantInputCheckbox" name="accept"
+                        id="variantCheckbox" {{ old('accept') == 1 ? 'checked' : '' }}>
                     <label for="variantCheckbox" class="turnOnVariant">Sản phẩm này có nhiều biến thể. Ví dụ như khác
                         nhau về
                         màu sắc, kích thước</label>
                 </div>
             </div>
         </div>
-        <div class="variant-wrapper ">
+        <div class="variant-wrapper {{ old('accept') == 1 ? '' : 'hidden' }}">
             <div class="row variant-container">
                 <div class="col-lg-3">
                     <div class="attribute-title">Chọn thuộc tính</div>
@@ -29,10 +30,38 @@
                 </div>
             </div>
             <div class="variant-body">
-
+                @if (old('attributeCatalogue'))
+                    @foreach (old('attributeCatalogue') as $keyAttr => $valAttr)
+                        <div class="row mb20 variant-item">
+                            <div class="col-lg-3">
+                                <div class="attribute-catalogue">
+                                    <select name="attributeCatalogue[]" id=""
+                                        class="setupselect2 form-control">
+                                        <option value="">Chọn nhóm thuộc tính</option>
+                                        @foreach ($attributeCatalogue as $key => $val)
+                                            <option {{ $valAttr == $val->id ? 'selected' : '' }}
+                                                value="{{ $val->id }}">
+                                                {{ $val->attribute_catalogue_language->first()->name }}</option>
+                                        @endforeach
+                                    </select>
+                                </div>
+                            </div>
+                            <div class="col-lg-8">
+                                {{-- <input type="text" name="" disabled class="fake-variant form-control"> --}}
+                                <select name="attribute[{{ $valAttr }}][]"
+                                    class="selectVariant form-control variant-{{ $valAttr }}" multiple
+                                    data-catid="{{ $valAttr }}" id=""></select>
+                            </div>
+                            <div class="col-lg-1">
+                                <button type="button" class="remove-attribute btn btn-danger"><i
+                                        class="fa fa-trash"></i></button>
+                            </div>
+                        </div>
+                    @endforeach
+                @endif
             </div>
             <div class="variant-foot mt10">
-                <button type="button" class="add-variant">Thêm phiên bản mới</button>
+                <button type="button" class="add-variant">Thêm thuộc tính mới</button>
             </div>
         </div>
 
@@ -45,7 +74,8 @@
     <div class="ibox-content">
         <div class="table-responsive">
             <table class="table table-striped variantTable">
-
+                <thead></thead>
+                <tbody></tbody>
             </table>
         </div>
 
@@ -61,4 +91,5 @@
                         'name' => $name,
                     ];
                 })->values());
+    var attribute = '{{ base64_encode(json_encode(old('attribute'))) }}'
 </script>
