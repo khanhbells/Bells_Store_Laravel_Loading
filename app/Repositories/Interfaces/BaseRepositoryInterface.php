@@ -29,4 +29,6 @@ interface BaseRepositoryInterface
     public function updateByWhere($condition = [], array $payload = []);
     public function findByCondition($condition = []);
     public function forceDeleteByCondition(array $condition = []);
+    public function createBatch(array $payload = []);
+    public function updateOrInsert(array $payload = [], array $condition = []);
 }

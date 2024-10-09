@@ -6,6 +6,8 @@ use App\Services\Interfaces\ProductServiceInterface;
 use App\Services\BaseService;
 use App\Repositories\Interfaces\ProductRepositoryInterface as ProductRepository;
 use App\Repositories\Interfaces\RouterRepositoryInterface as RouterRepository;
+use App\Repositories\Interfaces\ProductVariantLanguageRepositoryInterface as ProductVariantLanguageRepository;
+use App\Repositories\Interfaces\ProductVariantAttributeRepositoryInterface as ProductVariantAttributeRepository;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Carbon;
@@ -14,6 +16,8 @@ use Illuminate\Support\Facades\Hash;
 use Exception;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Str;
+use App\Helpers;
+use App\Models\ProductVariant;
 
 /**
  * Class ProductService
@@ -23,11 +27,19 @@ class ProductService extends BaseService implements ProductServiceInterface
 {
     protected $productRepository;
     protected $routerRepository;
-    public function __construct(ProductRepository $productRepository, RouterRepository $routerRepository)
-    {
+    protected $productVariantLanguageRepository;
+    protected $productVariantAttributeRepository;
+    public function __construct(
+        ProductRepository $productRepository,
+        RouterRepository $routerRepository,
+        ProductVariantLanguageRepository $productVariantLanguageRepository,
+        ProductVariantAttributeRepository $productVariantAttributeRepository
+    ) {
         $this->productRepository = $productRepository;
         $this->routerRepository = $routerRepository;
         $this->controllerName = 'ProductController';
+        $this->productVariantLanguageRepository = $productVariantLanguageRepository;
+        $this->productVariantAttributeRepository = $productVariantAttributeRepository;
     }
     public function paginate($request, $languageId)
     {
@@ -67,12 +79,12 @@ class ProductService extends BaseService implements ProductServiceInterface
         DB::beginTransaction();
 
         try {
-            // dd($request);
             $product = $this->createProduct($request);
             if ($product->id > 0) {
                 $this->uploadLanguageForProduct($product, $request, $languageId);
                 $this->updateCatalogueForproduct($product, $request);
                 $this->createRouter($product, $request, $this->controllerName, $languageId);
+                $this->createVariant($product, $request, $languageId);
             }
 
             DB::commit();
@@ -87,16 +99,68 @@ class ProductService extends BaseService implements ProductServiceInterface
             abort(500, 'Đã xảy ra lỗi trong quá trình tạo bản ghi.');
         }
     }
+
+
+    private function createVariantLanguage() {}
+
+    private function combineAttribute($attributes = [], $index = 0)
+    {
+        if ($index === count($attributes))
+            return [[]];
+        $subCombines = $this->combineAttribute($attributes, $index + 1);
+
+        $combines = [];
+
+        foreach ($attributes[$index] as $key => $val) {
+
+            foreach ($subCombines as $keySub => $valSub) {
+                $combines[] = array_merge([$val], $valSub);
+            }
+        }
+        return $combines;
+    }
+    private function createVariantArray(array $payload = []): array
+    {
+        $variant = [];
+        if (isset($payload['variant']['sku']) && count($payload['variant']['sku'])) {
+            foreach ($payload['variant']['sku'] as $key => $val) {
+                // Xử lý album, loại bỏ phần '/laravelversion1.com/public'
+                $album = ($payload['variant']['album'][$key]) ?? '';
+                $album = str_replace('/laravelversion1.com/public', '', $album); // Loại bỏ phần đường dẫn
+                $variant[] = [
+                    'code' => ($payload['productVariant']['id'][$key]) ?? '',
+                    'quantity' => ($payload['variant']['quantity'][$key]) ?? '',
+                    'sku' => $val,
+                    'price' => ($payload['variant']['price'][$key]) ? $this->convert_price($payload['variant']['price'][$key]) : '',
+                    'barcode' => ($payload['variant']['barcode'][$key]) ?? '',
+                    'file_name' => ($payload['variant']['file_name'][$key]) ?? '',
+                    'file_url' => ($payload['variant']['file_url'][$key]) ?? '',
+                    'album' => $album,
+                    'user_id' => Auth::id()
+                ];
+            }
+        }
+        return $variant;
+    }
+
     // --------------------------------------------------------------------------------
     public function update($id, Request $request, $languageId)
     {
         DB::beginTransaction();
         try {
+
             $product = $this->productRepository->findById($id);
             if ($this->uploadProduct($product, $request)) {
                 $this->uploadLanguageForProduct($product, $request, $languageId);
                 $this->updateCatalogueForProduct($product, $request);
                 $this->updateRouter($product, $request, $this->controllerName, $languageId);
+                $product->product_variants()->each(function ($variant) {
+                    $variant->languages()->detach();
+                    $variant->attributes()->detach();
+                    $variant->delete();
+                });
+
+                $this->createVariant($product, $request, $languageId);
             }
             DB::commit();
             return true;
@@ -107,6 +171,43 @@ class ProductService extends BaseService implements ProductServiceInterface
             return false;
         }
     }
+
+    private function createVariant($product, $request, $languageId)
+    {
+        $payload = $request->only(['variant', 'productVariant', 'attribute']);
+
+        $variant = $this->createVariantArray($payload);
+        // dd($variant);
+
+        $variants = $product->product_variants()->createMany($variant);
+        $variantId = $variants->pluck('id');
+        $productVariantLanguage = [];
+        $variantAttribute = [];
+        $attributesCombines = $this->combineAttribute(array_values($payload['attribute']));
+        if (count($variantId)) {
+            foreach ($variantId as $key => $val) {
+                $productVariantLanguage[] = [
+                    'product_variant_id' => $val,
+                    'language_id' => $languageId,
+                    'name' => $payload['productVariant']['name'][$key]
+                ];
+                if (count($attributesCombines)) {
+                    foreach ($attributesCombines[$key] as  $attributeId) {
+                        $variantAttribute[] = [
+                            'product_variant_id' => $val,
+                            'attribute_id' => $attributeId
+                        ];
+                    }
+                }
+            }
+        }
+        $variantLanguage = $this->productVariantLanguageRepository->createBatch($productVariantLanguage);
+        $variantAttribute = $this->productVariantAttributeRepository->createBatch($variantAttribute);
+
+
+        // dd($attributesCombines);
+    }
+
 
     public function destroy($id)
     {
@@ -168,16 +269,18 @@ class ProductService extends BaseService implements ProductServiceInterface
         if (isset($payload['image'])) {
             $payload['image'] = $this->formatImage($payload['image']);
         }
-        // dd($payload['album'], $payload['image']);
+        $payload['price'] = $this->convert_price($payload['price']);
+        $payload['attributeCatalogue'] = $this->formatJson($request, 'attributeCatalogue');
+        $payload['attribute'] = $this->formatJson($request, 'attribute');
+        $payload['variant'] = $this->formatJson($request, 'variant');
         $payload['user_id'] = Auth::id();
-        // Tạo bản ghi
         $product = $this->productRepository->create($payload);
         return $product;
     }
 
 
 
-    private function uploadProduct($product, $request)
+    public function uploadProduct($product, $request)
     {
         $payload = $request->only($this->payload());
         $payload['price'] = str_replace('.', '', $payload['price']);
@@ -187,9 +290,9 @@ class ProductService extends BaseService implements ProductServiceInterface
         if (isset($payload['image'])) {
             $payload['image'] = $this->formatImage($payload['image']);
         }
+        $payload['price'] = $this->convert_price($payload['price']);
         // dd($payload);
         // Kiểm tra và xử lý cả hai trường hợp ảnh có tiền tố 'http://localhost:81/laravelversion1.com/public' hoặc '/laravelversion1.com/public'
-
         return $this->productRepository->update($product->id, $payload);
     }
     private function uploadLanguageForProduct($product, $request, $languageId)
@@ -236,13 +339,17 @@ class ProductService extends BaseService implements ProductServiceInterface
         }
         return $rawCondition;
     }
+    private function convert_price(string $price = '')
+    {
+        return str_replace('.', '', $price);
+    }
     private function paginateselect()
     {
         return ['products.id', 'products.publish', 'products.image', 'products.order', 'tb2.name', 'tb2.canonical'];
     }
     private function payload()
     {
-        return ['follow', 'publish', 'image', 'album', 'price', 'made_in', 'code', 'product_catalogue_id'];
+        return ['follow', 'publish', 'image', 'album', 'price', 'made_in', 'code', 'product_catalogue_id', 'attributeCatalogue', 'attribute', 'variant'];
     }
     private function payloadLanguage()
     {

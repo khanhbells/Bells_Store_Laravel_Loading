@@ -50,7 +50,7 @@ class AttributeRepository extends BaseRepository implements AttributeRepositoryI
             $query->where('name', 'like', '%' . $keyword . '%');
         })->get();
     }
-    public function findAttributeByIdArray(array $attributeArray = [], $languageId = 0)
+    public function findAttributeByIdArray(array $attributeArray = [], int $languageId = 0)
     {
         return $this->model->select([
             'attributes.id',

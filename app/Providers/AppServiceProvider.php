@@ -41,6 +41,9 @@ class AppServiceProvider extends ServiceProvider
         //Attribute
         'App\Services\Interfaces\AttributeServiceInterface' =>
         'App\Services\AttributeService',
+        //System
+        'App\Services\Interfaces\SystemServiceInterface' =>
+        'App\Services\SystemService',
     ];
     /**
      * Register any application services.

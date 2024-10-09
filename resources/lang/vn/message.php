@@ -151,6 +151,15 @@ return [
         ],
 
     ],
+    'system' => [
+        'index' => [
+            'title' => 'Cấu hình hệ thống',
+        ],
+        'create' => [
+            'title' => 'Cài đặt thông tin cấu hình hệ thống',
+        ]
+
+    ],
     'parent' => 'Chọn danh mục cha',
     'parent_notice' => '* Chọn Root nếu không có danh mục cha',
     'image' => 'Chọn ảnh đại diện',

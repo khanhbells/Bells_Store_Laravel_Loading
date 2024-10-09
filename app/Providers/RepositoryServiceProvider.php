@@ -48,6 +48,15 @@ class RepositoryServiceProvider extends ServiceProvider
         //Attribute
         'App\Repositories\Interfaces\AttributeRepositoryInterface' =>
         'App\Repositories\AttributeRepository',
+        //ProductVariantLanguage
+        'App\Repositories\Interfaces\ProductVariantLanguageRepositoryInterface' =>
+        'App\Repositories\ProductVariantLanguageRepository',
+        //ProductVariantAttribute
+        'App\Repositories\Interfaces\ProductVariantAttributeRepositoryInterface' =>
+        'App\Repositories\ProductVariantAttributeRepository',
+        //System
+        'App\Repositories\Interfaces\SystemRepositoryInterface' =>
+        'App\Repositories\SystemRepository',
     ];
     /**
      * Register services.

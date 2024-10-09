@@ -76,7 +76,6 @@ class ProductController extends Controller
         try {
             $this->authorize('modules', 'product.create');
             $attributeCatalogue = $this->attributeCatalogueRepository->getAll($this->language);
-            ($attributeCatalogue);
             $config = $this->configData();
             $config['seo'] = __('message.product');
             $config['method'] = 'create';
@@ -100,13 +99,14 @@ class ProductController extends Controller
         try {
             $this->authorize('modules', 'product.update');
             $product = $this->productRepository->getProductById($id, $this->language);
+            $attributeCatalogue = $this->attributeCatalogueRepository->getAll($this->language);
             $config = $this->configData();
             $dropdown = $this->nestedset->Dropdown();
             $template = 'backend.product.product.store';
             $config['seo'] = __('message.product');
             $config['method'] = 'edit';
             $album = json_decode($product->album);
-            return view('backend.dashboard.layout', compact('template', 'config', 'product', 'dropdown', 'album'));
+            return view('backend.dashboard.layout', compact('template', 'config', 'product', 'dropdown', 'album', 'attributeCatalogue'));
         } catch (\Illuminate\Auth\Access\AuthorizationException $e) {
             return redirect()->back()->with('error', 'Bạn không có quyền truy cập vào chức năng này.');
         }
@@ -144,23 +144,19 @@ class ProductController extends Controller
             'js' => [
                 'backend/plugin/ckeditor/ckeditor.js',
                 'backend/plugin/ckfinder_2/ckfinder.js',
-                'backend/js/plugins/switchery/switchery.js',
                 'backend/library/finder.js',
                 'backend/library/seo.js',
                 'backend/library/variant.js',
+                'backend/js/plugins/switchery/switchery.js',
                 'https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js',
                 'backend/plugin/nice-select/js/jquery.nice-select.min.js'
             ],
             'css' => [
                 'https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css',
                 'backend/plugin/nice-select/css/nice-select.css',
-                'backend/css/plugins/switchery/switchery.css'
+                'backend/css/plugins/switchery/switchery.css',
             ]
+
         ];
-    }
-    public function catalogue($product)
-    {
-        dd($product->product_catalogues);
-        // foreach($product as $key->$val)
     }
 }

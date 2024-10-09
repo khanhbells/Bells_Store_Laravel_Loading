@@ -67,5 +67,6 @@ class Kernel extends HttpKernel
         'admin' => \App\Http\Middleware\AuthenticateMiddleware::class,
         'AuthenticateMiddleware' => \App\Http\Middleware\AuthenticateMiddleware::class,
         'locale' => \App\Http\Middleware\SetLocale::class,
+        'backend_default_locale' => \App\Http\Middleware\SetDefaultLocale::class,
     ];
 }

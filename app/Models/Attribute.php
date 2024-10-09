@@ -4,12 +4,11 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
-use Illuminate\Database\Eloquent\SoftDeletes;
 use App\Traits\QueryScopes;
 
 class Attribute extends Model
 {
-    use HasFactory, SoftDeletes, QueryScopes;
+    use HasFactory, QueryScopes;
     protected $fillable = [
         'image',
         'album',
@@ -31,5 +30,9 @@ class Attribute extends Model
     public function attribute_language()
     {
         return $this->hasMany(AttributeLanguage::class, 'attribute_id');
+    }
+    public function product_variants()
+    {
+        return $this->belongsToMany(ProductVariant::class, 'product_variant_attribute', 'attribute_id', 'attribute_id')->withPivot('name')->withTimestamps();
     }
 }

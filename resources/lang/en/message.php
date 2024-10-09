@@ -138,6 +138,15 @@ return [
             'title' => 'Edit Module',
         ],
     ],
+    'system' => [
+        'index' => [
+            'title' => 'System configuration',
+        ],
+        'create' => [
+            'title' => 'System configuration information settings',
+        ]
+
+    ],
     'parent' => 'Select Parent Category',
     'parent_notice' => '* Select Root if no parent category exists',
     'image' => 'Select Featured Image',

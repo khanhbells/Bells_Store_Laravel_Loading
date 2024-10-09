@@ -51,10 +51,10 @@ class AttributeController extends Controller
         }
         $temp = [];
         if (count($attributes)) {
-            foreach ($attributes as $key => $value) {
+            foreach ($attributes as $key => $val) {
                 $temp[] = [
-                    'id' => $value->id,
-                    'text' => $value->name
+                    'id' => $val->id,
+                    'text' => $val->name,
                 ];
             }
         }

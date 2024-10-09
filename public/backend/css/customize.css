@@ -519,3 +519,19 @@ a {
 tr.variant-row {
     cursor: pointer;
 }
+
+.system-link {
+    font-size: 12px;
+    font-weight: normal;
+    font-style: italic;
+}
+
+.system-textarea {
+    height: 168px !important;
+}
+
+.system-flag {
+    width: 35px;
+    height: 23px;
+    margin-right: 10px;
+}

@@ -60,8 +60,7 @@ class BaseRepository implements BaseRepositoryInterface
     public function update($id = 0, array $payload = [])
     {
         $model = $this->findById($id);
-
-        $model->update($payload);
+        return $model->update($payload);
     }
 
     public function updateByWhereIn($whereInField = '', array $whereIn = [], array $payload = [])
@@ -102,13 +101,13 @@ class BaseRepository implements BaseRepositoryInterface
         return $this->model->select($column)->with($relation)->findOrFail($modelId);
     }
 
-    public function findByCondition($condition = [])
+    public function findByCondition($condition = [], $flag = false)
     {
         $query = $this->model->newQuery();
         foreach ($condition as $key => $val) {
             $query->where($val[0], $val[1], $val[2]);
         }
-        return $query->first();
+        return ($flag == false) ? $query->first() : $query->get();
     }
 
     public function createPivot($model, array $payload = [], string $relation = '')
@@ -116,4 +115,13 @@ class BaseRepository implements BaseRepositoryInterface
         return $model->{$relation}()->attach($model->id, $payload);
     }
     public function createRelationPivot($model, array $payload = []) {}
+
+    public function createBatch(array $payload = [])
+    {
+        return $this->model->insert($payload);
+    }
+    public function updateOrInsert(array $payload = [], array $condition = [])
+    {
+        return $this->model->updateOrInsert($condition, $payload);
+    }
 }

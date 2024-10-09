@@ -4,12 +4,11 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
-use Illuminate\Database\Eloquent\SoftDeletes;
 use App\Traits\QueryScopes;
 
 class Product extends Model
 {
-    use HasFactory, SoftDeletes, QueryScopes;
+    use HasFactory, QueryScopes;
     protected $fillable = [
         'image',
         'album',
@@ -21,6 +20,9 @@ class Product extends Model
         'price',
         'made_in',
         'code',
+        'attributeCatalogue',
+        'attribute',
+        'variant'
     ];
     protected $table = 'products';
     public function languages()
@@ -30,5 +32,9 @@ class Product extends Model
     public function product_catalogues()
     {
         return $this->belongsToMany(ProductCatalogue::class, 'product_catalogue_product', 'product_id', 'product_catalogue_id');
+    }
+    public function product_variants()
+    {
+        return $this->hasMany(ProductVariant::class, 'product_id', 'id');
     }
 }

@@ -77,15 +77,19 @@ return [
         [
             'title' => 'Cấu hình chung',
             'icon' => 'fa fa-cog',
-            'name' => ['language', 'generate'],
+            'name' => ['language', 'generate', 'system'],
             'subModule' => [
                 [
                     'title' => 'Ngôn ngữ',
                     'route' => 'language.index' // chỉ dùng tên route
                 ],
                 [
-                    'title' => 'Module',
+                    'title' => 'Chức năng',
                     'route' => 'generate.index' // chỉ dùng tên route
+                ],
+                [
+                    'title' => 'Cấu hình hệ thống',
+                    'route' => 'system.index' // chỉ dùng tên route
                 ],
             ]
         ]

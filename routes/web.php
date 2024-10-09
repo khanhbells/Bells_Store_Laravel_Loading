@@ -17,6 +17,7 @@ use App\Http\Controllers\Backend\ProductCatalogueController;
 use App\Http\Controllers\Backend\ProductController;
 use App\Http\Controllers\Backend\AttributeCatalogueController;
 use App\Http\Controllers\Backend\AttributeController;
+use App\Http\Controllers\Backend\SystemController;
 //USE CONTROLLER
 
 /*
@@ -53,7 +54,7 @@ Route::post('ajax/dashboard/changeStatusAll', [AjaxDashboardController::class, '
 Route::get('ajax/attribute/getAttribute', [AjaxAttributeController::class, 'getAttribute'])->name('ajax.attribute.getAttribute');
 Route::get('ajax/attribute/loadAttribute', [AjaxAttributeController::class, 'loadAttribute'])->name('ajax.attribute.loadAttribute');
 // BACKEND ROUTES
-Route::group(['middleware' => ['admin', 'locale']], function () {
+Route::group(['middleware' => ['admin', 'locale', 'backend_default_locale']], function () {
     // User
     Route::group(['prefix' => 'user'], function () {
         Route::get('index', [UserController::class, 'index'])->name('user.index');
@@ -129,6 +130,14 @@ Route::group(['middleware' => ['admin', 'locale']], function () {
         Route::get('index', [GenerateController::class, 'index'])->name('generate.index');
         Route::post('{id}/destroy', [GenerateController::class, 'destroy'])->where(['id' => '[0-9]+'])->name('generate.destroy');
     });
+    //System
+    Route::group(['prefix' => 'system'], function () {
+        Route::get('index', [SystemController::class, 'index'])->name('system.index');
+        Route::post('store', [SystemController::class, 'store'])->name('system.store');
+        Route::get('{languageId}/translate', [SystemController::class, 'translate'])->where(['languageId' => '[0-9]+'])->name('system.translate');
+        Route::post('{languageId}/saveTranslate', [SystemController::class, 'saveTranslate'])->where(['languageId' => '[0-9]+'])->name('system.save.translate');
+    });
+    //ProductCatalogue
     Route::group(['prefix' => 'product/catalogue'], function () {
         Route::get('index', [ProductCatalogueController::class, 'index'])->name('product.catalogue.index');
         Route::get('create', [ProductCatalogueController::class, 'create'])->name('product.catalogue.create');
@@ -138,6 +147,7 @@ Route::group(['middleware' => ['admin', 'locale']], function () {
         Route::get('{id}/delete', [ProductCatalogueController::class, 'delete'])->where(['id' => '[0-9]+'])->name('product.catalogue.delete');
         Route::post('{id}/destroy', [ProductCatalogueController::class, 'destroy'])->where(['id' => '[0-9]+'])->name('product.catalogue.destroy');
     });
+    //ProductCatalogue
     Route::group(['prefix' => 'product'], function () {
         Route::get('index', [ProductController::class, 'index'])->name('product.index');
         Route::get('create', [ProductController::class, 'create'])->name('product.create');
@@ -147,6 +157,7 @@ Route::group(['middleware' => ['admin', 'locale']], function () {
         Route::get('{id}/delete', [ProductController::class, 'delete'])->where(['id' => '[0-9]+'])->name('product.delete');
         Route::post('{id}/destroy', [ProductController::class, 'destroy'])->where(['id' => '[0-9]+'])->name('product.destroy');
     });
+    //AttributeCatalogue
     Route::group(['prefix' => 'attribute/catalogue'], function () {
         Route::get('index', [AttributeCatalogueController::class, 'index'])->name('attribute.catalogue.index');
         Route::get('create', [AttributeCatalogueController::class, 'create'])->name('attribute.catalogue.create');
@@ -156,6 +167,7 @@ Route::group(['middleware' => ['admin', 'locale']], function () {
         Route::get('{id}/delete', [AttributeCatalogueController::class, 'delete'])->where(['id' => '[0-9]+'])->name('attribute.catalogue.delete');
         Route::post('{id}/destroy', [AttributeCatalogueController::class, 'destroy'])->where(['id' => '[0-9]+'])->name('attribute.catalogue.destroy');
     });
+    //Attribute
     Route::group(['prefix' => 'attribute'], function () {
         Route::get('index', [AttributeController::class, 'index'])->name('attribute.index');
         Route::get('create', [AttributeController::class, 'create'])->name('attribute.create');
