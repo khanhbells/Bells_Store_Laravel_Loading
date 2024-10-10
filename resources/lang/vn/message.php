@@ -135,6 +135,22 @@ return [
         ],
 
     ],
+    'menu' => [
+        'index' => [
+            'title' => 'Quản lý menu',
+            'table' => 'Danh sách menu',
+        ],
+        'create' => [
+            'title' => 'Thêm menu mới',
+        ],
+        'delete' => [
+            'title' => 'Xoá menu',
+        ],
+        'update' => [
+            'title' => 'Sửa menu',
+        ],
+
+    ],
     'generate' => [
         'index' => [
             'title' => 'Quản lý module',

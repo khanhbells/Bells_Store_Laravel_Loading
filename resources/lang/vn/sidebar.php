@@ -75,6 +75,17 @@ return [
             ]
         ],
         [
+            'title' => 'Quản lý menu',
+            'icon' => 'fa fa-bars',
+            'name' => ['menu'],
+            'subModule' => [
+                [
+                    'title' => 'Cài đặt menu',
+                    'route' => 'menu.index' // chỉ dùng tên route
+                ],
+            ]
+        ],
+        [
             'title' => 'Cấu hình chung',
             'icon' => 'fa fa-cog',
             'name' => ['language', 'generate', 'system'],

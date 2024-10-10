@@ -57,6 +57,12 @@ class RepositoryServiceProvider extends ServiceProvider
         //System
         'App\Repositories\Interfaces\SystemRepositoryInterface' =>
         'App\Repositories\SystemRepository',
+        //Menu
+        'App\Repositories\Interfaces\MenuRepositoryInterface' =>
+        'App\Repositories\MenuRepository',
+        //MenuCatalogue
+        'App\Repositories\Interfaces\MenuCatalogueRepositoryInterface' =>
+        'App\Repositories\MenuCatalogueRepository',
     ];
     /**
      * Register services.
