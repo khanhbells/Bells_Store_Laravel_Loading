@@ -149,38 +149,6 @@ class ProductCatalogueService extends BaseService implements ProductCatalogueSer
             return false;
         }
     }
-    public function updateStatus($product = [])
-    {
-        DB::beginTransaction();
-        try {
-            $payload[$product['field']] = (($product['value'] == 1) ? 2 : 1);
-            $productCatalogue = $this->productCatalogueRepository->update($product['modelId'], $payload);
-            // $this->changeUserStatus($product, $payload[$product['field']]);
-            DB::commit();
-            return true;
-        } catch (Exception $e) {
-            DB::rollBack();
-            echo $e->getMessage();
-            die();
-            return false;
-        }
-    }
-    public function updateStatusAll($product)
-    {
-        DB::beginTransaction();
-        try {
-            $payload[$product['field']] = $product['value'];
-            $flag = $this->productCatalogueRepository->updateByWhereIn('id', $product['id'], $payload);
-            // $this->changeUserStatus($product, $product['value']);
-            DB::commit();
-            return true;
-        } catch (Exception $e) {
-            DB::rollBack();
-            echo $e->getMessage();
-            die();
-            return false;
-        }
-    }
 
     private function createCatalogue($request)
     {

@@ -9,6 +9,9 @@ use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Http\Request;
 use Exception;
+use Illuminate\Support\Facades\Auth;
+use App\Classes\Nestedsetbie;
+
 
 /**
  * Class MenuService
@@ -17,6 +20,7 @@ use Exception;
 class MenuService extends BaseService implements MenuServiceInterface
 {
     protected $menuRepository;
+    protected $nestedset;
     public function __construct(MenuRepository $menuRepository)
     {
         $this->menuRepository = $menuRepository;
@@ -30,6 +34,38 @@ class MenuService extends BaseService implements MenuServiceInterface
         DB::beginTransaction();
 
         try {
+            $payload = $request->only('menu', 'menu_catalogue_id', 'type');
+            if (count($payload['menu']['name'])) {
+                foreach ($payload['menu']['name'] as $key => $val) {
+                    $menuArray = [
+                        'menu_catalogue_id' => $payload['menu_catalogue_id'],
+                        'type' => $payload['type'],
+                        'order' => $payload['menu']['order'][$key],
+                        'user_id' => Auth::id()
+                    ];
+                    $menu = $this->menuRepository->create($menuArray);
+
+
+                    if ($menu->id > 0) {
+                        $menu->languages()->detach([$languageId, $menu->id]);
+                        $payloadLanguage = [
+                            'language_id' => $languageId,
+                            'name' => $val,
+                            'canonical' => $payload['menu']['canonical'][$key],
+                        ];
+                        $this->menuRepository->createPivot($menu, $payloadLanguage, 'languages');
+                    }
+                }
+                $this->nestedset = new Nestedsetbie([
+                    'table' => 'menus',
+                    'foreignkey' => 'menu_id',
+                    'isMenu' => true,
+                    'language_id' => $languageId,
+                ]);
+                $this->nestedset();
+                // die();
+            }
+            // die();
 
 
             DB::commit();

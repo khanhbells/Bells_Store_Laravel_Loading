@@ -6,11 +6,13 @@ use App\Http\Controllers\Controller;
 use App\Http\Requests\StoreMenuRequest;
 use App\Http\Requests\UpdateMenuRequest;
 use App\Models\Menu;
+use App\Models\Language;
 use Illuminate\Http\Request;
 // use App\Models\Menu;
 use App\Services\Interfaces\MenuServiceInterface as MenuService;
 use App\Repositories\Interfaces\MenuRepositoryInterface as MenuRepository;
 use App\Repositories\Interfaces\MenuCatalogueRepositoryInterface as MenuCatalogueRepository;
+use App\Services\Interfaces\MenuCatalogueServiceInterface as MenuCatalogueService;
 
 //Neu muon view hieu duoc controller thi phai compact
 class MenuController extends Controller
@@ -18,18 +20,31 @@ class MenuController extends Controller
     protected $menuService;
     protected $menuRepository;
     protected $menuCatalogueRepository;
-    public function __construct(MenuService $menuService,  MenuRepository $menuRepository, MenuCatalogueRepository $menuCatalogueRepository)
-    {
+    protected $menuCatalogueService;
+    protected $language;
+    public function __construct(
+        MenuService $menuService,
+        MenuRepository $menuRepository,
+        MenuCatalogueRepository $menuCatalogueRepository,
+        MenuCatalogueService $menuCatalogueService
+    ) {
         $this->menuService = $menuService;
         $this->menuRepository = $menuRepository;
         $this->menuCatalogueRepository = $menuCatalogueRepository;
+        $this->menuCatalogueService = $menuCatalogueService;
+        $this->middleware(function ($request, $next) {
+            $locale = app()->getLocale();
+            $language = Language::where('canonical', $locale)->first();
+            $this->language = $language->id;
+            return $next($request);
+        });
     }
     public function index(Request $request)
     {
         try {
             $this->authorize('modules', 'menu.index');
             // dd($request);
-            $menus = $this->menuService->paginate($request, 1);
+            $menuCatalogues = $this->menuCatalogueService->paginate($request, 1);
             // dd($menus); //hien thi thanh vien
             $config = [
                 'js' => [
@@ -40,12 +55,12 @@ class MenuController extends Controller
                     'backend/css/plugins/switchery/switchery.css',
                     'https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css'
                 ],
-                'model' => 'Menu'
+                'model' => 'MenuCatalogue'
             ];
             $config['seo'] = __('message.menu');
             // dd($config['seo']);
             $template = 'backend.menu.menu.index';
-            return view('backend.dashboard.layout', compact('template', 'config', 'menus'));
+            return view('backend.dashboard.layout', compact('template', 'config', 'menuCatalogues'));
         } catch (\Illuminate\Auth\Access\AuthorizationException $e) {
             return redirect()->back()->with('error', 'Bạn không có quyền truy cập vào chức năng này.');
         }
@@ -68,7 +83,7 @@ class MenuController extends Controller
     }
     public function store(StoreMenuRequest $request)
     {
-        if ($this->menuService->create($request)) {
+        if ($this->menuService->create($request, $this->language)) {
             return redirect()->route('menu.index')->with('success', 'Thêm mới bản ghi thành công');
         }
         return redirect()->route('menu.index')->with('error', 'Thêm mới bản ghi không thành công');

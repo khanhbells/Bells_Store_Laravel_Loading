@@ -43,12 +43,10 @@
                             </div>
                             <div id="{{ $key }}" class="panel-collapse collapse">
                                 <div class="panel-body">
-                                    <form action="" method="get" data-model="{{ $key }}"
-                                        class="searchModel">
-                                        <input type="text" value="" class="form-control" name="keyword"
-                                            placeholder="Nhập 2 ký tự để tìm kiếm...">
-                                    </form>
-                                    <div class="menu-list"></div>
+                                    <input type="text" value="" class="form-control search-menu" name="keyword"
+                                        placeholder="Nhập 2 ký tự để tìm kiếm..." autocomplete="off">
+                                    <div class="menu-list mt20">
+                                    </div>
                                 </div>
                             </div>
                         </div>
@@ -76,7 +74,8 @@
                 </div>
                 <div class="hr-line-dashed" style="margin:10px 0;"></div>
                 <div class="menu-wrapper">
-                    <div class="notification text-center">
+                    <div
+                        class="notification text-center {{ is_array(old('menu')) && count(old('menu')) ? 'none' : '' }}">
                         <h4 class="notification-title">
                             Danh sách Liên kết này chưa có bất kỳ đường dẫn nào.
                         </h4>
@@ -86,7 +85,24 @@
                             để bắt đầu thêm.
                         </p>
                     </div>
-
+                    @if (is_array(old('menu')) && count(old('menu')))
+                        @foreach (old('menu')['name'] as $key => $val)
+                            <div class="row mb10 menu-item tuyen-dung">
+                                <div class="col-lg-4"><input type="text" value="{{ $val }}"
+                                        class="form-control" name="menu[name][]"></div>
+                                <div class="col-lg-4"><input type="text" value="{{ old('menu')['canonical'][$key] }}"
+                                        class="form-control" name="menu[canonical][]"></div>
+                                <div class="col-lg-2"><input type="text" value="{{ old('menu')['order'][$key] }}"
+                                        class="form-control int text-right" name="menu[order][]">
+                                </div>
+                                <div class="col-lg-2">
+                                    <div class="form-row text-center"><a class="delete-menu"><i class="fa fa-times"
+                                                aria-hidden="true"></i></a>
+                                    </div>
+                                </div>
+                            </div>
+                        @endforeach
+                    @endif
                 </div>
             </div>
         </div>

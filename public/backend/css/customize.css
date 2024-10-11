@@ -594,3 +594,27 @@ tr.variant-row {
 .form-error {
     display: none;
 }
+
+.m0 {
+    margin: 0 !important;
+}
+
+.m-item label {
+    margin: 0;
+    font-weight: normal;
+    color: blue;
+    margin-left: 5px;
+    cursor: pointer;
+}
+
+.m-item {
+    margin-bottom: 10px;
+}
+
+.menu-list .pagination {
+    margin-bottom: 0 !important;
+}
+
+.none {
+    display: none;
+}

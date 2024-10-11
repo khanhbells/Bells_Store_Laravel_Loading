@@ -145,38 +145,6 @@ class AttributeCatalogueService extends BaseService implements AttributeCatalogu
             return false;
         }
     }
-    public function updateStatus($attribute = [])
-    {
-        DB::beginTransaction();
-        try {
-            $payload[$attribute['field']] = (($attribute['value'] == 1) ? 2 : 1);
-            $attributeCatalogue = $this->attributeCatalogueRepository->update($attribute['modelId'], $payload);
-            // $this->changeUserStatus($attribute, $payload[$attribute['field']]);
-            DB::commit();
-            return true;
-        } catch (Exception $e) {
-            DB::rollBack();
-            echo $e->getMessage();
-            die();
-            return false;
-        }
-    }
-    public function updateStatusAll($attribute)
-    {
-        DB::beginTransaction();
-        try {
-            $payload[$attribute['field']] = $attribute['value'];
-            $flag = $this->attributeCatalogueRepository->updateByWhereIn('id', $attribute['id'], $payload);
-            // $this->changeUserStatus($attribute, $attribute['value']);
-            DB::commit();
-            return true;
-        } catch (Exception $e) {
-            DB::rollBack();
-            echo $e->getMessage();
-            die();
-            return false;
-        }
-    }
 
     private function createCatalogue($request)
     {

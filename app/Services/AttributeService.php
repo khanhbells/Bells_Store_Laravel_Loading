@@ -126,38 +126,6 @@ class AttributeService extends BaseService implements AttributeServiceInterface
             return false;
         }
     }
-    public function updateStatus($attribute = [])
-    {
-        DB::beginTransaction();
-        try {
-            $payload[$attribute['field']] = (($attribute['value'] == 1) ? 2 : 1);
-            $attribute = $this->attributeRepository->update($attribute['modelId'], $payload);
-            // $this->changeUserStatus($attribute, $payload[$attribute['field']]);
-            DB::commit();
-            return true;
-        } catch (Exception $e) {
-            DB::rollBack();
-            echo $e->getMessage();
-            die();
-            return false;
-        }
-    }
-    public function updateStatusAll($attribute)
-    {
-        DB::beginTransaction();
-        try {
-            $payload[$attribute['field']] = $attribute['value'];
-            $flag = $this->attributeRepository->updateByWhereIn('id', $attribute['id'], $payload);
-            // $this->changeUserStatus($attribute, $attribute['value']);
-            DB::commit();
-            return true;
-        } catch (Exception $e) {
-            DB::rollBack();
-            echo $e->getMessage();
-            die();
-            return false;
-        }
-    }
     private function createAttribute($request)
     {
         $payload = $request->only($this->payload());
@@ -192,7 +160,7 @@ class AttributeService extends BaseService implements AttributeServiceInterface
     {
         $payload = $request->only($this->payloadLanguage());
         $payload = $this->formatLanguagePayload($payload, $attribute->id, $languageId);
-        $attribute->languages()->detach([$this->language, $attribute->id]);
+        $attribute->languages()->detach([$languageId, $attribute->id]);
         return $this->attributeRepository->createPivot($attribute, $payload, 'languages');
     }
     private function formatLanguagePayload($payload, $attributeId, $languageId)

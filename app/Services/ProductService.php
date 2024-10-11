@@ -299,7 +299,7 @@ class ProductService extends BaseService implements ProductServiceInterface
     {
         $payload = $request->only($this->payloadLanguage());
         $payload = $this->formatLanguagePayload($payload, $product->id, $languageId);
-        $product->languages()->detach([$this->language, $product->id]);
+        $product->languages()->detach([$languageId, $product->id]);
         return $this->productRepository->createPivot($product, $payload, 'languages');
     }
     private function formatLanguagePayload($payload, $productId, $languageId)

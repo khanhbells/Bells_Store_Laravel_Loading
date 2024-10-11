@@ -196,7 +196,7 @@ class {class}Service extends BaseService implements {class}ServiceInterface
     {
         $payload = $request->only($this->payloadLanguage());
         $payload = $this->formatLanguagePayload($payload, ${module}->id, $languageId);
-        ${module}->languages()->detach([$this->language, ${module}->id]);
+        ${module}->languages()->detach([$languageId, ${module}->id]);
         return $this->{module}Repository->createPivot(${module}, $payload, 'languages');
     }
     private function formatLanguagePayload($payload, ${module}Id, $languageId)
