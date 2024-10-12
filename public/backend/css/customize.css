@@ -618,3 +618,19 @@ tr.variant-row {
 .none {
     display: none;
 }
+
+.create-children-menu {
+    position: absolute;
+    top: 11px;
+    right: 11px;
+    z-index: 100;
+}
+
+.dd-handle {
+    position: relative;
+    padding-right: 125px !important;
+}
+
+#nestable2 .dd-item>button {
+    z-index: 9999;
+}

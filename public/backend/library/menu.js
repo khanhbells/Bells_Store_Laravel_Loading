@@ -78,9 +78,11 @@
         let $removeRow = $('<div>').addClass('form-row text-center')
         let $a = $('<a>').addClass('delete-menu')
         let $image = $('<i>').addClass('fa fa-times').attr('aria-hidden', 'true')
+        let $input = $('<input>').addClass('hidden').attr('value', 0).attr('name', 'menu[id][]')
         $a.append($image)
         $removeRow.append($a)
         $removeCol.append($removeRow)
+        $removeCol.append($input)
         $row.append($removeCol)
         return $row
     }
@@ -236,6 +238,57 @@
         })
     }
 
+
+    // --------------------------NESTEDSET------------------------------//
+    HT.setupNestable = () => {
+        if ($('#nestable2').length) {
+            $('#nestable2').nestable({
+                group: 1
+            }).on('change', HT.updateNesableOutput);
+        }
+
+    }
+
+    HT.updateNesableOutput = (e) => {
+        var list = $(e.currentTarget),
+            output = $(list.data('output'));
+        let json = window.JSON.stringify(list.nestable('serialize'))
+        if (json.length) {
+            let option = {
+                json: json,
+                menu_catalogue_id: $('#dataCatalogue').attr('data-catalogueId'),
+                _token: _token
+            }
+            $.ajax({
+                url: 'ajax/menu/drag',
+                type: 'POST',
+                data: option,
+                dataType: 'json',
+                success: function (res) {
+                },
+                error: function (jqXHR, textStatus, errorThrown) {
+                }
+            });
+        }
+    }
+
+    // HT.runUpdateNesableOutput = () => {
+    //     updateOutput($('#nestable2').data('output', $('#nestable2-output')));
+    // }
+
+    HT.expandAndCollapse = () => {
+        $('#nestable-menu').on('click', function (e) {
+            var target = $(e.target),
+                action = target.data('action');
+            if (action === 'expand-all') {
+                $('.dd').nestable('expandAll');
+            }
+            if (action === 'collapse-all') {
+                $('.dd').nestable('collapseAll');
+            }
+        });
+    }
+
     $(document).ready(function () {
         HT.createMenuCatalogue()
         HT.createMenuRow()
@@ -244,6 +297,10 @@
         HT.chooseMenu()
         HT.getPaginationMenu()
         HT.searchMenu()
+        HT.setupNestable()
+        // HT.updateNesableOutput()
+        // HT.runUpdateNesableOutput()
+        HT.expandAndCollapse()
     });
 
 })(jQuery);

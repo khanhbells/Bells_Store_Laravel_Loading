@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Backend;
 
 use App\Http\Controllers\Controller;
+use App\Http\Requests\StoreMenuChildrenRequest;
 use App\Http\Requests\StoreMenuRequest;
 use App\Http\Requests\UpdateMenuRequest;
 use App\Models\Menu;
@@ -92,17 +93,20 @@ class MenuController extends Controller
     {
         try {
             $this->authorize('modules', 'menu.update');
-            $menu = $this->menuRepository->findById($id);
-            // dd($menu);
-            $menus = Menu::where('publish', 2)->get();
-            // dd($provinces);
-            // dd($province);
+            $language = $this->language;
+            $menus = $this->menuRepository->findByCondition([
+                ['menu_catalogue_id', '=', $id]
+            ], TRUE, [
+                'languages' => function ($query) use ($language) {
+                    $query->where('language_id', $language);
+                }
+            ], ['order', 'DESC']);
             $config = $this->configData();
-            $template = 'backend.menu.menu.store';
+            $template = 'backend.menu.menu.show';
 
             $config['seo'] = __('message.menu');
             $config['method'] = 'edit';
-            return view('backend.dashboard.layout', compact('template', 'config', 'provinces', 'menu', 'menus'));
+            return view('backend.dashboard.layout', compact('template', 'config', 'menus', 'id'));
         } catch (\Illuminate\Auth\Access\AuthorizationException $e) {
             return redirect()->back()->with('error', 'Bạn không có quyền truy cập vào chức năng này.');
         }
@@ -133,6 +137,33 @@ class MenuController extends Controller
         }
         return redirect()->route('menu.index')->with('error', 'Xóa bản ghi không thành công');
     }
+
+    public function children($id)
+    {
+        try {
+            $this->authorize('modules', 'menu.create');
+            $language = $this->language;
+            $menu = $this->menuRepository->findById($id, ['*'], ['languages' => function ($query) use ($language) {
+                $query->where('language_id', $language);
+            }]);
+            $menuList = $this->menuService->getAndconvertMenu($menu, $this->language);
+            $config = $this->configData();
+            $config['seo'] = __('message.menu');
+            $config['method'] = 'children';
+            $template = 'backend.menu.menu.children';
+            return view('backend.dashboard.layout', compact('template', 'config', 'menu', 'menuList'));
+        } catch (\Illuminate\Auth\Access\AuthorizationException $e) {
+            return redirect()->back()->with('error', 'Bạn không có quyền truy cập vào chức năng này.');
+        }
+    }
+    public function saveChildren($id, StoreMenuChildrenRequest $request)
+    {
+        $menu = $this->menuRepository->findById($id);
+        if ($this->menuService->saveChildren($request, $this->language, $menu)) {
+            return redirect()->route('menu.edit', ['id' => $menu->menu_catalogue_id])->with('success', 'Thêm mới bản ghi thành công');
+        }
+        return redirect()->route('menu.edit', ['id' => $menu->menu_catalogue_id])->with('error', 'Thêm mới bản ghi không thành công');
+    }
     private function configData()
     {
         return [
@@ -140,6 +171,7 @@ class MenuController extends Controller
             'js' => [
                 'https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js',
                 'backend/library/menu.js',
+                'backend/js/plugins/nestable/jquery.nestable.js'
             ],
 
         ];

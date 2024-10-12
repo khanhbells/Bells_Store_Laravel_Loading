@@ -31,27 +31,30 @@ class PostService extends BaseService implements PostServiceInterface
     }
     public function paginate($request, $languageId)
     {
+        $payload = $request->input();
         $perPage = $request->integer('perpage');
         $condition = [
-            'keyword' => addslashes($request->input('keyword')),
-            'publish' => $request->input('publish', -1),
-            'post_catalogue_id' => $request->input('post_catalogue_id'),
+            'keyword' => ($request->input('keyword')) ? addslashes($request->input('keyword')) : '',
+            'publish' => $request->integer('publish'),
             'where' => [
-                ['tb2.language_id', '=', $languageId]
-            ]
+                ['tb2.language_id', '=', $languageId],
+            ],
         ];
         $paginationConfig = [
-            'path' => 'post/index'
+            'path' => 'post/index',
+            'groupBy' => $this->paginateSelect()
         ];
         $orderBy = ['posts.id', 'DESC'];
         $relations = ['post_catalogues'];
         $rawQuery = $this->whereRaw($request, $languageId);
+        // dd($rawQuery);
         $joins = [
             ['post_language as tb2', 'tb2.post_id', '=', 'posts.id'],
-            ['post_catalogue_post as tb3', 'posts.id', '=', 'tb3.post_id']
+            ['post_catalogue_post as tb3', 'posts.id', '=', 'tb3.post_id'],
         ];
+
         $posts = $this->postRepository->pagination(
-            $this->paginateselect(),
+            $this->paginateSelect(),
             $condition,
             $perPage,
             $paginationConfig,

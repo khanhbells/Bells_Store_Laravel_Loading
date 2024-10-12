@@ -142,12 +142,13 @@ return [
         ],
         'create' => [
             'title' => 'Thêm menu mới',
+            'children' => 'Cập nhật menu con cho mục ',
         ],
         'delete' => [
             'title' => 'Xoá menu',
         ],
-        'update' => [
-            'title' => 'Sửa menu',
+        'show' => [
+            'title' => 'Danh sách menu',
         ],
 
     ],

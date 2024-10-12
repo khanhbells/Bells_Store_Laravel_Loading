@@ -25,6 +25,17 @@ class MenuService extends BaseService implements MenuServiceInterface
     {
         $this->menuRepository = $menuRepository;
     }
+
+    private function initialize($languageId)
+    {
+        $this->nestedset = new Nestedsetbie([
+            'table' => 'menus',
+            'foreignkey' => 'menu_id',
+            'isMenu' => true,
+            'language_id' => $languageId,
+        ]);
+    }
+
     public function paginate($request, $languageId)
     {
         return [];
@@ -56,12 +67,7 @@ class MenuService extends BaseService implements MenuServiceInterface
                         $this->menuRepository->createPivot($menu, $payloadLanguage, 'languages');
                     }
                 }
-                $this->nestedset = new Nestedsetbie([
-                    'table' => 'menus',
-                    'foreignkey' => 'menu_id',
-                    'isMenu' => true,
-                    'language_id' => $languageId,
-                ]);
+                $this->initialize($languageId);
                 $this->nestedset();
                 // die();
             }
@@ -78,6 +84,80 @@ class MenuService extends BaseService implements MenuServiceInterface
             Log::error($e->getMessage());
             // Trả về mã lỗi 500
             abort(500, 'Đã xảy ra lỗi trong quá trình tạo bản ghi.');
+        }
+    }
+
+    public function saveChildren($request, $languageId, $menu)
+    {
+        DB::beginTransaction();
+        try {
+            $payload = $request->only('menu');
+            if (count($payload['menu']['name'])) {
+                foreach ($payload['menu']['name'] as $key => $val) {
+                    $menuId = $payload['menu']['id'][$key];
+                    $menuArray = [
+                        'menu_catalogue_id' => $menu->menu_catalogue_id,
+                        'parent_id' => $menu->id,
+                        'order' => $payload['menu']['order'][$key],
+                        'user_id' => Auth::id()
+                    ];
+
+                    if ($menuId == 0) {
+                        $menuSave = $this->menuRepository->create($menuArray);
+                    } else {
+                        $menuSave = $this->menuRepository->update($menuId, $menuArray);
+                    }
+                    // dd($menuSave);
+                    if ($menuSave->id > 0) {
+                        $menuSave->languages()->detach([$languageId, $menuSave->id]);
+                        $payloadLanguage = [
+                            'language_id' => $languageId,
+                            'name' => $val,
+                            'canonical' => $payload['menu']['canonical'][$key],
+                        ];
+                        $this->menuRepository->createPivot($menuSave, $payloadLanguage, 'languages');
+                    }
+                }
+                $this->initialize($languageId);
+                $this->nestedset();
+            }
+            DB::commit();
+            return true;
+        } catch (Exception $e) {
+            DB::rollBack();
+            // In ra lỗi để debug
+            dd($e);
+            // Ghi lỗi vào log
+            Log::error($e->getMessage());
+            // Trả về mã lỗi 500
+            abort(500, 'Đã xảy ra lỗi trong quá trình tạo bản ghi.');
+        }
+    }
+    public function dragUpdate(array $json = [], int $menuCatalogueId = 0, int $languageId = 1, $parentId = 0)
+    {
+        DB::beginTransaction();
+        try {
+            if (count($json)) {
+                foreach ($json as $key => $val) {
+                    $update = [
+                        'order' => count($json) - $key,
+                        'parent_id' => $parentId
+                    ];
+                    $menu = $this->menuRepository->update($val['id'], $update);
+                    if (isset($val['children']) && count($val['children'])) {
+                        $this->dragUpdate($val['children'], $menuCatalogueId, $languageId, $val['id']);
+                    }
+                }
+            }
+            $this->initialize($languageId);
+            $this->nestedset();
+            DB::commit();
+            return true;
+        } catch (Exception $e) {
+            DB::rollBack();
+            echo $e->getMessage();
+            die();
+            return false;
         }
     }
     // --------------------------------------------------------------------------------
@@ -108,6 +188,31 @@ class MenuService extends BaseService implements MenuServiceInterface
             Log::error($e->getMessage());
             return false;
         }
+    }
+
+    public function getAndconvertMenu($menu = null, $language = 1): array
+    {
+        $menuList = $this->menuRepository->findByCondition([
+            ['parent_id', '=', $menu->id]
+        ], TRUE, [
+            'languages' => function ($query) use ($language) {
+                $query->where('language_id', $language);
+            }
+        ]);
+        $temp = [];
+        $fields = ['name', 'canonical', 'order', 'id'];
+        if (count($menuList)) {
+            foreach ($menuList as $key => $val) {
+                foreach ($fields as $field) {
+                    if ($field == 'name' || $field == 'canonical') {
+                        $temp[$field][] = $val->languages->first()->pivot->{$field};
+                    } else {
+                        $temp[$field][] = $val->{$field};
+                    }
+                }
+            }
+        }
+        return $temp;
     }
 
     private function paginateselect()

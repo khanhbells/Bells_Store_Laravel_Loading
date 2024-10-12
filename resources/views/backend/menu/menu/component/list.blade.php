@@ -73,9 +73,12 @@
                     </div>
                 </div>
                 <div class="hr-line-dashed" style="margin:10px 0;"></div>
+
+                @php
+                    $menu = old('menu', $menuList ?? null);
+                @endphp
                 <div class="menu-wrapper">
-                    <div
-                        class="notification text-center {{ is_array(old('menu')) && count(old('menu')) ? 'none' : '' }}">
+                    <div class="notification text-center {{ is_array($menu) && count($menu) ? 'none' : '' }}">
                         <h4 class="notification-title">
                             Danh sách Liên kết này chưa có bất kỳ đường dẫn nào.
                         </h4>
@@ -85,20 +88,22 @@
                             để bắt đầu thêm.
                         </p>
                     </div>
-                    @if (is_array(old('menu')) && count(old('menu')))
-                        @foreach (old('menu')['name'] as $key => $val)
+                    @if (is_array($menu) && count($menu))
+                        @foreach ($menu['name'] as $key => $val)
                             <div class="row mb10 menu-item tuyen-dung">
                                 <div class="col-lg-4"><input type="text" value="{{ $val }}"
                                         class="form-control" name="menu[name][]"></div>
-                                <div class="col-lg-4"><input type="text" value="{{ old('menu')['canonical'][$key] }}"
+                                <div class="col-lg-4"><input type="text" value="{{ $menu['canonical'][$key] }}"
                                         class="form-control" name="menu[canonical][]"></div>
-                                <div class="col-lg-2"><input type="text" value="{{ old('menu')['order'][$key] }}"
+                                <div class="col-lg-2"><input type="text" value="{{ $menu['order'][$key] }}"
                                         class="form-control int text-right" name="menu[order][]">
                                 </div>
                                 <div class="col-lg-2">
                                     <div class="form-row text-center"><a class="delete-menu"><i class="fa fa-times"
                                                 aria-hidden="true"></i></a>
                                     </div>
+                                    <input type="text" class="hidden" value="{{ $menu['id'][$key] }}"
+                                        name="menu[id][]">
                                 </div>
                             </div>
                         @endforeach
