@@ -86,6 +86,17 @@ return [
             ]
         ],
         [
+            'title' => 'Quản lý slide/banner',
+            'icon' => 'fa fa-picture-o',
+            'name' => ['slide'],
+            'subModule' => [
+                [
+                    'title' => 'Cài đặt slide',
+                    'route' => 'slide.index' // chỉ dùng tên route
+                ],
+            ]
+        ],
+        [
             'title' => 'Cấu hình chung',
             'icon' => 'fa fa-cog',
             'name' => ['language', 'generate', 'system'],

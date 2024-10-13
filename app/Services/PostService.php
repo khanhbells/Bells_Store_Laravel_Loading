@@ -70,8 +70,8 @@ class PostService extends BaseService implements PostServiceInterface
         DB::beginTransaction();
 
         try {
-            // dd($request);
             $post = $this->createPost($request);
+
             if ($post->id > 0) {
                 $this->uploadLanguageForPost($post, $request, $languageId);
                 $this->updateCatalogueForpost($post, $request);

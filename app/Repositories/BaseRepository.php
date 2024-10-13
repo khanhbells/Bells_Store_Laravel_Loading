@@ -128,4 +128,12 @@ class BaseRepository implements BaseRepositoryInterface
     {
         return $this->model->updateOrInsert($condition, $payload);
     }
+    public function findByWhereHas(array $condition = [], string $relation = '', string $alias = '')
+    {
+        return $this->model->with('languages')->whereHas($relation, function ($query) use ($condition, $alias, $relation) {
+            foreach ($condition as $key => $val) {
+                $query->where($alias . '.' . $key, $val);
+            }
+        })->first();
+    }
 }

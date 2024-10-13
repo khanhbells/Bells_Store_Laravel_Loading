@@ -14,6 +14,7 @@ use App\Services\Interfaces\MenuServiceInterface as MenuService;
 use App\Repositories\Interfaces\MenuRepositoryInterface as MenuRepository;
 use App\Repositories\Interfaces\MenuCatalogueRepositoryInterface as MenuCatalogueRepository;
 use App\Services\Interfaces\MenuCatalogueServiceInterface as MenuCatalogueService;
+use App\Repositories\Interfaces\LanguageRepositoryInterface as LanguageRepository;
 
 //Neu muon view hieu duoc controller thi phai compact
 class MenuController extends Controller
@@ -23,16 +24,19 @@ class MenuController extends Controller
     protected $menuCatalogueRepository;
     protected $menuCatalogueService;
     protected $language;
+    protected $languageRepository;
     public function __construct(
         MenuService $menuService,
         MenuRepository $menuRepository,
         MenuCatalogueRepository $menuCatalogueRepository,
-        MenuCatalogueService $menuCatalogueService
+        MenuCatalogueService $menuCatalogueService,
+        LanguageRepository $languageRepository,
     ) {
         $this->menuService = $menuService;
         $this->menuRepository = $menuRepository;
         $this->menuCatalogueRepository = $menuCatalogueRepository;
         $this->menuCatalogueService = $menuCatalogueService;
+        $this->languageRepository = $languageRepository;
         $this->middleware(function ($request, $next) {
             $locale = app()->getLocale();
             $language = Language::where('canonical', $locale)->first();
@@ -84,10 +88,11 @@ class MenuController extends Controller
     }
     public function store(StoreMenuRequest $request)
     {
-        if ($this->menuService->create($request, $this->language)) {
-            return redirect()->route('menu.index')->with('success', 'Thêm mới bản ghi thành công');
+        if ($this->menuService->save($request, $this->language)) {
+            $menuCatalogueId = $request->input('menu_catalogue_id');
+            return redirect()->route('menu.edit', ['id' => $menuCatalogueId])->with('success', 'Cập nhật bản ghi thành công');
         }
-        return redirect()->route('menu.index')->with('error', 'Thêm mới bản ghi không thành công');
+        return redirect()->route('menu.index')->with('error', 'Cập nhật bản ghi không thành công');
     }
     public function edit($id)
     {
@@ -101,37 +106,57 @@ class MenuController extends Controller
                     $query->where('language_id', $language);
                 }
             ], ['order', 'DESC']);
+            $menuCatalogue = $this->menuCatalogueRepository->findById($id);
             $config = $this->configData();
             $template = 'backend.menu.menu.show';
-
             $config['seo'] = __('message.menu');
             $config['method'] = 'edit';
-            return view('backend.dashboard.layout', compact('template', 'config', 'menus', 'id'));
+            return view('backend.dashboard.layout', compact('template', 'config', 'menus', 'id', 'menuCatalogue'));
         } catch (\Illuminate\Auth\Access\AuthorizationException $e) {
             return redirect()->back()->with('error', 'Bạn không có quyền truy cập vào chức năng này.');
         }
     }
-    public function update($id, UpdateMenuRequest $request)
+
+    public function editMenu($id)
     {
-        if ($this->menuService->update($id, $request)) {
-            return redirect()->route('menu.index')->with('success', 'Cập nhật bản ghi thành công');
+        try {
+            $this->authorize('modules', 'menu.update');
+            $language = $this->language;
+            $menuCatalogues = $this->menuCatalogueRepository->all();
+            $menuCatalogue = $this->menuCatalogueRepository->findById($id);
+            $menus = $this->menuRepository->findByCondition([
+                ['menu_catalogue_id', '=', $id],
+                ['parent_id', '=', 0]
+            ], TRUE, [
+                'languages' => function ($query) use ($language) {
+                    $query->where('language_id', $language);
+                }
+            ], ['order', 'DESC']);
+            $menuList = $this->menuService->convertMenu($menus);
+            $config = $this->configData();
+            $config['seo'] = __('message.menu');
+            $config['method'] = 'update';
+            $template = 'backend.menu.menu.store';
+            return view('backend.dashboard.layout', compact('template', 'config', 'menuList', 'menuCatalogues', 'menuCatalogue', 'id'));
+        } catch (\Illuminate\Auth\Access\AuthorizationException $e) {
+            return redirect()->back()->with('error', 'Bạn không có quyền truy cập vào chức năng này.');
         }
-        return redirect()->route('menu.index')->with('error', 'Cập nhật bản ghi không thành công');
     }
     public function delete($id)
     {
         try {
             $this->authorize('modules', 'menu.destroy');
             $config['seo'] = __('message.menu');
-            $menu = $this->menuRepository->findById($id);
+            $menuCatalogue = $this->menuCatalogueRepository->findById($id);
             $template = 'backend.menu.menu.delete';
-            return view('backend.dashboard.layout', compact('template', 'menu', 'config'));
+            return view('backend.dashboard.layout', compact('template', 'menuCatalogue', 'config'));
         } catch (\Illuminate\Auth\Access\AuthorizationException $e) {
             return redirect()->back()->with('error', 'Bạn không có quyền truy cập vào chức năng này.');
         }
     }
     public function destroy($id)
     {
+
         if ($this->menuService->destroy($id)) {
             return redirect()->route('menu.index')->with('success', 'Xóa bản ghi thành công');
         }
@@ -164,6 +189,36 @@ class MenuController extends Controller
         }
         return redirect()->route('menu.edit', ['id' => $menu->menu_catalogue_id])->with('error', 'Thêm mới bản ghi không thành công');
     }
+
+    public function translate(int $languageId = 1, int $id = 0)
+    {
+        $language = $this->languageRepository->findById($languageId);
+        $menuCatalogue = $this->menuCatalogueRepository->findById($id);
+        $currentLanguage = $this->language;
+        $menus = $this->menuRepository->findByCondition([
+            ['menu_catalogue_id', '=', $id],
+        ], TRUE, [
+            'languages' => function ($query) use ($currentLanguage) {
+                $query->where('language_id', $currentLanguage);
+            }
+        ], ['lft', 'asc']);
+        $menus = buildMenu($this->menuService->findMenuItemTranslate($menus, $currentLanguage, $languageId));
+
+
+        $config['seo'] = __('message.menu');
+        $config['method'] = 'translate';
+        $template = 'backend.menu.menu.translate';
+        return view('backend.dashboard.layout', compact('template', 'config', 'language', 'menuCatalogue', 'menus', 'languageId'));
+    }
+
+    public function saveTranslate(Request $request, $languageId = 1)
+    {
+        if ($this->menuService->saveTranslateMenu($request, $languageId)) {
+            return redirect()->route('menu.index')->with('success', 'Cập nhật bản ghi thành công');
+        }
+        return redirect()->route('menu.index')->with('error', 'Cập nhật bản ghi không thành công');
+    }
+
     private function configData()
     {
         return [

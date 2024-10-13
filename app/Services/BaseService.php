@@ -67,7 +67,6 @@ class BaseService implements BaseServiceInterface
     public function createRouter($model, $request, $controllerName, $languageId)
     {
         $router = $this->formatRouterPayload($model, $request, $controllerName, $languageId);
-        // dd($router);
         $this->routerRepository->create($router);
     }
     public function updateRouter($model, $request, $controllerName, $languageId)

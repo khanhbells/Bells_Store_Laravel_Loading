@@ -150,6 +150,9 @@ return [
         'show' => [
             'title' => 'Danh sách menu',
         ],
+        'translate' => [
+            'title' => 'Tạo bản dịch {language} cho',
+        ],
 
     ],
     'generate' => [

@@ -19,6 +19,7 @@ use App\Http\Controllers\Backend\AttributeCatalogueController;
 use App\Http\Controllers\Backend\AttributeController;
 use App\Http\Controllers\Backend\SystemController;
 use App\Http\Controllers\Backend\MenuController;
+use App\Http\Controllers\Backend\SlideController;
 use App\Http\Controllers\Ajax\MenuController as AjaxMenuController;
 //USE CONTROLLER
 
@@ -75,7 +76,7 @@ Route::group(['middleware' => ['admin', 'locale', 'backend_default_locale']], fu
         Route::get('{id}/delete', [UserController::class, 'delete'])->where(['id' => '[0-9]+'])->name('user.delete');
         Route::post('{id}/destroy', [UserController::class, 'destroy'])->where(['id' => '[0-9]+'])->name('user.destroy');
     });
-    //Catalogue
+    //UserCatalogue
     Route::group(['prefix' => 'user/catalogue'], function () {
         Route::get('index', [UserCatalogueController::class, 'index'])->name('user.catalogue.index');
         Route::get('create', [UserCatalogueController::class, 'create'])->name('user.catalogue.create');
@@ -193,11 +194,24 @@ Route::group(['middleware' => ['admin', 'locale', 'backend_default_locale']], fu
         Route::get('create', [MenuController::class, 'create'])->name('menu.create');
         Route::post('store', [MenuController::class, 'store'])->name('menu.store');
         Route::get('{id}/edit', [MenuController::class, 'edit'])->where(['id' => '[0-9]+'])->name('menu.edit');
+        Route::get('{id}/editMenu', [MenuController::class, 'editMenu'])->where(['id' => '[0-9]+'])->name('menu.editMenu');
         Route::post('{id}/update', [MenuController::class, 'update'])->where(['id' => '[0-9]+'])->name('menu.update');
         Route::get('{id}/delete', [MenuController::class, 'delete'])->where(['id' => '[0-9]+'])->name('menu.delete');
         Route::post('{id}/destroy', [MenuController::class, 'destroy'])->where(['id' => '[0-9]+'])->name('menu.destroy');
         Route::get('{id}/children', [MenuController::class, 'children'])->where(['id' => '[0-9]+'])->name('menu.children');
         Route::post('{id}/saveChildren', [MenuController::class, 'saveChildren'])->where(['id' => '[0-9]+'])->name('menu.save.children');
+        Route::get('{languageId}/{id}/translate', [MenuController::class, 'translate'])->where(['languageId' => '[0-9]+', 'id' => '[0-9]+'])->name('menu.translate');
+        Route::post('{languageId}/saveTranslate', [MenuController::class, 'saveTranslate'])->where(['languageId' => '[0-9]+'])->name('menu.translate.save');
+    });
+    //Slide
+    Route::group(['prefix' => 'slide'], function () {
+        Route::get('index', [SlideController::class, 'index'])->name('slide.index');
+        Route::get('create', [SlideController::class, 'create'])->name('slide.create');
+        Route::post('store', [SlideController::class, 'store'])->name('slide.store');
+        Route::get('{id}/edit', [SlideController::class, 'edit'])->where(['id' => '[0-9]+'])->name('slide.edit');
+        Route::post('{id}/update', [SlideController::class, 'update'])->where(['id' => '[0-9]+'])->name('slide.update');
+        Route::get('{id}/delete', [SlideController::class, 'delete'])->where(['id' => '[0-9]+'])->name('slide.delete');
+        Route::post('{id}/destroy', [SlideController::class, 'destroy'])->where(['id' => '[0-9]+'])->name('slide.destroy');
     });
     //NEW MODULE
 });
