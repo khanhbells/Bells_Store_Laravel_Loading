@@ -13,17 +13,11 @@ class Slide extends Model
     use HasFactory, SoftDeletes, QueryScopes;
     protected $fillable = [
         'name',
-        'description',
         'keyword',
-        'image',
-        'icon',
-        'album',
+        'description',
+        'item',
+        'setting',
+        'short_code',
         'publish',
-        'order',
-        'user_id',
     ];
-    public function languages()
-    {
-        return $this->belongsToMany(Language::class, 'Slide_language', 'Slide_id', 'language_id')->withPivot('Slide_id', 'language_id', 'name', 'canonical')->withTimestamps();
-    }
 }

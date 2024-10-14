@@ -15,7 +15,7 @@ use Exception;
  * Class SlideService
  * @package App\Services
  */
-class SlideService implements SlideServiceInterface
+class SlideService extends BaseService implements SlideServiceInterface
 {
     protected $slideRepository;
     public function __construct(SlideRepository $slideRepository)
@@ -38,15 +38,14 @@ class SlideService implements SlideServiceInterface
         // dd($slides);
         return $slides;
     }
-    public function create(Request $request)
+    public function create(Request $request, $languageId)
     {
         DB::beginTransaction();
 
         try {
-            $payload = $request->except(['_token', 'send', 're_password']);
-            $payload['birthday'] = $this->convertBirthdayDate($payload['birthday']);
-            $payload['password'] = Hash::make($payload['password']);
-            // dd($payload);
+            $payload = $request->only('name', 'keyword', 'setting', 'short_code');
+            $payload['setting'] = $this->formatJson($request, 'setting');
+            $payload['item'] = json_encode($this->handleSlideItem($request, $languageId));
             $slide = $this->slideRepository->create($payload);
 
             DB::commit();
@@ -64,7 +63,6 @@ class SlideService implements SlideServiceInterface
 
         try {
             $payload = $request->except(['_token', 'send']);
-            $payload['birthday'] = $this->convertBirthdayDate($payload['birthday']);
             $slide = $this->slideRepository->update($id, $payload);
             // dd($payload);
             DB::commit();
@@ -90,45 +88,25 @@ class SlideService implements SlideServiceInterface
             return false;
         }
     }
-    public function updateStatus($post = [])
-    {
-        DB::beginTransaction();
-        try {
-            $payload[$post['field']] = (($post['value'] == 1) ? 2 : 1);
-            $slide = $this->slideRepository->update($post['modelId'], $payload);
-            DB::commit();
-            return true;
-        } catch (Exception $e) {
-            DB::rollBack();
-            echo $e->getMessage();
-            die();
-            return false;
-        }
-    }
-    public function updateStatusAll($post)
-    {
-        DB::beginTransaction();
-        try {
-            $payload[$post['field']] = $post['value'];
-            $flag = $this->slideRepository->updateByWhereIn('id', $post['id'], $payload);
-            DB::commit();
-            return true;
-        } catch (Exception $e) {
-            DB::rollBack();
-            echo $e->getMessage();
-            die();
-            return false;
-        }
-    }
 
-    private function convertBirthdayDate($birthday = '')
+    private function handleSlideItem($request, $languageId)
     {
-        $carbonDate = Carbon::createFromFormat('Y-m-d', $birthday);
-        $birthday = $carbonDate->format('Y-m-d H:i:s');
-        return $birthday;
+        $slide = $request->input('slide');
+        $temp = [];
+        foreach ($slide['image'] as $key => $val) {
+            $valReplace = str_replace('/laravelversion1.com/public', '', $val);
+            $temp[$languageId][] = [
+                'name' => $valReplace,
+                'description' => $slide['description'][$key],
+                'canonical' => $slide['canonical'][$key],
+                'alt' => $slide['alt'][$key],
+                'window' => (isset($slide['window'][$key])) ? $slide['window'][$key] : '',
+            ];
+        }
+        return $temp;
     }
     private function paginateselect()
     {
-        return ['id', 'email', 'phone', 'address', 'name', 'publish', 'slide_catalogue_id', 'image'];
+        return ['id', 'name', 'keyword', 'item', 'publish'];
     }
 }

@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Backend;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\StoreSlideRequest;
 use App\Http\Requests\UpdateSlideRequest;
+use App\Models\Language;
 use Illuminate\Http\Request;
 use App\Models\SlideCatalogue;
 // use App\Models\Slide;
@@ -18,8 +19,15 @@ class SlideController extends Controller
     protected $slideService;
     protected $provinceRepository;
     protected $slideRepository;
+    protected $language;
     public function __construct(SlideService $slideService, ProvinceRepository $provinceRepository, SlideRepository $slideRepository)
     {
+        $this->middleware(function ($request, $next) {
+            $locale = app()->getLocale();
+            $language = Language::where('canonical', $locale)->first();
+            $this->language = $language->id;
+            return $next($request);
+        });
         $this->slideService = $slideService;
         $this->provinceRepository = $provinceRepository;
         $this->slideRepository = $slideRepository;
@@ -28,8 +36,6 @@ class SlideController extends Controller
     {
         try {
             $this->authorize('modules', 'slide.index');
-            echo 123;
-            die();
             // dd($request);
             $slides = $this->slideService->paginate($request);
             // dd($slides); //hien thi thanh vien
@@ -44,7 +50,7 @@ class SlideController extends Controller
                 ],
                 'model' => 'slide'
             ];
-            $config['seo'] = config('app.slide');
+            $config['seo'] = __('message.slide');
             // dd($config['seo']);
             $template = 'backend.slide.slide.index';
             return view('backend.dashboard.layout', compact('template', 'config', 'slides'));
@@ -57,21 +63,20 @@ class SlideController extends Controller
         try {
             $this->authorize('modules', 'slide.create');
             $provinces = $this->provinceRepository->all();
-            $slideCatalogues = SlideCatalogue::where('publish', 2)->get(); // Lấy danh sách nhóm thành viên đã được publish
             $config = $this->configData();
-            $config['seo'] = config('app.slide');
+            $config['seo'] = __('message.slide');
             $config['method'] = 'create';
             $template = 'backend.slide.slide.store';
 
             // Truyền slideCatalogues vào view
-            return view('backend.dashboard.layout', compact('template', 'config', 'provinces', 'slideCatalogues'));
+            return view('backend.dashboard.layout', compact('template', 'config', 'provinces'));
         } catch (\Illuminate\Auth\Access\AuthorizationException $e) {
             return redirect()->back()->with('error', 'Bạn không có quyền truy cập vào chức năng này.');
         }
     }
     public function store(StoreSlideRequest $request)
     {
-        if ($this->slideService->create($request)) {
+        if ($this->slideService->create($request, $this->language)) {
             return redirect()->route('slide.index')->with('success', 'Thêm mới bản ghi thành công');
         }
         return redirect()->route('slide.index')->with('error', 'Thêm mới bản ghi không thành công');
@@ -83,13 +88,12 @@ class SlideController extends Controller
             $slide = $this->slideRepository->findById($id);
             // dd($slide);
             $provinces = $this->provinceRepository->all();
-            $slideCatalogues = SlideCatalogue::where('publish', 2)->get();
             // dd($provinces);
             // dd($province);
             $config = $this->configData();
             $template = 'backend.slide.slide.store';
 
-            $config['seo'] = config('app.slide');
+            $config['seo'] = __('message.slide');
             $config['method'] = 'edit';
             return view('backend.dashboard.layout', compact('template', 'config', 'provinces', 'slide', 'slideCatalogues'));
         } catch (\Illuminate\Auth\Access\AuthorizationException $e) {
@@ -107,7 +111,7 @@ class SlideController extends Controller
     {
         try {
             $this->authorize('modules', 'slide.destroy');
-            $config['seo'] = config('app.slide');
+            $config['seo'] = __('message.slide');
             $slide = $this->slideRepository->findById($id);
             $template = 'backend.slide.slide.delete';
             return view('backend.dashboard.layout', compact('template', 'slide', 'config'));
@@ -130,7 +134,7 @@ class SlideController extends Controller
                 'https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js',
                 'backend/library/location.js',
                 'backend/plugin/ckfinder_2/ckfinder.js',
-                'backend/library/finder.js',
+                'backend/library/slide.js',
             ],
 
         ];

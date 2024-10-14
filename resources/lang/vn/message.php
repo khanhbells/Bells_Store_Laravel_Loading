@@ -155,6 +155,22 @@ return [
         ],
 
     ],
+    'slide' => [
+        'index' => [
+            'title' => 'Quản lý slide',
+            'table' => 'Danh sách slide',
+        ],
+        'create' => [
+            'title' => 'Thêm slide mới',
+        ],
+        'delete' => [
+            'title' => 'Xoá slide',
+        ],
+        'update' => [
+            'title' => 'Sửa slide',
+        ],
+
+    ],
     'generate' => [
         'index' => [
             'title' => 'Quản lý module',

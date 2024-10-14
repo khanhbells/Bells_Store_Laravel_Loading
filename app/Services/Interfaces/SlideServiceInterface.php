@@ -11,7 +11,7 @@ use Illuminate\Http\Request;
 interface SlideServiceInterface
 {
     public function paginate($request);
-    public function create(Request $request);
+    public function create(Request $request, $languageId);
     public function update($id, Request $request);
     public function destroy($id);
 }

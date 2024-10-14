@@ -7,11 +7,11 @@
         <ul class="nav metismenu" id="side-menu">
             <li class="nav-header">
                 <div class="dropdown profile-element"> <span>
-                        <img alt="image" class="img-circle" src="img/profile_small.jpg" />
+                        <img alt="image" class="img-circle" src="{{ asset('backend/img/profile_small.jpg') }}" />
                     </span>
                     <a data-toggle="dropdown" class="dropdown-toggle" href="#">
-                        <span class="clear"> <span class="block m-t-xs"> <strong class="font-bold">David
-                                    Williams</strong>
+                        <span class="clear"> <span class="block m-t-xs"> <strong
+                                    class="font-bold">{{ $auth->name }}</strong>
                             </span> <span class="text-muted text-xs block">Art Director <b class="caret"></b></span>
                         </span> </a>
                     <ul class="dropdown-menu animated fadeInRight m-t-xs">
@@ -23,7 +23,7 @@
                     </ul>
                 </div>
                 <div class="logo-element">
-                    IN+
+                    BELLS
                 </div>
             </li>
             @foreach (__('sidebar.module') as $key => $val)
