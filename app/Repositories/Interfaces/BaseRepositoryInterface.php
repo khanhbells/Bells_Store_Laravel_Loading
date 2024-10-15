@@ -31,5 +31,5 @@ interface BaseRepositoryInterface
     public function forceDeleteByCondition(array $condition = []);
     public function createBatch(array $payload = []);
     public function updateOrInsert(array $payload = [], array $condition = []);
-    public function findByWhereHas(array $condition = [], string $relation = '', string $alias = '');
+    public function findByWhereHas(array $condition = [], string $relation = '', string $alias = '', $flag = false, $redirectWhere = false);
 }

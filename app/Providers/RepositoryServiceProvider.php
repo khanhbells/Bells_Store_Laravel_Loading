@@ -66,6 +66,9 @@ class RepositoryServiceProvider extends ServiceProvider
         //Slide
         'App\Repositories\Interfaces\SlideRepositoryInterface' =>
         'App\Repositories\SlideRepository',
+        //Widget
+        'App\Repositories\Interfaces\WidgetRepositoryInterface' =>
+        'App\Repositories\WidgetRepository',
     ];
     /**
      * Register services.

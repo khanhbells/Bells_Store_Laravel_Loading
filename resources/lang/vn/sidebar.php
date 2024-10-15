@@ -97,21 +97,25 @@ return [
             ]
         ],
         [
-            'title' => 'Cấu hình chung',
+            'title' => 'Cài đặt chung',
             'icon' => 'fa fa-cog',
-            'name' => ['language', 'generate', 'system'],
+            'name' => ['language', 'generate', 'system', 'widget'],
             'subModule' => [
                 [
                     'title' => 'Ngôn ngữ',
                     'route' => 'language.index' // chỉ dùng tên route
                 ],
                 [
-                    'title' => 'Chức năng',
+                    'title' => 'Tự sáng tạo',
                     'route' => 'generate.index' // chỉ dùng tên route
                 ],
                 [
                     'title' => 'Cấu hình hệ thống',
                     'route' => 'system.index' // chỉ dùng tên route
+                ],
+                [
+                    'title' => 'Cấu hình Widget',
+                    'route' => 'widget.index' // chỉ dùng tên route
                 ],
             ]
         ]

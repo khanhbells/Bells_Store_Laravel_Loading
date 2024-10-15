@@ -171,6 +171,22 @@ return [
         ],
 
     ],
+    'widget' => [
+        'index' => [
+            'title' => 'Quản lý widget',
+            'table' => 'Danh sách widget',
+        ],
+        'create' => [
+            'title' => 'Thêm widget mới',
+        ],
+        'delete' => [
+            'title' => 'Xoá widget',
+        ],
+        'update' => [
+            'title' => 'Sửa widget',
+        ],
+
+    ],
     'generate' => [
         'index' => [
             'title' => 'Quản lý module',

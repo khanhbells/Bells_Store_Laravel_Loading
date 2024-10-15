@@ -6,7 +6,7 @@
         </div>
     </div>
     @php
-        $slides = old('slide', $slides ?? null);
+        $slides = old('slide', $slideItem ?? null);
         $i = 1;
     @endphp
     <div class="ibox-content">
@@ -17,7 +17,8 @@
             @if (isset($slides) && is_array($slides))
                 @foreach ($slides['image'] as $key => $val)
                     @php
-                        $image = $val;
+                        $valReplace = str_replace('/laravelversion1.com/public/', '', $val);
+                        $image = $valReplace;
                         $description = $slides['description'][$key];
                         $canonical = $slides['canonical'][$key];
                         $name = $slides['name'][$key];
@@ -28,9 +29,11 @@
                         <div class="slide-item mb20">
                             <div class="row custom-row">
                                 <div class="col-lg-3">
-                                    <span class="slide-image img-cover"><img src="{{ $val }}" alt="">
+                                    <span class="slide-image img-cover"><img src="{{ asset($valReplace) }}"
+                                            alt="">
                                         <input type="hidden" name="slide[image][]" value="{{ $val }}">
                                         <button class="delete-image"><i class="fa fa-trash"></i></button>
+                                        <button class="choose-image-text">Đổi ảnh</button>
                                     </span>
                                 </div>
                                 <div class="col-lg-9">
@@ -57,12 +60,13 @@
                                                             placeholder="URL">
                                                         <div class="overlay">
                                                             <div class="uk-flex uk-flex-middle">
-                                                                <label for="input_{{ $key }}">Mở trong tab
+                                                                <label for="input_tab-{{ $i }}">Mở trong tab
                                                                     mới</label>
-                                                                <input type="checkbox" name="slide[window][]"
+                                                                <input type="checkbox"
+                                                                    name="slide[window][{{ $key }}]"
                                                                     value="_blank"
-                                                                    {{ $window == '_blank' ? 'checked' : '' }}
-                                                                    id="input_{{ $key }}">
+                                                                    {{ old('slide.window.' . $key, $window) == '_blank' ? 'checked' : '' }}
+                                                                    id="input_tab-{{ $i }}">
                                                             </div>
                                                         </div>
                                                     </div>

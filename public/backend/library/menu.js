@@ -2,6 +2,8 @@
     "use strict";
     var HT = {};
     var _token = $('meta[name="csrf-token"]').attr('content');
+    var typingTimer;
+    var doneTyingInterval = 1000;
 
     //Tao menucatalogue
     HT.createMenuCatalogue = () => {
@@ -220,8 +222,7 @@
     }
 
     HT.searchMenu = () => {
-        let typingTimer;
-        let doneTyingInterval = 1000;
+
         $(document).on('keyup', '.search-menu', function (e) {
             let _this = $(this)
             let keyword = _this.val()

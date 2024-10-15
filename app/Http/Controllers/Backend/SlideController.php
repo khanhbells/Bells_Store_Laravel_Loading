@@ -38,11 +38,13 @@ class SlideController extends Controller
             $this->authorize('modules', 'slide.index');
             // dd($request);
             $slides = $this->slideService->paginate($request);
-            // dd($slides); //hien thi thanh vien
+            $languageId = $this->language;
+            // dd($slides);
             $config = [
                 'js' => [
                     'backend/js/plugins/switchery/switchery.js',
-                    'https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js'
+                    'https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js',
+                    'backend/library/slide.js',
                 ],
                 'css' => [
                     'backend/css/plugins/switchery/switchery.css',
@@ -53,7 +55,7 @@ class SlideController extends Controller
             $config['seo'] = __('message.slide');
             // dd($config['seo']);
             $template = 'backend.slide.slide.index';
-            return view('backend.dashboard.layout', compact('template', 'config', 'slides'));
+            return view('backend.dashboard.layout', compact('template', 'config', 'slides', 'languageId'));
         } catch (\Illuminate\Auth\Access\AuthorizationException $e) {
             return redirect()->back()->with('error', 'Bạn không có quyền truy cập vào chức năng này.');
         }
@@ -66,6 +68,7 @@ class SlideController extends Controller
             $config = $this->configData();
             $config['seo'] = __('message.slide');
             $config['method'] = 'create';
+            $config['checked'] = true;
             $template = 'backend.slide.slide.store';
 
             // Truyền slideCatalogues vào view
@@ -87,22 +90,21 @@ class SlideController extends Controller
             $this->authorize('modules', 'slide.update');
             $slide = $this->slideRepository->findById($id);
             // dd($slide);
-            $provinces = $this->provinceRepository->all();
-            // dd($provinces);
-            // dd($province);
+            $slideItem = $this->slideService->convertSlideArray($slide->item[$this->language]);
             $config = $this->configData();
+            // dd($slide->setting['navigate']);
             $template = 'backend.slide.slide.store';
-
             $config['seo'] = __('message.slide');
             $config['method'] = 'edit';
-            return view('backend.dashboard.layout', compact('template', 'config', 'provinces', 'slide', 'slideCatalogues'));
+            $config['checked'] = ($slide->setting['arrow'] ?? null) === 'accept';
+            return view('backend.dashboard.layout', compact('template', 'config', 'slide', 'slideItem'));
         } catch (\Illuminate\Auth\Access\AuthorizationException $e) {
             return redirect()->back()->with('error', 'Bạn không có quyền truy cập vào chức năng này.');
         }
     }
     public function update($id, UpdateSlideRequest $request)
     {
-        if ($this->slideService->update($id, $request)) {
+        if ($this->slideService->update($id, $request, $this->language)) {
             return redirect()->route('slide.index')->with('success', 'Cập nhật bản ghi thành công');
         }
         return redirect()->route('slide.index')->with('error', 'Cập nhật bản ghi không thành công');

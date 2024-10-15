@@ -86,6 +86,40 @@ class DashboardController extends Controller
             'relations' => [],
         ];
     }
+    public function findModelObject(Request $request)
+    {
+        $get = $request->input();
+        $languageTable = Str::snake($get['model']) . '_language';
+        $language = $this->language;
+        $class = $this->loadClassInterface($get['model'], 'Repository');
+        $object = $class->findByWhereHas(
+            [
+                [
+                    'name',
+                    'LIKE',
+                    '%' . $get['keyword'] . '%'
+                ],
+                [
+                    'language_id',
+                    '=',
+                    $language
+                ]
+            ],
+            'languages',
+            $languageTable,
+            TRUE,
+            TRUE
+        );
+        return response()->json($object);
+    }
+    private function loadClassInterface(string $model = '', $interface = 'Repository')
+    {
+        $serviceInterfaceNamespage = '\App\Repositories\\' . ucfirst($model) . 'Repository';
+        if (class_exists($serviceInterfaceNamespage)) {
+            $serviceInstance = app($serviceInterfaceNamespage);
+        }
+        return $serviceInstance;
+    }
 }
 // array:2 [ // app\Http\Controllers\Ajax\LocationController.php:22
 //     "data" => array:1 [

@@ -8,22 +8,16 @@ use Illuminate\Database\Eloquent\SoftDeletes;
 use App\Traits\QueryScopes;
 
 
-class Slide extends Model
+class Widget extends Model
 {
     use HasFactory, SoftDeletes, QueryScopes;
     protected $fillable = [
         'name',
         'keyword',
         'description',
-        'item',
-        'setting',
-        'short_code',
         'publish',
     ];
 
-    protected $table = 'slides';
-    protected $casts = [
-        'item' => 'json',
-        'setting' => 'json'
-    ];
+    protected $table = 'widgets';
+    protected $casts = [];
 }

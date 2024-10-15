@@ -18,6 +18,8 @@
         }
     }
     HT.sortui = () => {
+        $(".sortable").sortable();
+        $(".sortable").disableSelection();
         $("#sortable").sortable();
         $("#sortable").disableSelection();
     }
