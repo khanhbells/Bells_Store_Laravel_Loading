@@ -13,7 +13,7 @@ class StoreWidgetRequest extends FormRequest
      */
     public function authorize()
     {
-        return false;
+        return true;
     }
 
     /**
@@ -24,7 +24,19 @@ class StoreWidgetRequest extends FormRequest
     public function rules()
     {
         return [
-            //
+            'name' => 'required',
+            'keyword' => 'required|unique:widgets',
+            'short_code' => 'required|unique:widgets',
+        ];
+    }
+    public function messages(): array
+    {
+        return [
+            'name.required' => 'Bạn chưa nhập tên của widget!',
+            'keyword.required' => 'Bạn chưa nhập từ khóa của widget!',
+            'keyword.unique' => 'Từ khóa đã tồn tại hãy nhập từ khóa khác!',
+            'short_code.required' => 'Bạn chưa nhập vào shortcode của widget!',
+            'short_code.unique' => 'ShortCode đã tồn tại hãy nhập ShortCode khác!',
         ];
     }
 }

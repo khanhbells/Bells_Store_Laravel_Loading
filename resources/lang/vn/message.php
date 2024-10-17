@@ -178,12 +178,30 @@ return [
         ],
         'create' => [
             'title' => 'Thêm widget mới',
+            'translate' => 'Tạo bản dịch {language} cho Widget',
         ],
         'delete' => [
             'title' => 'Xoá widget',
         ],
         'update' => [
             'title' => 'Sửa widget',
+        ],
+
+    ],
+    'promotion' => [
+        'index' => [
+            'title' => 'Quản lý khuyến mại',
+            'table' => 'Danh sách khuyến mại',
+        ],
+        'create' => [
+            'title' => 'Thêm khuyến mại mới',
+            'translate' => 'Tạo bản dịch {language} cho khuyến mại',
+        ],
+        'delete' => [
+            'title' => 'Xoá khuyến mại',
+        ],
+        'update' => [
+            'title' => 'Sửa khuyến mại',
         ],
 
     ],

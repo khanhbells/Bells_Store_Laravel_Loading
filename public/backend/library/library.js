@@ -4,6 +4,7 @@
     var _token = $('meta[name="csrf-token"]').attr('content');
 
 
+
     HT.switchery = () => {
         $('.js-switch').each(function () {
             // let _this = $(this)
@@ -175,20 +176,31 @@
         str = str.slice(0, str.length - 1);
         return str;
     }
-    HT.niceSelect = () => {
-        $('.niceSelect').niceSelect();
+    HT.setupDatepicker = () => {
+        $('.datepicker').datetimepicker({
+            // minDate: '-1970/01/2',
+            // maxDate: '+1970/01/2',
+            timepicker: true,
+            format: 'd/m/Y H:i',
+            value: new Date(),
+            minDate: new Date()
+        })
     }
 
+
+
+
+
     $(document).ready(function () {
-        HT.switchery();
-        HT.select2();
-        HT.changeStatus();
-        HT.checkAll();
-        HT.checkBoxItem();
-        HT.changeStatusAll();
-        HT.sortui();
-        HT.int();
-        HT.niceSelect();
+        HT.switchery()
+        HT.select2()
+        HT.changeStatus()
+        HT.checkAll()
+        HT.checkBoxItem()
+        HT.changeStatusAll()
+        HT.sortui()
+        HT.int()
+        HT.setupDatepicker()
 
     });
 

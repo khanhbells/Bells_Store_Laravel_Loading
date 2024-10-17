@@ -103,11 +103,19 @@ class BaseRepository implements BaseRepositoryInterface
         return $this->model->select($column)->with($relation)->findOrFail($modelId);
     }
 
-    public function findByCondition($condition = [], $flag = false, $relation = [], array $orderBy = ['id', 'desc'])
-    {
+    public function findByCondition(
+        $condition = [],
+        $flag = false,
+        $relation = [],
+        array $orderBy = ['id', 'desc'],
+        array $param = []
+    ) {
         $query = $this->model->newQuery();
         foreach ($condition as $key => $val) {
             $query->where($val[0], $val[1], $val[2]);
+        }
+        if (isset($param['whereIn'])) {
+            $query->whereIn($param['whereInField'], $param['whereIn']);
         }
         $query->with($relation);
         $query->orderBy($orderBy[0], $orderBy[1]);
@@ -128,20 +136,25 @@ class BaseRepository implements BaseRepositoryInterface
     {
         return $this->model->updateOrInsert($condition, $payload);
     }
-    public function findByWhereHas(array $condition = [], string $relation = '', string $alias = '', $flag = false, $redirectWhere = false)
+    public function findByWhereHas(array $condition = [], string $relation = '', string $alias = '')
     {
-        $query = $this->model->with($relation);
-        $query->whereHas($relation, function ($query) use ($condition, $alias, $relation, $redirectWhere) {
-            if ($redirectWhere == true) {
-                foreach ($condition as $key => $val) {
-                    $query->where($alias . '.' . $val[0], $val[1], $val[2]);
-                }
-            } else {
-                foreach ($condition as $key => $val) {
-                    $query->where($alias . '.' . $key, $val);
-                }
+        return $this->model->with('languages')->whereHas($relation, function ($query) use ($condition, $alias, $relation) {
+            foreach ($condition as $key => $val) {
+                $query->where($alias . '.' . $key, $val);
             }
-        });
-        return ($flag == false) ? $query->first() : $query->get();
+        })->first();
+    }
+
+    public function findWidgetItem(array $condition = [], int $language_id = 1, string $alias = '')
+    {
+        return $this->model->with([
+            'languages' => function ($query) use ($language_id) {
+                $query->where('language_id', $language_id);
+            }
+        ])->whereHas('languages', function ($query) use ($condition, $alias) {
+            foreach ($condition as $key => $val) {
+                $query->where($alias . '.' . $val[0], $val[1], $val[2]);
+            }
+        })->get();
     }
 }

@@ -89,36 +89,20 @@ class DashboardController extends Controller
     public function findModelObject(Request $request)
     {
         $get = $request->input();
-        $languageTable = Str::snake($get['model']) . '_language';
-        $language = $this->language;
-        $class = $this->loadClassInterface($get['model'], 'Repository');
-        $object = $class->findByWhereHas(
+        $alias = Str::snake($get['model']) . '_language';
+        $class = loadClass($get['model']);
+        $object = $class->findWidgetItem(
             [
                 [
                     'name',
                     'LIKE',
                     '%' . $get['keyword'] . '%'
-                ],
-                [
-                    'language_id',
-                    '=',
-                    $language
                 ]
             ],
-            'languages',
-            $languageTable,
-            TRUE,
-            TRUE
+            $this->language,
+            $alias
         );
         return response()->json($object);
-    }
-    private function loadClassInterface(string $model = '', $interface = 'Repository')
-    {
-        $serviceInterfaceNamespage = '\App\Repositories\\' . ucfirst($model) . 'Repository';
-        if (class_exists($serviceInterfaceNamespage)) {
-            $serviceInstance = app($serviceInterfaceNamespage);
-        }
-        return $serviceInstance;
     }
 }
 // array:2 [ // app\Http\Controllers\Ajax\LocationController.php:22

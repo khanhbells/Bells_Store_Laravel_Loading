@@ -11,13 +11,12 @@ use App\Traits\QueryScopes;
 class Widget extends Model
 {
     use HasFactory, SoftDeletes, QueryScopes;
-    protected $fillable = [
-        'name',
-        'keyword',
-        'description',
-        'publish',
-    ];
+    protected $guarded = [];
 
     protected $table = 'widgets';
-    protected $casts = [];
+    protected $casts = [
+        'model_id' => 'json',
+        'album' => 'json',
+        'description' => 'json'
+    ];
 }

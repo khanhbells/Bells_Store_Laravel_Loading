@@ -18,11 +18,12 @@
                         @include('backend.dashboard.component.content', [
                             'offTitle' => true,
                             'offContent' => true,
+                            'model' => $widget ?? null,
                         ])
 
                     </div>
                 </div>
-                @include('backend.dashboard.component.album')
+                @include('backend.dashboard.component.album', ['model' => $widget ?? null])
                 <div class="ibox">
                     <div class="ibox-title">
                         <h5>Cấu hình nội dung của widget</h5>
@@ -32,38 +33,51 @@
                         @foreach (__('module.model') as $key => $val)
                             <div class="model-item uk-flex uk-flex-middle">
                                 <input type="radio" id="{{ $key }}" class="input-radio"
-                                    value="{{ $key }}" name="model">
+                                    value="{{ $key }}" name="model"
+                                    {{ old('model', $widget->model ?? null) == $key ? 'checked' : '' }}>
                                 <label for="{{ $key }}">{{ $val }}</label>
                             </div>
                         @endforeach
                         <div class="search-model-box">
                             <i class="fa fa-search"></i>
                             <input type="text" class="form-control search-model">
-                            <div class="ajax-search-result">
-
-                            </div>
+                            <div class="ajax-search-result"></div>
                         </div>
-                        <div class="search-model-result hidden">
-                            @for ($i = 0; $i < 10; $i++)
-                                <div class="search-result-item">
-                                    <div class="uk-flex uk-flex-middle uk-flex-space-between">
-                                        <div class="uk-flex uk-flex-middle">
-                                            <span class="image img-cover"><img
-                                                    src="{{ asset('backend/img/rails_logo.png') }}"
-                                                    alt=""></span>
-                                            <span class="name">BELLS STORE</span>
-                                        </div>
-                                        <div class="deleted">
-                                            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="24"
-                                                height="24">
-                                                <path fill="none" d="M0 0h24v24H0z" />
-                                                <path
-                                                    d="M18.3 5.71a1 1 0 00-1.42 0L12 10.59 7.12 5.7a1 1 0 00-1.42 1.42l4.88 4.88-4.88 4.88a1 1 0 001.42 1.42L12 13.41l4.88 4.88a1 1 0 001.42-1.42l-4.88-4.88 4.88-4.88a1 1 0 000-1.42z" />
-                                            </svg>
+                        @php
+                            $modelItem = old('modelItem', $widgetItem ?? null);
+                        @endphp
+                        <div class="search-model-result">
+                            @if (!is_null($modelItem))
+                                @foreach ($modelItem['id'] as $key => $val)
+                                    <div class="search-result-item" id="model-{{ $val }}"
+                                        data-modelid="{{ $val }}">
+                                        <div class="uk-flex uk-flex-middle uk-flex-space-between">
+                                            <div class="uk-flex uk-flex-middle">
+                                                <span class="image img-cover"><img
+                                                        src="{{ asset($modelItem['image'][$key]) }}"
+                                                        alt=""></span>
+                                                <span class="name">{{ $modelItem['name'][$key] }}</span>
+                                                <div class="hidden">
+                                                    <input type="text" name="modelItem[id][]"
+                                                        value="{{ $val }}">
+                                                    <input type="text" name="modelItem[name][]"
+                                                        value="{{ $modelItem['name'][$key] }}">
+                                                    <input type="text" name="modelItem[image][]"
+                                                        value="{{ $modelItem['image'][$key] }}">
+                                                </div>
+                                            </div>
+                                            <div class="deleted">
+                                                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"
+                                                    width="24" height="24">
+                                                    <path fill="none" d="M0 0h24v24H0z" />
+                                                    <path
+                                                        d="M18.3 5.71a1 1 0 00-1.42 0L12 10.59 7.12 5.7a1 1 0 00-1.42 1.42l4.88 4.88-4.88 4.88a1 1 0 001.42 1.42L12 13.41l4.88 4.88a1 1 0 001.42-1.42l-4.88-4.88 4.88-4.88a1 1 0 000-1.42z" />
+                                                </svg>
+                                            </div>
                                         </div>
                                     </div>
-                                </div>
-                            @endfor
+                                @endforeach
+                            @endif
                         </div>
                     </div>
                 </div>
@@ -79,8 +93,5 @@
     </div>
 </form>
 <script>
-    var province_id = '{{ isset($widget->province_id) ? $widget->province_id : old('province_id') }}'
-    var district_id = '{{ isset($widget->district_id) ? $widget->district_id : old('district_id') }}'
-    var ward_id = '{{ isset($widget->ward_id) ? $widget->ward_id : old('ward_id') }}'
-    var getLocation = "{{ url('ajax/location/getLocation') }}";
+    var baseUrl = "{{ asset('') }}"; // Đây sẽ là đường dẫn đến thư mục gốc của ứng dụng
 </script>

@@ -132,3 +132,34 @@ if (!function_exists('buildMenu')) {
         return $output;
     }
 }
+if (!function_exists('loadClass')) {
+    function loadClass(string $model = '', $folder = 'Repositories', $interface = 'Repository')
+    {
+        $serviceInterfaceNamespage = '\App\\' . $folder . '\\' . ucfirst($model) . 'Repository';
+        if (class_exists($serviceInterfaceNamespage)) {
+            $serviceInstance = app($serviceInterfaceNamespage);
+        }
+        return $serviceInstance;
+    }
+}
+if (!function_exists('convertArrayByKey')) {
+    function convertArrayByKey($object = null, $fields = [])
+    {
+        $temp = [];
+        foreach ($object as $key => $val) {
+            foreach ($fields as $field) {
+                if (is_array($object)) {
+                    $temp[$field][] = $val[$field];
+                } else {
+                    $extract = explode('.', $field);
+                    if (count($extract) == 2) {
+                        $temp[$extract[0]][] = $val->{$extract[1]}->first()->pivot->{$extract[0]};
+                    } else {
+                        $temp[$field][] = $val->{$field};
+                    }
+                }
+            }
+        }
+        return $temp;
+    }
+}

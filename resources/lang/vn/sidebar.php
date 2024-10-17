@@ -43,6 +43,22 @@ return [
                 ],
             ]
         ],
+        [
+            'title' => 'Quản lý marketing',
+            'icon' => 'fa fa-credit-card',
+            'name' => ['promotion'],
+            'subModule' => [
+                [
+                    'title' => 'Khuyến mại',
+                    'route' => 'promotion.index' // chỉ dùng tên route
+                ],
+                [
+                    'title' => 'Mã giảm giá',
+                    'route' => 'product.catalogue.index' // chỉ dùng tên route
+                ],
+            ]
+        ],
+        // promotion coupon
         // [
         //     'title' => 'Quản lý hình ảnh',
         //     'icon' => 'fa fa-picture-o',

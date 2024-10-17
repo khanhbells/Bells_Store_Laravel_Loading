@@ -15,7 +15,7 @@ use Exception;
  * Class WidgetService
  * @package App\Services
  */
-class WidgetService implements WidgetServiceInterface
+class WidgetService extends BaseService implements WidgetServiceInterface
 {
     protected $widgetRepository;
     public function __construct(WidgetRepository $widgetRepository)
@@ -38,16 +38,18 @@ class WidgetService implements WidgetServiceInterface
         // dd($widgets);
         return $widgets;
     }
-    public function create(Request $request)
+    public function create(Request $request, $languageId)
     {
         DB::beginTransaction();
 
         try {
-            $payload = $request->except(['_token', 'send', 're_password']);
-            $payload['birthday'] = $this->convertBirthdayDate($payload['birthday']);
-            $payload['password'] = Hash::make($payload['password']);
-            // dd($payload);
-            $widget = $this->widgetRepository->create($payload);
+            $payload = $request->only('name', 'keyword', 'short_code', 'description', 'album', 'model');
+            $payload['model_id'] = $request->input('modelItem.id');
+            $payload['album'] = $this->formatAlbum($payload['album']);
+            $payload['description'] = [
+                $languageId => $payload['description']
+            ];
+            $this->widgetRepository->create($payload);
 
             DB::commit();
             return true;
@@ -58,13 +60,17 @@ class WidgetService implements WidgetServiceInterface
             return false;
         }
     }
-    public function update($id, Request $request)
+    public function update($id, Request $request, $languageId)
     {
         DB::beginTransaction();
 
         try {
-            $payload = $request->except(['_token', 'send']);
-            $payload['birthday'] = $this->convertBirthdayDate($payload['birthday']);
+            $payload = $request->only('name', 'keyword', 'short_code', 'description', 'album', 'model');
+            $payload['model_id'] = $request->input('modelItem.id');
+            $payload['album'] = $this->formatAlbum($payload['album']);
+            $payload['description'] = [
+                $languageId => $payload['description']
+            ];
             $widget = $this->widgetRepository->update($id, $payload);
             // dd($payload);
             DB::commit();
@@ -90,6 +96,28 @@ class WidgetService implements WidgetServiceInterface
             return false;
         }
     }
+
+    public function saveTranslate($request)
+    {
+        DB::beginTransaction();
+        try {
+            $temp = [];
+            $languageId = $request->input('translateId');
+            $widget = $this->widgetRepository->findById($request->input('widgetId'));
+            $temp = $widget->description;
+            $temp[$languageId] = $request->input('translate_description');
+            $payload['description'] = $temp;
+            $this->widgetRepository->update($widget->id, $payload);
+            DB::commit();
+            return true;
+        } catch (Exception $e) {
+            DB::rollBack();
+            echo $e->getMessage();
+            die();
+            return false;
+        }
+    }
+
     public function updateStatus($post = [])
     {
         DB::beginTransaction();
@@ -129,6 +157,6 @@ class WidgetService implements WidgetServiceInterface
     }
     private function paginateselect()
     {
-        return ['id', 'email', 'phone', 'address', 'name', 'publish', 'widget_catalogue_id', 'image'];
+        return ['id', 'name', 'keyword', 'short_code', 'publish', 'description'];
     }
 }

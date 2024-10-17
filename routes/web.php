@@ -21,6 +21,7 @@ use App\Http\Controllers\Backend\SystemController;
 use App\Http\Controllers\Backend\MenuController;
 use App\Http\Controllers\Backend\SlideController;
 use App\Http\Controllers\Backend\WidgetController;
+use App\Http\Controllers\Backend\PromotionController;
 use App\Http\Controllers\Ajax\MenuController as AjaxMenuController;
 use App\Http\Controllers\Ajax\SlideController as AjaxSlideController;
 //USE CONTROLLER
@@ -217,7 +218,7 @@ Route::group(['middleware' => ['admin', 'locale', 'backend_default_locale']], fu
         Route::get('{id}/delete', [SlideController::class, 'delete'])->where(['id' => '[0-9]+'])->name('slide.delete');
         Route::post('{id}/destroy', [SlideController::class, 'destroy'])->where(['id' => '[0-9]+'])->name('slide.destroy');
     });
-    //Slide
+    //Widget
     Route::group(['prefix' => 'widget'], function () {
         Route::get('index', [WidgetController::class, 'index'])->name('widget.index');
         Route::get('create', [WidgetController::class, 'create'])->name('widget.create');
@@ -226,6 +227,20 @@ Route::group(['middleware' => ['admin', 'locale', 'backend_default_locale']], fu
         Route::post('{id}/update', [WidgetController::class, 'update'])->where(['id' => '[0-9]+'])->name('widget.update');
         Route::get('{id}/delete', [WidgetController::class, 'delete'])->where(['id' => '[0-9]+'])->name('widget.delete');
         Route::post('{id}/destroy', [WidgetController::class, 'destroy'])->where(['id' => '[0-9]+'])->name('widget.destroy');
+        Route::get('{languageId}/{id}/translate', [WidgetController::class, 'translate'])->where(['id' => '[0-9]+', 'languageId' => '[0-9]+'])->name('widget.translate');
+        Route::post('saveTranslate', [WidgetController::class, 'saveTranslate'])->name('widget.saveTranslate');
+    });
+    //Promotion
+    Route::group(['prefix' => 'promotion'], function () {
+        Route::get('index', [PromotionController::class, 'index'])->name('promotion.index');
+        Route::get('create', [PromotionController::class, 'create'])->name('promotion.create');
+        Route::post('store', [PromotionController::class, 'store'])->name('promotion.store');
+        Route::get('{id}/edit', [PromotionController::class, 'edit'])->where(['id' => '[0-9]+'])->name('promotion.edit');
+        Route::post('{id}/update', [PromotionController::class, 'update'])->where(['id' => '[0-9]+'])->name('promotion.update');
+        Route::get('{id}/delete', [PromotionController::class, 'delete'])->where(['id' => '[0-9]+'])->name('promotion.delete');
+        Route::post('{id}/destroy', [PromotionController::class, 'destroy'])->where(['id' => '[0-9]+'])->name('promotion.destroy');
+        Route::get('{languageId}/{id}/translate', [PromotionController::class, 'translate'])->where(['id' => '[0-9]+', 'languageId' => '[0-9]+'])->name('widget.translate');
+        Route::post('saveTranslate', [PromotionController::class, 'saveTranslate'])->name('promotion.saveTranslate');
     });
     //NEW MODULE
 });

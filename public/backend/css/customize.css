@@ -118,7 +118,7 @@ table strong {
 }
 
 .select2-container .select2-selection--single {
-    height: 32px !important;
+    height: 40px !important;
     -webkit-transition: all .2s ease-out;
     transition: all .2s ease-out;
     -webkit-transition-property: color, -webkit-box-shadow;
@@ -131,11 +131,12 @@ table strong {
     outline: none;
     background: -webkit-gradient(linear, left top, left bottom, from(#fff), to(#f9fafb));
     border-color: #c4cdd5;
+    border-radius: 5px;
 
 }
 
 .select2-container--default .select2-selection--single .select2-selection__rendered {
-    line-height: 31px !important;
+    line-height: 39px !important;
     font-size: 13px;
 }
 
@@ -510,7 +511,7 @@ a {
     box-shadow: inset 0 1px 0 0 rgba(63, 63, 68, .05);
     border: 1px solid #c4cdd5;
     outline: none;
-    height: 32px;
+    height: 40px;
     -webkit-box-shadow: inset 0 1px 0 0 rgba(63, 63, 68, .05);
     /* box-shadow: inset 0 1px 0 0 rgba(63,63,68,.05); */
     border-radius: 5px;
@@ -892,4 +893,73 @@ input[type=checkbox] {
 
 .ajax-search-result button:hover {
     background: #b1f1e4;
+}
+
+.form-date input {
+    padding-right: 30px;
+}
+
+.form-date {
+    position: relative;
+}
+
+.form-date span {
+    position: absolute;
+    top: 10px;
+    right: 10px;
+}
+
+.form-date span>* {
+    color: #777;
+}
+
+.fix-label {
+    font-weight: normal;
+    margin: 0;
+    cursor: pointer;
+}
+
+.ml5 {
+    margin-left: 5px
+}
+
+.promotion-wrapper input[type=radio] {
+    margin: 0;
+}
+
+.promotion-wrapper input[type=checkbox],
+.promotion-wrapper input[type=radio] {
+    width: 17px;
+    height: 17px;
+    cursor: pointer;
+}
+
+.promotion-wrapper .select2-container--default {
+    width: 100% !important;
+    /* height: 40px !important; */
+}
+
+div.fix-label {
+    margin-bottom: 5px;
+}
+
+.mb5 {
+    margin-bottom: 5px;
+}
+
+.mt10 {
+    margin-top: 10px;
+}
+
+.wrapperConditionItem {
+    padding-top: 10px;
+    border-top: 1px solid #eaeaea;
+}
+
+.wrapper-condition {
+    margin-top: 20px;
+}
+
+.conditionLabel {
+    color: blue;
 }
