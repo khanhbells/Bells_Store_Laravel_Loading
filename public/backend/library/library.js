@@ -192,8 +192,8 @@
 
 
     $(document).ready(function () {
-        HT.switchery()
         HT.select2()
+        HT.switchery()
         HT.changeStatus()
         HT.checkAll()
         HT.checkBoxItem()
@@ -202,6 +202,21 @@
         HT.int()
         HT.setupDatepicker()
 
+
     });
 
 })(jQuery);
+
+
+
+addCommas = (nStr) => {
+    nStr = String(nStr);
+    nStr = nStr.replace(/\./gi, "");
+    let str = '';
+    for (let i = nStr.length; i > 0; i -= 3) {
+        let a = ((i - 3) < 0) ? 0 : (i - 3);
+        str = nStr.slice(a, i) + '.' + str;
+    }
+    str = str.slice(0, str.length - 1);
+    return str;
+}

@@ -54,11 +54,11 @@ class MenuController extends Controller
             $config = [
                 'js' => [
                     'backend/js/plugins/switchery/switchery.js',
-                    'https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js'
+                    'backend/plugin/select2-4.1.0-rc.0/dist/js/select2.min.js'
                 ],
                 'css' => [
                     'backend/css/plugins/switchery/switchery.css',
-                    'https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css'
+                    'backend/plugin/select2-4.1.0-rc.0/dist/css/select2.min.css'
                 ],
                 'model' => 'MenuCatalogue'
             ];
@@ -222,9 +222,9 @@ class MenuController extends Controller
     private function configData()
     {
         return [
-            'css' => ['https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css'],
+            'css' => ['backend/plugin/select2-4.1.0-rc.0/dist/css/select2.min.css'],
             'js' => [
-                'https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js',
+                'backend/plugin/select2-4.1.0-rc.0/dist/js/select2.min.js',
                 'backend/library/menu.js',
                 'backend/js/plugins/nestable/jquery.nestable.js'
             ],

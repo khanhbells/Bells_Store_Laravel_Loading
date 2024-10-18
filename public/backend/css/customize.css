@@ -963,3 +963,21 @@ div.fix-label {
 .conditionLabel {
     color: blue;
 }
+
+.discountType .select2-container {
+    width: 60px !important;
+    margin-left: 10px;
+}
+
+.delete-some-item {
+    cursor: pointer;
+}
+
+.btn-custom {
+    border-radius: 4px;
+}
+
+.btn-success {
+    background: #1ab394;
+    box-shadow: rgba(0, 0, 0, 0.35) 0px 5px 15px;
+}

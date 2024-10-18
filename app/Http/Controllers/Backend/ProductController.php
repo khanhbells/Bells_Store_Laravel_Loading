@@ -55,11 +55,11 @@ class ProductController extends Controller
             $config = [
                 'js' => [
                     'backend/js/plugins/switchery/switchery.js',
-                    'https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js'
+                    'backend/plugin/select2-4.1.0-rc.0/dist/js/select2.min.js'
                 ],
                 'css' => [
                     'backend/css/plugins/switchery/switchery.css',
-                    'https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css'
+                    'backend/plugin/select2-4.1.0-rc.0/dist/css/select2.min.css'
                 ],
                 'model' => 'Product'
             ];
@@ -148,11 +148,11 @@ class ProductController extends Controller
                 'backend/library/seo.js',
                 'backend/library/variant.js',
                 'backend/js/plugins/switchery/switchery.js',
-                'https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js',
+                'backend/plugin/select2-4.1.0-rc.0/dist/js/select2.min.js',
                 'backend/plugin/nice-select/js/jquery.nice-select.min.js'
             ],
             'css' => [
-                'https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css',
+                'backend/plugin/select2-4.1.0-rc.0/dist/css/select2.min.css',
                 'backend/plugin/nice-select/css/nice-select.css',
                 'backend/css/plugins/switchery/switchery.css',
             ]

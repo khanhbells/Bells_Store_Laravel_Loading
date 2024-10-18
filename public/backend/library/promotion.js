@@ -187,20 +187,20 @@
 
     }
 
-    // HT.deleteCondition = () => {
-    //     $(document).on('click', '.wrapperConditionItem .delete', function () {
-    //         let _this = $(this)
-    //         let unSelectedValue = _this.attr('data-condition-item')
-    //         let selectedItem = $('.conditionItem').val()
-    //         let indexOf = selectedItem.indexOf(unSelectedValue)
-    //         if (indexOf !== -1) {
-    //             selectedItem.splice(selectedItem, indexOf)
-    //         }
+    HT.deleteCondition = () => {
+        $(document).on('click', '.wrapperConditionItem .delete', function () {
+            let _this = $(this)
+            let unSelectedValue = _this.attr('data-condition-item')
+            let selectedItem = $('.conditionItem').val()
+            let indexOf = selectedItem.indexOf(unSelectedValue)
+            if (indexOf !== -1) {
+                selectedItem.splice(selectedItem, indexOf)
+            }
 
 
-    //         // $('.conditionItem').val(unSelectedValue).trigger('change')
-    //     })
-    // }
+            // $('.conditionItem').val(unSelectedValue).trigger('change')
+        })
+    }
 
 
 
@@ -230,13 +230,88 @@
         });
     }
 
+    HT.checkbtnJs100Condition = () => {
+        let inputValue = $('.order_amount_range').find('tbody tr:last-child').find('.order_amount_range_to input').val().replace(/\./g, '')
+        if (inputValue == 0) {
+            alert('Bạn phải nhập vào giá trị đến');
+            return false;
+        }
+        return inputValue
+
+    }
+
+    //Cấu hình HTML
+    HT.btnJs100 = () => {
+        $(document).on('click', '.btn-js-100', function () {
+            let _button = $(this)
+
+            let lastInputValue = HT.checkbtnJs100Condition()
+
+            if (lastInputValue === false) {
+                return
+            }
+            let r = (Math.random() + 1).toString(36).substring(7)
+            let $tr = $('<tr>')
+            let tdList = [
+                { name: '', value: addCommas(lastInputValue), attribute: { 'readonly': true } },
+                { name: '', value: 0, attribute: { 'readonly': false } },
+            ]
+            for (let i = 0; i < tdList.length; i++) {
+                let $td = $('<td>')
+                let $input = $('<input>').addClass('form-control int')
+                    .attr('name', tdList[i].name)
+                    .val(tdList[i].value)
+                if (tdList[i].attribute.readonly != 'undefined' && tdList[i].attribute.readonly === true) {
+                    $input.attr('readonly', true)
+                }
+                $td.append($input)
+                $tr.append($td)
+            }
+
+            let discountTd = $('<td>').addClass('discountType')
+            discountTd.append(
+                $('<div>', { class: 'uk-flex uk-flex-middle' }).append(
+                    $('<input>', {
+                        type: 'text',
+                        name: '',
+                        class: 'form-control int',
+                        placeholder: 0,
+                        value: 0
+                    })
+                ).append(
+                    $('<select>', {
+                        class: 'multipleSelect2'
+                    })
+                        .append($('<option>', { value: 'cash', text: 'đ' }))
+                        .append($('<option>', { value: 'percent', text: '%' }))
+                )
+            )
+            $tr.append(discountTd)
+            let deleteButton = $('<td>').append(
+                $('<div>', {
+                    class: 'delete-some-item delete-order-amount-range-condition'
+                }).append(`<svg data-icon="TrashSolidLarge" aria-hidden="true"
+                                focusable="false" width="15" height="16"
+                                viewBox="0 0 15 16" class="bem-Svg" style="display: block;">
+                                <path fill="currentColor"
+                                    d="M2 14a1 1 0 001 1h9a1 1 0 001-1V6H2v8zM13 2h-3a1 1 0 01-1-1H6a1 1 0 01-1 1H1v2h13V2h-1z">
+                                </path>
+                            </svg>`)
+            )
+            $tr.append(deleteButton)
+            $('.order_amount_range table tbody').append($tr)
+            HT.promotionMultipleSelect2()
+        })
+    }
+
 
     $(document).ready(function () {
         HT.promotionNeverEnd()
         HT.promotionSource()
-        HT.promotionMultipleSelect2()
         HT.chooseCustomerCondition()
         HT.chooseApplyItem()
-        // HT.deleteCondition()
+        HT.deleteCondition()
+        HT.btnJs100()
+        HT.promotionMultipleSelect2()
     });
 })(jQuery);
