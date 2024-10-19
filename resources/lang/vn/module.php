@@ -30,5 +30,9 @@ return [
         'product_and_quantity' => 'Chiết khấu theo từng sản phẩm',
         'product_quantity_range' => 'Chiết khấu theo số lượng sản phẩm',
         'goods_discount_by_quantity' => 'Mua sản phẩm - giảm giá sản phẩm',
+    ],
+    'item' => [
+        'Product' => 'Phiên bản sản phẩm',
+        'ProductCatalogue' => 'Loại sản phẩm',
     ]
 ];

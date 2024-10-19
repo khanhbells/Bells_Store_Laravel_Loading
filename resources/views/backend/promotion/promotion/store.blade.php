@@ -55,53 +55,82 @@
                     <div class="ibox-content">
                         <div class="form-row">
                             <div class="fix-label" for="">Chọn hình thức khuyến mại</div>
-                            <select name="" class="setupSelect2" id="">
-                                <option value="">Chọn hình thức</option>
+                            <select name="" class="setupSelect2 promotionMethod" id="">
+                                <option value="none">Chọn hình thức</option>
                                 @foreach (__('module.promotion') as $key => $val)
                                     <option value="{{ $key }}">{{ $val }}</option>
                                 @endforeach
                             </select>
                         </div>
                         <div class="promotion-container">
-                            <div class="order_amount_range">
-                                <table class="table table-striped">
-                                    <thead>
-                                        <tr>
-                                            <th class="text-right">Giá trị từ</th>
-                                            <th class="text-right">Giá trị đến</th>
-                                            <th class="text-right">Chiết khấu (đ/%)</th>
-                                            <th class="text-right"></th>
-                                        </tr>
-                                    </thead>
-                                    <tbody>
-                                        <tr>
-                                            <td class="order_amount_range_from">
-                                                <input type="text" name="" class="form-control int"
-                                                    placeholder="0" value="0">
-                                            </td>
-                                            <td class="order_amount_range_to">
-                                                <input type="text" name="" class="form-control int"
-                                                    placeholder="0" value="0">
-                                            </td>
-                                            <td class="discountType">
-                                                <div class="uk-flex uk-flex-middle">
-                                                    <input type="text" name="" class="form-control int"
-                                                        placeholder="0" value="0">
-                                                    <select name="" class="multipleSelect2" id="">
-                                                        <option value="cash">đ</option>
-                                                        <option value="percent">%</option>
-                                                    </select>
+                            <table class="table table-striped mt20">
+                                <thead>
+                                    <tr>
+                                        <th class="text-right" style="width:400px">Sản phẩm mua</th>
+                                        <th class="text-right" style="width:80px">Tối thiểu </th>
+                                        <th class="text-right">Giới hạn khuyến mãi</th>
+                                        <th class="text-right">Chiết khấu</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr>
+                                        <td class="order_amount_range_from td-range" data-toggle="modal"
+                                            data-target="#findProduct">
+                                            <div class="product-quantity">
+                                                <div class="boxWrapper">
+                                                    <div class="boxSearchIcon">
+                                                        <i class="fa fa-search"></i>
+                                                    </div>
+                                                    @for ($i = 0; $i <= 10; $i++)
+                                                        <div class="fixGrid6 hidden">
+                                                            <div class="goods-item">
+                                                                <span class="goods-item-name">Nước hoa thế hệ
+                                                                    mới ra
+                                                                    mắt
+                                                                    năm
+                                                                    2024</span>
+                                                                <button class="delete-goods-item">
+                                                                    <svg viewBox="0 0 16 16" fill="none"
+                                                                        xmlns="http://www.w3.org/2000/svg"
+                                                                        width="16" height="16">
+                                                                        <path d="M1 1L15 15" stroke="currentColor"
+                                                                            stroke-width="2" stroke-linecap="round"
+                                                                            stroke-linejoin="round" />
+                                                                        <path d="M15 1L1 15" stroke="currentColor"
+                                                                            stroke-width="2" stroke-linecap="round"
+                                                                            stroke-linejoin="round" />
+                                                                    </svg>
+                                                                </button>
+                                                            </div>
+                                                        </div>
+                                                    @endfor
+                                                    <div class="boxSearchInput fixGrid6">
+                                                        <p>Tìm theo tên, mã sản phẩm</p>
+                                                    </div>
                                                 </div>
-                                            </td>
-                                            <td>
-                                            </td>
-                                        </tr>
-                                    </tbody>
-                                </table>
-                                <button class="btn btn-success btn-custom btn-js-100" value="" type="button">Thêm
-                                    điều
-                                    kiện</button>
-                            </div>
+                                            </div>
+                                        </td>
+                                        <td>
+                                            <input type="text" name="amountTo[]" class="form-control int"
+                                                value="1">
+                                        </td>
+                                        <td class="order_amount_range_to td-range">
+                                            <input type="text" name="amountTo[]" class="form-control int"
+                                                placeholder="0" value="0">
+                                        </td>
+                                        <td class="discountType">
+                                            <div class="uk-flex uk-flex-middle">
+                                                <input type="text" name="amountValue[]" class="form-control int"
+                                                    placeholder="0" value="0">
+                                                <select name="amountType" class="multipleSelect2" id="">
+                                                    <option value="cash">đ</option>
+                                                    <option value="percent">%</option>
+                                                </select>
+                                            </div>
+                                        </td>
+                                    </tr>
+                                </tbody>
+                            </table>
                         </div>
                     </div>
                 </div>
@@ -188,3 +217,5 @@
         </div>
     </div>
 </form>
+@include('backend.promotion.promotion.component.popup')
+<input type="hidden" class="input-product-and-quantity" value="{{ json_encode(__('module.item')) }}">

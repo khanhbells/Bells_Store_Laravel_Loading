@@ -6,6 +6,7 @@ namespace App\Repositories;
 use App\Models\Product;
 use App\Repositories\Interfaces\ProductRepositoryInterface;
 use App\Repositories\BaseRepository;
+use Illuminate\Support\Facades\DB;
 
 /**
  * Class UserService
@@ -55,5 +56,29 @@ class ProductRepository extends BaseRepository implements ProductRepositoryInter
             ])
             ->where('tb2.language_id', '=', $language_id)
             ->find($id);
+    }
+    public function findProductForPromotion($condition = [], $relation = [])
+    {
+        $query = $this->model->newQuery();
+        $query->select([
+            'products.id',
+            'tb2.name',
+            'tb3.id as product_variant_id',
+            DB::raw('CONCAT(tb2.name,"-",COALESCE(tb4.name,"default")) as variant_name'),
+            DB::raw('COALESCE(tb3.sku,products.code) as sku'),
+            DB::raw('COALESCE(tb3.price,products.price) as price'),
+            DB::raw('COALESCE(tb3.album,products.image) as image'),
+        ])->distinct();
+        $query->join('product_language as tb2', 'products.id', '=', 'tb2.product_id');
+        $query->leftJoin('product_variants as tb3', 'products.id', '=', 'tb3.product_id');
+        $query->leftJoin('product_variant_language as tb4', 'tb3.id', '=', 'tb4.product_variant_id');
+        foreach ($condition as $key => $val) {
+            $query->where($val[0], $val[1], $val[2]);
+        }
+        if (count($relation)) {
+            $query->with($relation);
+        }
+        $query->orderBy('id', 'desc');
+        return $query->paginate(10);
     }
 }

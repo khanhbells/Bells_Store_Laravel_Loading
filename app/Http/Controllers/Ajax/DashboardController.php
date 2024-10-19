@@ -104,6 +104,35 @@ class DashboardController extends Controller
         );
         return response()->json($object);
     }
+    public function findPromotionObject(Request $request)
+    {
+        $get = $request->input();
+        $model = $get['option']['model'];
+        $alias = Str::snake($model) . '_language';
+        $keyword = $get['search'];
+        $class = loadClass(($model));
+        $object = $class->findWidgetItem(
+            [
+                [
+                    'name',
+                    'LIKE',
+                    '%' . $keyword . '%'
+                ]
+            ],
+            $this->language,
+            $alias
+        );
+        $temp = [];
+        if (count($object)) {
+            foreach ($object as $key => $val) {
+                $temp[] = [
+                    'id' => $val->id,
+                    'text' => $val->languages->first()->pivot->name,
+                ];
+            }
+        }
+        return response()->json(array('items' => $temp));
+    }
 }
 // array:2 [ // app\Http\Controllers\Ajax\LocationController.php:22
 //     "data" => array:1 [

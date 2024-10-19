@@ -84,7 +84,10 @@ class ProductService extends BaseService implements ProductServiceInterface
                 $this->uploadLanguageForProduct($product, $request, $languageId);
                 $this->updateCatalogueForproduct($product, $request);
                 $this->createRouter($product, $request, $this->controllerName, $languageId);
-                $this->createVariant($product, $request, $languageId);
+
+                if ($request->input('attribute')) {
+                    $this->createVariant($product, $request, $languageId);
+                }
             }
 
             DB::commit();
@@ -159,8 +162,9 @@ class ProductService extends BaseService implements ProductServiceInterface
                     $variant->attributes()->detach();
                     $variant->delete();
                 });
-
-                $this->createVariant($product, $request, $languageId);
+                if ($request->input('attribute')) {
+                    $this->createVariant($product, $request, $languageId);
+                }
             }
             DB::commit();
             return true;
@@ -175,10 +179,7 @@ class ProductService extends BaseService implements ProductServiceInterface
     private function createVariant($product, $request, $languageId)
     {
         $payload = $request->only(['variant', 'productVariant', 'attribute']);
-
         $variant = $this->createVariantArray($payload);
-        // dd($variant);
-
         $variants = $product->product_variants()->createMany($variant);
         $variantId = $variants->pluck('id');
         $productVariantLanguage = [];
@@ -269,7 +270,7 @@ class ProductService extends BaseService implements ProductServiceInterface
         if (isset($payload['image'])) {
             $payload['image'] = $this->formatImage($payload['image']);
         }
-        $payload['price'] = $this->convert_price($payload['price']);
+        $payload['price'] = $this->convert_price(($payload['price']) ?? 0);
         $payload['attributeCatalogue'] = $this->formatJson($request, 'attributeCatalogue');
         $payload['attribute'] = $this->formatJson($request, 'attribute');
         $payload['variant'] = $this->formatJson($request, 'variant');

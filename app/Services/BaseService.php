@@ -77,6 +77,7 @@ class BaseService implements BaseServiceInterface
         // Điều kiện để tìm router trong database
         $condition = [
             ['module_Id', '=', $model->id],
+            ['language_id', '=', $languageId],
             ['controllers', '=', 'App\Http\Controller\Frontend\\' . $controllerName . ''],
         ];
 
