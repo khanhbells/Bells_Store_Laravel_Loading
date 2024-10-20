@@ -21,6 +21,21 @@ return [
             ]
         ],
         [
+            'title' => 'Quản lý khách hàng',
+            'icon' => 'fa fa-user-plus',
+            'name' => ['customer'],
+            'subModule' => [
+                [
+                    'title' => 'Nhóm khách hàng',
+                    'route' => 'customer.catalogue.index' // chỉ dùng tên route
+                ],
+                [
+                    'title' => 'Khách hàng',
+                    'route' => 'customer.index' // chỉ dùng tên route
+                ],
+            ]
+        ],
+        [
             'title' => 'Quản lý sản phẩm',
             'icon' => 'fa fa-cube',
             'name' => ['product', 'attribute'],
@@ -46,15 +61,15 @@ return [
         [
             'title' => 'Quản lý marketing',
             'icon' => 'fa fa-credit-card',
-            'name' => ['promotion'],
+            'name' => ['promotion', 'source'],
             'subModule' => [
                 [
                     'title' => 'Khuyến mại',
                     'route' => 'promotion.index' // chỉ dùng tên route
                 ],
                 [
-                    'title' => 'Mã giảm giá',
-                    'route' => 'product.catalogue.index' // chỉ dùng tên route
+                    'title' => 'Nguồn khách',
+                    'route' => 'source.index' // chỉ dùng tên route
                 ],
             ]
         ],

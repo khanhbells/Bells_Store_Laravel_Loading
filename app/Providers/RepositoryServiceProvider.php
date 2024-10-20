@@ -13,6 +13,12 @@ class RepositoryServiceProvider extends ServiceProvider
         //UserCatalogue
         'App\Repositories\Interfaces\UserCatalogueRepositoryInterface' =>
         'App\Repositories\UserCatalogueRepository',
+        //Customer
+        'App\Repositories\Interfaces\CustomerRepositoryInterface' =>
+        'App\Repositories\CustomerRepository',
+        //CustomerCatalogue
+        'App\Repositories\Interfaces\CustomerCatalogueRepositoryInterface' =>
+        'App\Repositories\CustomerCatalogueRepository',
         //Permission
         'App\Repositories\Interfaces\PermissionRepositoryInterface' =>
         'App\Repositories\PermissionRepository',
@@ -72,6 +78,9 @@ class RepositoryServiceProvider extends ServiceProvider
         //Promotion
         'App\Repositories\Interfaces\PromotionRepositoryInterface' =>
         'App\Repositories\PromotionRepository',
+        //Source
+        'App\Repositories\Interfaces\SourceRepositoryInterface' =>
+        'App\Repositories\SourceRepository',
     ];
     /**
      * Register services.

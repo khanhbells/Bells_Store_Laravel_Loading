@@ -21,6 +21,7 @@ trait QueryScopes
     }
     public function scopeCustomWhere($query, $where = [])
     {
+
         if (!empty($where)) {
             foreach ($where as $key => $val) {
                 $query->where($val[0], $val[1], $val[2]);

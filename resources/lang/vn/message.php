@@ -106,7 +106,7 @@ return [
             'table' => 'Danh sách nhóm thành viên',
         ],
         'create' => [
-            'title' => 'Thêm nhóm bài thành viên',
+            'title' => 'Thêm nhóm thành viên',
         ],
         'delete' => [
             'title' => 'Xoá nhóm thành viên',
@@ -117,6 +117,38 @@ return [
         'permission' => [
             'title' => 'Cập nhật quyền',
         ],
+
+    ],
+    'customerCatalogue' => [
+        'index' => [
+            'title' => 'Quản lý nhóm khách hàng',
+            'table' => 'Danh sách nhóm khách hàng',
+        ],
+        'create' => [
+            'title' => 'Thêm nhóm khách hàng',
+        ],
+        'delete' => [
+            'title' => 'Xoá nhóm khách hàng',
+        ],
+        'update' => [
+            'title' => 'Sửa nhóm khách hàng',
+        ]
+
+    ],
+    'customer' => [
+        'index' => [
+            'title' => 'Quản lý khách hàng',
+            'table' => 'Danh sách khách hàng',
+        ],
+        'create' => [
+            'title' => 'Thêm khách hàng',
+        ],
+        'delete' => [
+            'title' => 'Xoá khách hàng',
+        ],
+        'update' => [
+            'title' => 'Sửa khách hàng',
+        ]
 
     ],
     'permission' => [
@@ -185,6 +217,22 @@ return [
         ],
         'update' => [
             'title' => 'Sửa widget',
+        ],
+
+    ],
+    'source' => [
+        'index' => [
+            'title' => 'Quản lý source',
+            'table' => 'Danh sách source',
+        ],
+        'create' => [
+            'title' => 'Thêm source mới',
+        ],
+        'delete' => [
+            'title' => 'Xoá source',
+        ],
+        'update' => [
+            'title' => 'Sửa source',
         ],
 
     ],

@@ -8,6 +8,8 @@ use App\Http\Controllers\Backend\AuthController;
 use App\Http\Controllers\Backend\DashboardController;
 use App\Http\Controllers\Backend\UserController;
 use App\Http\Controllers\Backend\UserCatalogueController;
+use App\Http\Controllers\Backend\CustomerController;
+use App\Http\Controllers\Backend\CustomerCatalogueController;
 use App\Http\Controllers\Backend\LanguageController;
 use App\Http\Controllers\Backend\PostCatalogueController;
 use App\Http\Controllers\Backend\PostController;
@@ -22,9 +24,11 @@ use App\Http\Controllers\Backend\MenuController;
 use App\Http\Controllers\Backend\SlideController;
 use App\Http\Controllers\Backend\WidgetController;
 use App\Http\Controllers\Backend\PromotionController;
+use App\Http\Controllers\Backend\SourceController;
 use App\Http\Controllers\Ajax\MenuController as AjaxMenuController;
 use App\Http\Controllers\Ajax\SlideController as AjaxSlideController;
 use App\Http\Controllers\Ajax\ProductController as AjaxProductController;
+use App\Http\Controllers\Ajax\SourceController as AjaxSourceController;
 //USE CONTROLLER
 
 /*
@@ -61,12 +65,14 @@ Route::post('ajax/dashboard/changeStatusAll', [AjaxDashboardController::class, '
 Route::get('ajax/dashboard/getMenu', [AjaxDashboardController::class, 'getMenu'])->name('ajax.dashboard.getMenu');
 Route::get('ajax/dashboard/findModelObject', [AjaxDashboardController::class, 'findModelObject'])->name('ajax.dashboard.findModelObject');
 Route::get('ajax/dashboard/findPromotionObject', [AjaxDashboardController::class, 'findPromotionObject'])->name('ajax.dashboard.findPromotionObject');
+Route::get('ajax/dashboard/getPromotionConditionValue', [AjaxDashboardController::class, 'getPromotionConditionValue'])->name('ajax.dashboard.getPromotionConditionValue');
 Route::get('ajax/attribute/getAttribute', [AjaxAttributeController::class, 'getAttribute'])->name('ajax.attribute.getAttribute');
 Route::get('ajax/attribute/loadAttribute', [AjaxAttributeController::class, 'loadAttribute'])->name('ajax.attribute.loadAttribute');
 Route::post('ajax/menu/createCatalogue', [AjaxMenuController::class, 'createCatalogue'])->name('ajax.menu.createCatalogue');
 Route::post('ajax/menu/drag', [AjaxMenuController::class, 'drag'])->name('ajax.menu.drag');
 Route::post('ajax/slide/updateImage', [AjaxSlideController::class, 'updateImage'])->name('ajax.slide.updateImage');
 Route::get('ajax/product/loadProductPromotion', [AjaxProductController::class, 'loadProductPromotion'])->name('ajax.loadProductPromotion');
+Route::get('ajax/source/getAllSource', [AjaxSourceController::class, 'getAllSource'])->name('ajax.getAllSource');
 
 
 
@@ -95,6 +101,28 @@ Route::group(['middleware' => ['admin', 'locale', 'backend_default_locale']], fu
         Route::post('{id}/destroy', [UserCatalogueController::class, 'destroy'])->where(['id' => '[0-9]+'])->name('user.catalogue.destroy');
         Route::get('permissison', [UserCatalogueController::class, 'permission'])->name('user.catalogue.permissison');
         Route::post('updatePermission', [UserCatalogueController::class, 'updatePermission'])->name('user.catalogue.updatePermission');
+    });
+    // Customer
+    Route::group(['prefix' => 'customer'], function () {
+        Route::get('index', [CustomerController::class, 'index'])->name('customer.index');
+        Route::get('create', [CustomerController::class, 'create'])->name('customer.create');
+        Route::post('store', [CustomerController::class, 'store'])->name('customer.store');
+        Route::get('{id}/edit', [CustomerController::class, 'edit'])->where(['id' => '[0-9]+'])->name('customer.edit');
+        Route::post('{id}/update', [CustomerController::class, 'update'])->where(['id' => '[0-9]+'])->name('customer.update');
+        Route::get('{id}/delete', [CustomerController::class, 'delete'])->where(['id' => '[0-9]+'])->name('customer.delete');
+        Route::post('{id}/destroy', [CustomerController::class, 'destroy'])->where(['id' => '[0-9]+'])->name('customer.destroy');
+    });
+    //CustomerCatalogue
+    Route::group(['prefix' => 'customer/catalogue'], function () {
+        Route::get('index', [CustomerCatalogueController::class, 'index'])->name('customer.catalogue.index');
+        Route::get('create', [CustomerCatalogueController::class, 'create'])->name('customer.catalogue.create');
+        Route::post('store', [CustomerCatalogueController::class, 'store'])->name('customer.catalogue.store');
+        Route::get('{id}/edit', [CustomerCatalogueController::class, 'edit'])->where(['id' => '[0-9]+'])->name('customer.catalogue.edit');
+        Route::post('{id}/update', [CustomerCatalogueController::class, 'update'])->where(['id' => '[0-9]+'])->name('customer.catalogue.update');
+        Route::get('{id}/delete', [CustomerCatalogueController::class, 'delete'])->where(['id' => '[0-9]+'])->name('customer.catalogue.delete');
+        Route::post('{id}/destroy', [CustomerCatalogueController::class, 'destroy'])->where(['id' => '[0-9]+'])->name('customer.catalogue.destroy');
+        Route::get('permissison', [CustomerCatalogueController::class, 'permission'])->name('customer.catalogue.permissison');
+        Route::post('updatePermission', [CustomerCatalogueController::class, 'updatePermission'])->name('customer.catalogue.updatePermission');
     });
     //Language
     Route::group(['prefix' => 'language'], function () {
@@ -244,6 +272,16 @@ Route::group(['middleware' => ['admin', 'locale', 'backend_default_locale']], fu
         Route::post('{id}/destroy', [PromotionController::class, 'destroy'])->where(['id' => '[0-9]+'])->name('promotion.destroy');
         Route::get('{languageId}/{id}/translate', [PromotionController::class, 'translate'])->where(['id' => '[0-9]+', 'languageId' => '[0-9]+'])->name('widget.translate');
         Route::post('saveTranslate', [PromotionController::class, 'saveTranslate'])->name('promotion.saveTranslate');
+    });
+    //Source
+    Route::group(['prefix' => 'source'], function () {
+        Route::get('index', [SourceController::class, 'index'])->name('source.index');
+        Route::get('create', [SourceController::class, 'create'])->name('source.create');
+        Route::post('store', [SourceController::class, 'store'])->name('source.store');
+        Route::get('{id}/edit', [SourceController::class, 'edit'])->where(['id' => '[0-9]+'])->name('source.edit');
+        Route::post('{id}/update', [SourceController::class, 'update'])->where(['id' => '[0-9]+'])->name('source.update');
+        Route::get('{id}/delete', [SourceController::class, 'delete'])->where(['id' => '[0-9]+'])->name('source.delete');
+        Route::post('{id}/destroy', [SourceController::class, 'destroy'])->where(['id' => '[0-9]+'])->name('source.destroy');
     });
     //NEW MODULE
 });

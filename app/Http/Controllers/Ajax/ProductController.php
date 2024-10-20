@@ -28,28 +28,58 @@ class ProductController extends Controller
     public function loadProductPromotion(Request $request)
     {
         $get = $request->input();
-        $condition = [
-            [
-                'tb2.language_id',
-                '=',
-                $this->language
-            ]
-        ];
-        if (isset($get['keyword']) && $get['keyword'] != '') {
-            $keywordCondition = [
-                'tb2.name',
-                'LIKE',
-                '%' . $get['keyword'] . '%'
+        $loadClass = loadClass($get['model']);
+        if ($get['model'] == 'Product') {
+            $condition = [
+                [
+                    'tb2.language_id',
+                    '=',
+                    $this->language
+                ]
             ];
-            array_push($condition, $keywordCondition);
-        }
-        $objects = $this->productRepository->findProductForPromotion($condition);
-        foreach ($objects as $object) {
-            if (isset($object->image) && is_string($object->image)) {
-                // Nếu image là chuỗi, tách thành mảng theo dấu phẩy
-                $object->image = explode(',', $object->image);
+            if (isset($get['keyword']) && $get['keyword'] != '') {
+                $keywordCondition = [
+                    'tb2.name',
+                    'LIKE',
+                    '%' . $get['keyword'] . '%'
+                ];
+                array_push($condition, $keywordCondition);
             }
+            $objects = $loadClass->findProductForPromotion($condition);
+            foreach ($objects as $object) {
+                if (isset($object->image) && is_string($object->image)) {
+                    // Nếu image là chuỗi, tách thành mảng theo dấu phẩy
+                    $object->image = explode(',', $object->image);
+                }
+            }
+        } else if ($get['model']  == 'ProductCatalogue') {
+            $conditionArray['keyword'] = ($get['keyword']) ?? null;
+            $conditionArray['where'] = [
+                ['tb2.language_id', '=', $this->language]
+            ];
+            $objects = $loadClass->pagination(
+                [
+                    'product_catalogues.id',
+                    'tb2.name',
+                ],
+                $conditionArray,
+                20,
+                ['path' => 'product/catalogue/index'],
+                [
+                    'product_catalogues.lft',
+                    'DESC'
+                ],
+                [
+                    [
+                        'product_catalogue_language as tb2',
+                        'tb2.product_catalogue_id',
+                        '=',
+                        'product_catalogues.id'
+                    ]
+                ],
+            );
         }
+
         // dd($objects->toArray());
         return response()->json([
             'model' => ($get['model']) ?? 'Product',

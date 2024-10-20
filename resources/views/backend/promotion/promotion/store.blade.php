@@ -63,74 +63,7 @@
                             </select>
                         </div>
                         <div class="promotion-container">
-                            <table class="table table-striped mt20">
-                                <thead>
-                                    <tr>
-                                        <th class="text-right" style="width:400px">Sản phẩm mua</th>
-                                        <th class="text-right" style="width:80px">Tối thiểu </th>
-                                        <th class="text-right">Giới hạn khuyến mãi</th>
-                                        <th class="text-right">Chiết khấu</th>
-                                    </tr>
-                                </thead>
-                                <tbody>
-                                    <tr>
-                                        <td class="order_amount_range_from td-range" data-toggle="modal"
-                                            data-target="#findProduct">
-                                            <div class="product-quantity">
-                                                <div class="boxWrapper">
-                                                    <div class="boxSearchIcon">
-                                                        <i class="fa fa-search"></i>
-                                                    </div>
-                                                    @for ($i = 0; $i <= 10; $i++)
-                                                        <div class="fixGrid6 hidden">
-                                                            <div class="goods-item">
-                                                                <span class="goods-item-name">Nước hoa thế hệ
-                                                                    mới ra
-                                                                    mắt
-                                                                    năm
-                                                                    2024</span>
-                                                                <button class="delete-goods-item">
-                                                                    <svg viewBox="0 0 16 16" fill="none"
-                                                                        xmlns="http://www.w3.org/2000/svg"
-                                                                        width="16" height="16">
-                                                                        <path d="M1 1L15 15" stroke="currentColor"
-                                                                            stroke-width="2" stroke-linecap="round"
-                                                                            stroke-linejoin="round" />
-                                                                        <path d="M15 1L1 15" stroke="currentColor"
-                                                                            stroke-width="2" stroke-linecap="round"
-                                                                            stroke-linejoin="round" />
-                                                                    </svg>
-                                                                </button>
-                                                            </div>
-                                                        </div>
-                                                    @endfor
-                                                    <div class="boxSearchInput fixGrid6">
-                                                        <p>Tìm theo tên, mã sản phẩm</p>
-                                                    </div>
-                                                </div>
-                                            </div>
-                                        </td>
-                                        <td>
-                                            <input type="text" name="amountTo[]" class="form-control int"
-                                                value="1">
-                                        </td>
-                                        <td class="order_amount_range_to td-range">
-                                            <input type="text" name="amountTo[]" class="form-control int"
-                                                placeholder="0" value="0">
-                                        </td>
-                                        <td class="discountType">
-                                            <div class="uk-flex uk-flex-middle">
-                                                <input type="text" name="amountValue[]" class="form-control int"
-                                                    placeholder="0" value="0">
-                                                <select name="amountType" class="multipleSelect2" id="">
-                                                    <option value="cash">đ</option>
-                                                    <option value="percent">%</option>
-                                                </select>
-                                            </div>
-                                        </td>
-                                    </tr>
-                                </tbody>
-                            </table>
+
                         </div>
                     </div>
                 </div>
@@ -174,8 +107,8 @@
                     <div class="ibox-content">
                         <div class="setting-value">
                             <div class="nav-setting-item uk-flex uk-flex-middle">
-                                <input type="radio" value="all" name="source" id="allSource"
-                                    class="chooseSource" checked="">
+                                <input type="radio" value="all" name="source" id="allSource" class="chooseSource"
+                                    checked="">
                                 <label class="fix-label ml5" for="allSource">Áp dụng cho toàn bộ nguồn khách</label>
                             </div>
                             <div class="nav-setting-item uk-flex uk-flex-middle">

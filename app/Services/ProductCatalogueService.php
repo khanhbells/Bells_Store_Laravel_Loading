@@ -199,7 +199,15 @@ class ProductCatalogueService extends BaseService implements ProductCatalogueSer
     }
     private function paginateselect()
     {
-        return ['product_catalogues.id', 'product_catalogues.publish', 'product_catalogues.image', 'product_catalogues.level', 'product_catalogues.order', 'tb2.name', 'tb2.canonical'];
+        return [
+            'product_catalogues.id',
+            'product_catalogues.publish',
+            'product_catalogues.image',
+            'product_catalogues.level',
+            'product_catalogues.order',
+            'tb2.name',
+            'tb2.canonical'
+        ];
     }
     private function payload()
     {

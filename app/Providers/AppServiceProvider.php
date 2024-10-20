@@ -14,6 +14,12 @@ class AppServiceProvider extends ServiceProvider
         //UserCatalogue
         'App\Services\Interfaces\UserCatalogueServiceInterface' =>
         'App\Services\UserCatalogueService',
+        //Customer
+        'App\Services\Interfaces\CustomerServiceInterface' =>
+        'App\Services\CustomerService',
+        //CustomerCatalogue
+        'App\Services\Interfaces\CustomerCatalogueServiceInterface' =>
+        'App\Services\CustomerCatalogueService',
         //Permission
         'App\Services\Interfaces\PermissionServiceInterface' =>
         'App\Services\PermissionService',
@@ -59,6 +65,9 @@ class AppServiceProvider extends ServiceProvider
         //Promotion
         'App\Services\Interfaces\PromotionServiceInterface' =>
         'App\Services\PromotionService',
+        //Source
+        'App\Services\Interfaces\SourceServiceInterface' =>
+        'App\Services\SourceService',
     ];
     /**
      * Register any application services.

@@ -34,5 +34,18 @@ return [
     'item' => [
         'Product' => 'Phiên bản sản phẩm',
         'ProductCatalogue' => 'Loại sản phẩm',
-    ]
+    ],
+    'gender' => [
+        [
+            'id' => 1,
+            'name' => 'Nam'
+        ],
+        [
+            'id' => 2,
+            'name' => 'Nữ'
+        ]
+    ],
+    'day' => array_map(function ($value) {
+        return ['id' => $value - 1, 'name' => $value];
+    }, range(1, 31))
 ];
