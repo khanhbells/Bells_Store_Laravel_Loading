@@ -2,8 +2,11 @@
 
 namespace App\Providers;
 
+use Carbon\Carbon;
+use DateTime;
 use Illuminate\Support\ServiceProvider;
 use Illuminate\Support\Facades\Schema;
+use Illuminate\Support\Facades\Validator;
 
 class AppServiceProvider extends ServiceProvider
 {
@@ -89,6 +92,18 @@ class AppServiceProvider extends ServiceProvider
      */
     public function boot()
     {
+        Validator::extend('custom_date_format', function ($attribute, $value, $parameters, $validator) {
+            return DateTime::createFromFormat('d/m/Y H:i', $value) !== false;
+        });
+        Validator::extend('custom_after', function ($attribute, $value, $parameters, $validator) {
+            if (isset($validator->getData()[$parameters[0]])) {
+                $startDate = Carbon::createFromFormat('d/m/Y H:i', $validator->getData()[$parameters[0]]);
+            } else {
+                return false;
+            }
+            $endDate = Carbon::createFromFormat('d/m/Y H:i', $value);
+            return $endDate->greaterThan($startDate) !== false;
+        });
         Schema::defaultStringLength(191);
         //
     }

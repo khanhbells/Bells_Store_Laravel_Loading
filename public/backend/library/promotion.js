@@ -53,7 +53,7 @@
         if (sourceData.length) {
             let select = $('<select>')
                 .addClass('multipleSelect2')
-                .attr('name', 'source')
+                .attr('name', 'sourceValue[]')
                 .attr('multiple', true)
             for (let i = 0; i < sourceData.length; i++) {
                 let option = $('<option>').attr('value', sourceData[i].id).text(sourceData[i].name)
@@ -81,30 +81,13 @@
         })
     }
     HT.renderApplyCondition = () => {
-        let applyConditionData = [
-            {
-                id: 'staff_take_care_customer',
-                name: 'Nhân viên phụ trách'
-            },
-            {
-                id: 'customer_group',
-                name: 'Nhóm khách hàng'
-            },
-            {
-                id: 'customer_gender',
-                name: 'Giới tính'
-            },
-            {
-                id: 'customer_birthday',
-                name: 'Ngày sinh'
-            },
-        ]
+        let applyConditionData = JSON.parse($('.applyStatusList').val())
         let wrapper = $('<div>').addClass('apply-wrapper')
         let wrapperConditionItem = $('<div>').addClass('wrapper-condition')
         if (applyConditionData.length) {
             let select = $('<select>')
                 .addClass('multipleSelect2 conditionItem')
-                .attr('name', 'applyObject')
+                .attr('name', 'applyValue[]')
                 .attr('multiple', true)
             for (let i = 0; i < applyConditionData.length; i++) {
                 let option = $('<option>').attr('value', applyConditionData[i].id).text(applyConditionData[i].name)
@@ -154,14 +137,22 @@
                 success: function (res) {
                     let optionData = res.data
                     let conditionItem = $('<div>').addClass('wrapperConditionItem mt10 ' + value)
+                    let conditionHiddenInput = $('.condition_input_' + value)
+                    let conditionHiddenInputValue = []
+                    if (conditionHiddenInput.length) {
+                        conditionHiddenInputValue = JSON.parse(conditionHiddenInput.val())
+                    }
                     let select = $('<select>')
                         .addClass('multipleSelect2 objectItem')
-                        .attr('name', value)
+                        .attr('name', value + "[]")
                         .attr('multiple', true)
                     for (let i = 0; i < optionData.length; i++) {
                         let option = $('<option>').attr('value', optionData[i].id).text(optionData[i].text)
                         select.append(option)
                     }
+                    console.log(conditionHiddenInputValue);
+                    select.val(conditionHiddenInputValue).trigger('change')
+
                     const conditionLabel = HT.createConditionLabel(label, value)
                     conditionItem.append(conditionLabel)
                     conditionItem.append(select)
@@ -246,12 +237,12 @@
             let tdList = [
                 {
                     class: 'order_amount_range_from td-range',
-                    name: '',
+                    name: 'promotion_order_amount_range[amountFrom][]',
                     value: addCommas(parseInt(newTo) + 1),
                 },
                 {
                     class: 'order_amount_range_to td-range',
-                    name: '',
+                    name: 'promotion_order_amount_range[amountTo][]',
                     value: 0,
                 },
             ]
@@ -269,7 +260,7 @@
                 $('<div>', { class: 'uk-flex uk-flex-middle' }).append(
                     $('<input>', {
                         type: 'text',
-                        name: '',
+                        name: 'promotion_order_amount_range[amountValue][]',
                         class: 'form-control int',
                         placeholder: 0,
                         value: 0
@@ -277,7 +268,7 @@
                 ).append(
                     $('<select>', {
                         class: 'multipleSelect2'
-                    })
+                    }).append('name', 'promotion_order_amount_range[amountType][]')
                         .append($('<option>', { value: 'cash', text: 'đ' }))
                         .append($('<option>', { value: 'percent', text: '%' }))
                 )
@@ -331,6 +322,7 @@
     }
 
     HT.renderOrderRangeConditionContainer = () => {
+
         $(document).on('change', '.promotionMethod', function () {
             let _this = $(this)
             let option = _this.val()
@@ -351,6 +343,10 @@
                     HT.removePromotionContainer()
             }
         })
+        let method = $('.preload_promotionMethod').val()
+        if (method.length && typeof method !== 'undefined') {
+            $('.promotionMethod').val(method).trigger('change')
+        }
     }
 
     HT.removePromotionContainer = () => {
@@ -359,6 +355,46 @@
     }
 
     HT.renderOrderAmountRange = () => {
+        let $tr = ''
+        let order_amount_range = JSON.parse($('.input_order_amount_range').val()) || {
+            amountFrom: ['0'],
+            amountTo: ['0'],
+            amountValue: ['0'],
+            amountType: ['cash'],
+        }
+        for (let i = 0; i < order_amount_range.amountFrom.length; i++) {
+            let $amountFrom = order_amount_range.amountFrom[i]
+            let $amountTo = order_amount_range.amountTo[i]
+            let $amountValue = order_amount_range.amountValue[i]
+            let $amountType = order_amount_range.amountType[i]
+            $tr += `<tr>
+                <td class="order_amount_range_from td-range">
+                    <input type="text" name="promotion_order_amount_range[amountFrom][]" class="form-control int"
+                        placeholder="0" value="${$amountFrom}">
+                </td>
+                <td class="order_amount_range_to td-range">
+                    <input type="text" name="promotion_order_amount_range[amountTo][]" class="form-control int"
+                        placeholder="0" value="${$amountTo}">
+                </td>
+                <td class="discountType">
+                    <div class="uk-flex uk-flex-middle">
+                        <input type="text" name="promotion_order_amount_range[amountValue][]" class="form-control int"
+                            placeholder="0" value="${$amountValue}">
+                        <select name="promotion_order_amount_range[amountType][]" class="multipleSelect2" id="">
+                            <option value="cash" ${($amountType == 'cash') ? 'selected' : ''}>đ</option>
+                            <option value="percent" ${($amountType == 'percent') ? 'selected' : ''}>%</option>
+                        </select>
+                    </div>
+                </td>
+                <td>
+                <div class="delete-some-item delete-order-amount-range-condition"><svg data-icon="TrashSolidLarge" aria-hidden="true" focusable="false" width="15" height="16" viewBox="0 0 15 16" class="bem-Svg" style="display: block;">
+                    <path fill="currentColor" d="M2 14a1 1 0 001 1h9a1 1 0 001-1V6H2v8zM13 2h-3a1 1 0 01-1-1H6a1 1 0 01-1 1H1v2h13V2h-1z">
+                    </path>
+                </svg></div>
+                </td>
+            </tr>`
+        }
+
         let html = `<div class="order_amount_range">
                                 <table class="table table-striped">
                                     <thead>
@@ -370,28 +406,7 @@
                                         </tr>
                                     </thead>
                                     <tbody>
-                                        <tr>
-                                            <td class="order_amount_range_from td-range">
-                                                <input type="text" name="amountFrom[]" class="form-control int"
-                                                    placeholder="0" value="0">
-                                            </td>
-                                            <td class="order_amount_range_to td-range">
-                                                <input type="text" name="amountTo[]" class="form-control int"
-                                                    placeholder="0" value="0">
-                                            </td>
-                                            <td class="discountType">
-                                                <div class="uk-flex uk-flex-middle">
-                                                    <input type="text" name="amountValue[]" class="form-control int"
-                                                        placeholder="0" value="0">
-                                                    <select name="amountType" class="multipleSelect2" id="">
-                                                        <option value="cash">đ</option>
-                                                        <option value="percent">%</option>
-                                                    </select>
-                                                </div>
-                                            </td>
-                                            <td>
-                                            </td>
-                                        </tr>
+                                        ${$tr}
                                     </tbody>
                                 </table>
                                 <button class="btn btn-success btn-custom btn-js-100" value="" type="button">Thêm
@@ -404,14 +419,21 @@
     HT.renderProductAndQuantity = () => {
         let selectData = JSON.parse($('.input-product-and-quantity').val())
         let selectHtml = ''
+        let moduleType = $('.preload_select-product-and-quantity').val()
         for (let key in selectData) {
-            selectHtml += ' <option value="' + key + '">' + selectData[key] + '</option>'
+            selectHtml += ' <option ' + ((moduleType.length && typeof moduleType !== 'undefined' && moduleType == key) ? 'selected' : '') + ' value="' + key + '">' + selectData[key] + '</option>'
         }
 
+        let preloadData = JSON.parse($('.input_product_and_quantity').val()) || {
+            quantity: ['1'],
+            maxDiscountValue: ['0'],
+            discountValue: ['0'],
+            discountType: ['cash'],
+        }
         let html = `<div class="product_and_quantity">
                         <div class="choose-module mt20">
                             <div class="fix-label" style="color: blue">Sản phẩm áp dụng</div>
-                            <select name="" id=""
+                            <select name="module_type" id=""
                                 class="multipleSelect2 select-product-and-quantity">
                                 ${selectHtml}
                             </select>
@@ -442,20 +464,20 @@
                                     </div>
                                 </td>
                             <td>
-                                <input type="text" name="amountTo[]" class="form-control int"
-                                    value="1">
+                                <input type="text" name="product_and_quantity[quantity]" class="form-control int"
+                                    value="${preloadData.quantity}">
                             </td>
                             <td class="order_amount_range_to td-range">
-                                <input type="text" name="amountTo[]" class="form-control int"
-                                    placeholder="0" value="0">
+                                <input type="text" name="product_and_quantity[maxDiscountValue]" class="form-control int"
+                                    placeholder="0" value="${preloadData.maxDiscountValue}">
                             </td>
                             <td class="discountType">
                                 <div class="uk-flex uk-flex-middle">
-                                    <input type="text" name="amountValue[]" class="form-control int"
-                                        placeholder="0" value="0">
-                                    <select name="amountType" class="multipleSelect2" id="">
-                                        <option value="cash">đ</option>
-                                        <option value="percent">%</option>
+                                    <input type="text" name="product_and_quantity[discountValue]" class="form-control int"
+                                        placeholder="0" value="${preloadData.discountValue}">
+                                    <select name="product_and_quantity[discountType]" class="multipleSelect2" id="">
+                                        <option value="cash" ${(preloadData.discountType == 'cash') ? 'selected' : ''}>đ</option>
+                                        <option value="percent" ${(preloadData.discountType == 'percent') ? 'selected' : ''}>%</option>
                                     </select>
                                 </div>
                             </td>
@@ -735,48 +757,72 @@
     }
 
     HT.confirmProductPromotion = () => {
+        let preloadObject = JSON.parse($('.input_object').val()) || {
+            id: [],
+            product_variant_id: [],
+            name: [],
+            type: [] // Thêm mảng type vào preloadObject
+        }
+
+        let objectArray = preloadObject.id.map((id, index) => ({
+            id: id,
+            product_variant_id: preloadObject.product_variant_id[index] || 'null',
+            name: preloadObject.name[index],
+            type: preloadObject.type
+        }))
+        // console.log(objectArray);
+
+        if (objectArray.length && typeof objectArray !== 'undefined') {
+            let preloadHtml = HT.renderBoxWrapper(objectArray)
+            HT.checkFixGrid(preloadHtml)
+        }
+
         $(document).on('click', '.confirm-product-promotion', function () {
-            let html = ''
-            let model = $('.select-product-and-quantity').val()
-            if (objectChoose.length) {
-                for (let i = 0; i < objectChoose.length; i++) {
-                    let id = objectChoose[i].id
-                    let product_variant_id = objectChoose[i].product_variant_id
-                    let name = objectChoose[i].name
-                    let type = objectChoose[i].type
-                    if (type == 'Product') {
-                        var classBox = model + '_' + id + '_' + product_variant_id
-                    } else {
-                        var classBox = model + '_' + id
-                    }
-                    if (!$(`.boxWrapper .${classBox}`).length) {
-                        html += `<div class="fixGrid6 ${classBox}">
-                        <div class="goods-item">
-                            <a class="goods-item-name" title="${name}">${name}</a>
-                            <button class="delete-goods-item">
-                                <svg viewBox="0 0 16 16" fill="none"
-                                    xmlns="http://www.w3.org/2000/svg"
-                                    width="16" height="16">
-                                    <path d="M1 1L15 15" stroke="currentColor"
-                                        stroke-width="2" stroke-linecap="round"
-                                        stroke-linejoin="round" />
-                                    <path d="M15 1L1 15" stroke="currentColor"
-                                        stroke-width="2" stroke-linecap="round"
-                                        stroke-linejoin="round" />
-                                </svg>
-                            </button>
-                            <div class="hidden">
-                                <input name="object[id][]" value="${id}">
-                                <input name="object[product_variant_id][]" value="${product_variant_id}">
-                            </div>
-                        </div>
-                    </div>`
-                    }
-                }
-            }
+            let html = HT.renderBoxWrapper(objectChoose)
             HT.checkFixGrid(html)
             $('#findProduct').modal('hide')
         })
+    }
+
+    HT.renderBoxWrapper = (objectData) => {
+        let html = ''
+        let model = $('.select-product-and-quantity').val()
+        if (objectData.length) {
+            for (let i = 0; i < objectData.length; i++) {
+                let { id, product_variant_id, name, type } = objectData[i]
+                if (type == 'Product') {
+                    var classBox = `${model}_${id}_${product_variant_id}`
+                } else {
+                    var classBox = `${model}_${id}`
+                }
+                if (!$(`.boxWrapper .${classBox}`).length) {
+                    html += `<div class="fixGrid6 ${classBox}">
+                    <div class="goods-item">
+                        <a class="goods-item-name" title="${name}">${name}</a>
+                        <button class="delete-goods-item">
+                            <svg viewBox="0 0 16 16" fill="none"
+                                xmlns="http://www.w3.org/2000/svg"
+                                width="16" height="16">
+                                <path d="M1 1L15 15" stroke="currentColor"
+                                    stroke-width="2" stroke-linecap="round"
+                                    stroke-linejoin="round" />
+                                <path d="M15 1L1 15" stroke="currentColor"
+                                    stroke-width="2" stroke-linecap="round"
+                                    stroke-linejoin="round" />
+                            </svg>
+                        </button>
+                        <div class="hidden">
+                            <input name="object[id][]" value="${id}">
+                            <input name="object[product_variant_id][]" value="${product_variant_id}">
+                            <input name="object[name][]" value="${name}">
+                            <input name="object[type]" value="${type}">
+                        </div>
+                    </div>
+                </div>`
+                }
+            }
+        }
+        return html
     }
 
     HT.checkFixGrid = (html) => {
@@ -815,9 +861,18 @@
         })
     }
 
-
+    HT.checkConditionItemSet = () => {
+        let checkedValue = $('.conditionItemSelected').val()
+        if (checkedValue.length && $('.conditionItem').length) {
+            checkedValue = JSON.parse(checkedValue)
+            $('.conditionItem').val(checkedValue).trigger('change')
+        }
+    }
 
     $(document).ready(function () {
+        setTimeout(function () {
+            HT.checkConditionItemSet();
+        }, 100);
         HT.promotionNeverEnd()
         HT.promotionSource()
         HT.chooseCustomerCondition()

@@ -2,16 +2,16 @@
 return [
     'module' => [
         [
-            'title' => 'Quản lý thành viên',
+            'title' => 'Quản lý quản trị viên',
             'icon' => 'fa fa-user-circle-o',
             'name' => ['user', 'permission'],
             'subModule' => [
                 [
-                    'title' => 'Nhóm thành viên',
+                    'title' => 'Nhóm quản trị viên',
                     'route' => 'user.catalogue.index' // chỉ dùng tên route
                 ],
                 [
-                    'title' => 'Thành viên',
+                    'title' => 'Thành viên quản trị',
                     'route' => 'user.index' // chỉ dùng tên route
                 ],
                 [

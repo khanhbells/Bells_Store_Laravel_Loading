@@ -3,8 +3,8 @@
 namespace App\Http\Controllers\Backend;
 
 use App\Http\Controllers\Controller;
-use App\Http\Requests\StorePromotionRequest;
-use App\Http\Requests\UpdatePromotionRequest;
+use App\Http\Requests\Promotion\StorePromotionRequest;
+use App\Http\Requests\Promotion\UpdatePromotionRequest;
 use App\Models\Language;
 use App\Models\Promotion;
 use Illuminate\Http\Request;
@@ -13,6 +13,7 @@ use App\Models\PromotionCatalogue;
 use App\Services\Interfaces\PromotionServiceInterface as PromotionService;
 use App\Repositories\Interfaces\PromotionRepositoryInterface as PromotionRepository;
 use App\Repositories\Interfaces\LanguageRepositoryInterface as LanguageRepository;
+use App\Repositories\Interfaces\SourceRepositoryInterface as SourceRepository;
 use Illuminate\Support\Collection;
 //Neu muon view hieu duoc controller thi phai compact
 class PromotionController extends Controller
@@ -21,14 +22,17 @@ class PromotionController extends Controller
     protected $promotionRepository;
     protected $language;
     protected $languageRepository;
+    protected $sourceRepository;
     public function __construct(
         PromotionService $promotionService,
         PromotionRepository $promotionRepository,
         LanguageRepository $languageRepository,
+        SourceRepository $sourceRepository,
     ) {
         $this->promotionService = $promotionService;
         $this->promotionRepository = $promotionRepository;
         $this->languageRepository = $languageRepository;
+        $this->sourceRepository = $sourceRepository;
         $this->middleware(function ($request, $next) {
             $locale = app()->getLocale();
             $language = Language::where('canonical', $locale)->first();
@@ -66,13 +70,14 @@ class PromotionController extends Controller
     {
         try {
             $this->authorize('modules', 'promotion.create');
+            $sources = $this->sourceRepository->all();
             $config = $this->configData();
             $config['seo'] = __('message.promotion');
             $config['method'] = 'create';
             $template = 'backend.promotion.promotion.store';
 
             // Truyền promotionCatalogues vào view
-            return view('backend.dashboard.layout', compact('template', 'config'));
+            return view('backend.dashboard.layout', compact('template', 'config', 'sources'));
         } catch (\Illuminate\Auth\Access\AuthorizationException $e) {
             return redirect()->back()->with('error', 'Bạn không có quyền truy cập vào chức năng này.');
         }
@@ -104,24 +109,6 @@ class PromotionController extends Controller
         } catch (\Illuminate\Auth\Access\AuthorizationException $e) {
             return redirect()->back()->with('error', 'Bạn không có quyền truy cập vào chức năng này.');
         }
-    }
-    private function menuItemAgrument(array $whereIn = [])
-    {
-        $language = $this->language;
-        return [
-            'condition' => [],
-            'flag' => true,
-            'relation' => [
-                'languages' => function ($query) use ($language) {
-                    $query->where('language_id', $language);
-                }
-            ],
-            'orderBy' => ['id', 'desc'],
-            'param' => [
-                'whereIn' => $whereIn,
-                'whereInField' => 'id'
-            ]
-        ];
     }
     public function update($id, UpdatePromotionRequest $request)
     {

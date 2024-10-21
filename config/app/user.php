@@ -1,16 +1,16 @@
 <?php
 return [
     'index' => [
-        'title' => 'Quản lý thành viên',
-        'table' => 'Danh sách thành viên',
+        'title' => 'Quản lý người quản trị',
+        'table' => 'Danh sách người quản trị',
     ],
     'create' => [
-        'title' => 'Thêm mới thành viên',
+        'title' => 'Thêm mới người quản trị',
     ],
     'delete' => [
-        'title' => 'Xoá thành viên',
+        'title' => 'Xoá người quản trị',
     ],
     'update' => [
-        'title' => 'Sửa thành viên',
+        'title' => 'Sửa người quản trị',
     ]
 ];

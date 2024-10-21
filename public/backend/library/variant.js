@@ -601,6 +601,7 @@
     }
 
     $(document).ready(function () {
+
         HT.setupProductVariant()
         HT.addVariant()
         HT.niceSelect()
@@ -614,11 +615,14 @@
         HT.cancleVariantUpdate()
         HT.saveVariantUpdate()
         HT.select2();
-        HT.setupSelectMultiple(
-            () => {
-                HT.productVariant()
-            }
-        )
+        setTimeout(function () {
+            HT.setupSelectMultiple(
+                () => {
+                    HT.productVariant()
+                }
+            )
+        }, 100);
+
 
     });
 
