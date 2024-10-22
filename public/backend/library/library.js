@@ -185,10 +185,6 @@
         })
     }
 
-
-
-
-
     $(document).ready(function () {
         HT.select2()
         HT.switchery()

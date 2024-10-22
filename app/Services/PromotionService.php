@@ -2,6 +2,7 @@
 
 namespace App\Services;
 
+use App\Enums\PromotionEnum;
 use App\Services\Interfaces\PromotionServiceInterface;
 use App\Repositories\Interfaces\PromotionRepositoryInterface as PromotionRepository;
 use Illuminate\Support\Facades\DB;
@@ -35,7 +36,6 @@ class PromotionService extends BaseService implements PromotionServiceInterface
             $perPage,
             ['path' => 'promotion/index'],
         );
-        // dd($promotions);
         return $promotions;
     }
     public function create(Request $request, $languageId)
@@ -43,14 +43,36 @@ class PromotionService extends BaseService implements PromotionServiceInterface
         DB::beginTransaction();
 
         try {
-            $payload = $request->only('name', 'keyword', 'short_code', 'description', 'album', 'model');
-            $payload['model_id'] = $request->input('modelItem.id');
-            $payload['album'] = $this->formatAlbum($payload['album']);
-            $payload['description'] = [
-                $languageId => $payload['description']
-            ];
-            $this->promotionRepository->create($payload);
+            $payload = $request->only(
+                'name',
+                'code',
+                'description',
+                'method',
+                'startDate',
+                'endDate',
+                'neverEndDate',
+            );
+            // Chuyển đổi định dạng ngày tháng trước khi lưu
+            $payload['startDate'] = Carbon::createFromFormat('d/m/Y H:i', $request->input('startDate'));
+            if (isset($payload['endDate'])) {
+                $payload['endDate'] = Carbon::createFromFormat('d/m/Y H:i', $request->input('endDate'));
+            }
 
+            $payload['code'] = (empty($payload['code'])) ? time() : $payload['code'];
+            switch ($payload['method']) {
+                case PromotionEnum::ORDER_AMOUNT_RANGE:
+                    $payload[PromotionEnum::DISCOUNT] = $this->orderByRange($request);
+                    break;
+                case PromotionEnum::PRODUCT_AND_QUANTITY:
+                    $payload[PromotionEnum::DISCOUNT] = $this->productAndQuantity($request);
+                    break;
+            }
+            $promotion = $this->promotionRepository->create($payload);
+            if ($promotion->id > 0) {
+                if ($request->input('method') === PromotionEnum::PRODUCT_AND_QUANTITY) {
+                    $this->createPromotionProductVariant($request, $promotion);
+                }
+            }
             DB::commit();
             return true;
         } catch (Exception $e) {
@@ -59,6 +81,61 @@ class PromotionService extends BaseService implements PromotionServiceInterface
             die();
             return false;
         }
+    }
+
+    private function createPromotionProductVariant($request, $promotion)
+    {
+        $object = $request->input('object');
+        $payloadRelation = [];
+        if (is_array($object) && count($object)) {
+            foreach ($object['id'] as $key => $val) {
+                $productVariantId = $object['product_variant_id'][$key];
+                if ($productVariantId == 'null') {
+                    $productVariantId = 0;
+                }
+
+                $payloadRelation[] = [
+                    'product_id' => $val,
+                    'product_variant_id' => $productVariantId,
+                    'model' => $request->input(PromotionEnum::MODULE_TYPE)
+                ];
+            }
+            $promotion->products()->sync($payloadRelation);
+        }
+    }
+
+    private function handleSourceAndCondition($request)
+    {
+        $data = [
+            'source' => [
+                'status' => $request->input('source'),
+                'data' => $request->input('sourceValue'),
+            ],
+            'apply' => [
+                'status' => $request->input('applyStatus'),
+                'data' => $request->input('applyValue'),
+            ]
+        ];
+        if (!is_null($data['apply']['data'])) {
+            foreach ($data['apply']['data'] as $key => $val) {
+                $data['apply']['condition'][$val] = $request->input($val);
+            }
+        }
+        return $data;
+    }
+
+    private function orderByRange($request)
+    {
+        $data['info'] = $request->input('promotion_order_amount_range');
+        return $data + $this->handleSourceAndCondition($request);
+    }
+
+    private function productAndQuantity($request)
+    {
+        $data['info'] = $request->input('product_and_quantity');
+        $data['info']['model'] = $request->input(PromotionEnum::MODULE_TYPE);
+        $data['info']['object'] = $request->input('object');
+        return $data + $this->handleSourceAndCondition($request);
     }
     public function update($id, Request $request, $languageId)
     {
@@ -157,6 +234,17 @@ class PromotionService extends BaseService implements PromotionServiceInterface
     }
     private function paginateselect()
     {
-        return ['id', 'name', 'keyword', 'short_code', 'publish', 'description'];
+        return [
+            'id',
+            'name',
+            'code',
+            'discountInformation',
+            'method',
+            'neverEndDate',
+            'startDate',
+            'endDate',
+            'publish',
+            'order',
+        ];
     }
 }

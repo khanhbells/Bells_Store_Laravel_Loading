@@ -268,7 +268,7 @@
                 ).append(
                     $('<select>', {
                         class: 'multipleSelect2'
-                    }).append('name', 'promotion_order_amount_range[amountType][]')
+                    }).attr('name', 'promotion_order_amount_range[amountType][]')
                         .append($('<option>', { value: 'cash', text: 'đ' }))
                         .append($('<option>', { value: 'percent', text: '%' }))
                 )
@@ -618,7 +618,7 @@
 
                 let isChecked = ($('.boxWrapper .' + classBox + '').length) ? true : false
                 console.log(isChecked);
-                html += `<div class="search-object-item" data-productid="${product_id}" data-variant_id="${product_variant_id}" data-name="${name}" data-type="Product">
+                html += `<div class="search-object-item" data-productid="${product_id}" data-variant_id="${product_variant_id ? product_variant_id : ''}" data-name="${name}" data-type="Product">
                                 <div class="uk-flex uk-flex-middle uk-flex-space-between">
                                     <div class="object-info">
                                         <div class="uk-flex uk-flex-middle">
@@ -679,7 +679,7 @@
             let objectType = _this.attr('data-type')
             let objectItem = {
                 id: _this.attr('data-productid'),
-                product_variant_id: _this.attr('data-variant_id') || null,
+                product_variant_id: _this.attr('data-variant_id'),
                 name: _this.attr('data-name'),
                 type: objectType
             }

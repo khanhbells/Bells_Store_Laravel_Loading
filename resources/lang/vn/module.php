@@ -65,6 +65,13 @@ return [
             'id' => 'customer_birthday',
             'name' => 'Ngày sinh'
         ],
-    ]
-
+    ],
+    // 'promotion' => [
+    //     'method' => [
+    //         'method_1' => 'order_amount_range',
+    //         'method_2' => 'product_and_quantity',
+    //         'method_3' => 'product_quantity_range',
+    //         'method_4' => 'goods_discount_by_quantity',
+    //     ]
+    // ]
 ];

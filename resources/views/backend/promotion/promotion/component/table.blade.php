@@ -4,52 +4,59 @@
             <th>
                 <input type="checkbox" value="" id="checkAll" class="input-checkbox">
             </th>
-            <th>Tên widget</th>
-            <th class="text-center">Từ khóa</th>
-            <th class="text-center">Short code</th>
-            @include('backend.dashboard.component.languageTh')
+            <th class="text-center">Tên chương trình</th>
+            <th class="text-center">Chiết khấu</th>
+            <th class="text-center">Loại khuyến mại</th>
+            <th class="text-center">Ngày bắt đầu</th>
+            <th class="text-center">Ngày kết thúc</th>
             <th class="text-center">Tình trạng</th>
             <th class="text-center">Thao tác</th>
         </tr>
     </thead>
     <tbody>
-        @if (isset($widgets) && is_object($widgets))
-            @foreach ($widgets as $widget)
+        @if (isset($promotions) && is_object($promotions))
+            @foreach ($promotions as $key => $promotion)
+                @php
+                    $startDate = convertDateTime($promotion->startDate);
+                    $endDate = convertDateTime($promotion->endDate);
+                    $status = '';
+                    if ($promotion->endDate !== null && strtotime($promotion->endDate) - strtotime(now()) <= 0) {
+                        $status = '<span class="text-danger text-small">- Hết hạn</span>';
+                    }
+                @endphp
                 <tr>
-                    <td><input type="checkbox" value="{{ $widget->id }}" class="input-checkbox checkBoxItem"></td>
+                    <td><input type="checkbox" value="{{ $promotion->id }}" class="input-checkbox checkBoxItem"></td>
                     <td>
-                        {{ $widget->name }}
+                        <div> {{ $promotion->name }} {!! $status !!}</div>
+                        <div class="text-small text-success">Mã KM: {{ $promotion->code }}</div>
                     </td>
                     <td>
-                        {{ $widget->keyword }}
-                    </td>
-                    <td>
-                        {{ !empty($widget->short_code) ? $widget->short_code : '-' }}
-                    </td>
-                    @foreach ($languages as $language)
-                        @if (session('app_locale') == $language->canonical)
-                            @continue;
-                        @endif
-                        @php
-                            $translated = isset($widget->description[$language->id]) ? 1 : 0;
-                        @endphp
-                        <td class="text-center" style="width: 100px">
-                            <a class="{{ $translated == 1 ? '' : 'text-danger' }}"
-                                href="{{ route('widget.translate', ['languageId' => $language->id, 'id' => $widget->id]) }}">
-                                {{ $translated == 1 ? 'Đã dịch' : 'Chưa dịch' }}
-                            </a>
-                        </td>
-                    @endforeach
+                        <div class="discount-infomation text-danger text-center">
+                            {!! renderDiscountInformation($promotion) !!}
+                        </div>
 
-                    <td class="text-center js-switch-{{ $widget->id }}">
-                        <input type="checkbox" value="{{ $widget->publish }}"
-                            {{ $widget->publish == 2 ? 'checked' : '' }} class="js-switch  status" data-field="publish"
-                            data-model="{{ $config['model'] }}" data-modelId="{{ $widget->id }}" />
+                    </td>
+
+                    <td>
+                        <div>{{ __('module.promotion')[$promotion->method] }}</div>
+
+                    </td>
+                    <td>
+                        {{ $startDate }}
+                    </td>
+                    <td>
+                        {{ $promotion->neverEndDate === 'accept' ? 'Không giới hạn' : $endDate }}
+                    </td>
+                    <td class="text-center js-switch-{{ $promotion->id }}">
+                        <input type="checkbox" value="{{ $promotion->publish }}"
+                            {{ $promotion->publish == 2 ? 'checked' : '' }} class="js-switch  status"
+                            data-field="publish" data-model="{{ $config['model'] }}"
+                            data-modelId="{{ $promotion->id }}" />
                     </td>
                     <td class="text-center">
-                        <a href="{{ route('widget.edit', $widget->id) }}" class="btn btn-success"><i
+                        <a href="{{ route('promotion.edit', $promotion->id) }}" class="btn btn-success"><i
                                 class="fa fa-edit"></i></a>
-                        <a href="{{ route('widget.delete', $widget->id) }}" class="btn btn-danger"><i
+                        <a href="{{ route('promotion.delete', $promotion->id) }}" class="btn btn-danger"><i
                                 class="fa fa-trash"></i></a>
                     </td>
                 </tr>
@@ -57,7 +64,7 @@
         @endif
     </tbody>
 </table>
-{{ $widgets->links('pagination::bootstrap-4') }}
+{{ $promotions->links('pagination::bootstrap-4') }}
 <script>
     var changeStatusUrl = "{{ url('ajax/dashboard/changeStatus') }}";
     var changeStatusAllUrl = "{{ url('ajax/dashboard/changeStatusAll') }}";

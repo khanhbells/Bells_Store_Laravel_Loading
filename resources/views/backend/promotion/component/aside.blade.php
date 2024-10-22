@@ -52,7 +52,7 @@
                     <label class="fix-label ml5" for="chooseSource">Chọn nguồn khách áp dụng</label>
                 </div>
             </div>
-            @if ($sourceStatus)
+            @if ($sourceStatus != 'all' && isset($sourceStatus))
                 @php
                     $sourceValue = old('sourceValue', $model->sourceValue ?? []);
                 @endphp
@@ -90,7 +90,7 @@
                 $applyStatus = old('source', $model->applyStatus ?? null);
                 $applyValue = old('applyValue', $model->applyValue ?? []);
             @endphp
-            @if ($applyStatus)
+            @if ($applyStatus != 'all' && isset($applyStatus))
                 <div class="apply-wrapper">
                     <select name="applyValue[]" id="" class="multipleSelect2 conditionItem" multiple>
                         @foreach (__('module.applyStatus') as $key => $val)
