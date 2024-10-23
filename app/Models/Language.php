@@ -51,4 +51,8 @@ class Language extends Model
     {
         return $this->belongsToMany(Menu::class, 'menu_language', 'language_id', 'menu_id')->withPivot('name', 'canonical')->withTimestamps();
     }
+    public function systems()
+    {
+        return $this->hasMany(System::class, 'language_id', 'id');
+    }
 }

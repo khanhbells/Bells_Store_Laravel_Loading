@@ -28,7 +28,7 @@ class StorePromotionRequest extends FormRequest
     {
         $rules = [
             'name' => 'required',
-            'code' => 'required',
+            'code' => 'required|unique:promotions',
             'startDate' => 'required|custom_date_format',
         ];
         $date = $this->only('startDate', 'endDate');
@@ -58,7 +58,7 @@ class StorePromotionRequest extends FormRequest
         $message = [
             'name.required' => 'Bạn chưa nhập tên của khuyến mại!',
             'code.required' => 'Bạn chưa nhập mã khuyến mại của khuyến mại!',
-            // 'code.unique' => 'Mã khuyến mại đã tồn tại hãy nhập từ khóa khác!',
+            'code.unique' => 'Mã khuyến mại đã tồn tại hãy nhập mã khuyến mại khác!',
             'startDate.required' => 'Bạn chưa nhập vào ngày bắt đầu khuyến mại!',
             'startDate.custom_date_format' => 'Ngày bắt đầu khuyến mại không đúng định dạng!',
             'endDate.required' => 'Bạn chưa nhập vào ngày kết thúc khuyến mại!',

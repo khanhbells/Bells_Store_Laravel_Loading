@@ -8,7 +8,8 @@
                 <label for="" class="control-label text-left">Ngày bắt đầu <span
                         class="text-danger">(*)</span></label>
                 <div class="form-date">
-                    <input type="text" name="startDate" value="{{ old('startDate', $model->startDate ?? '') }}"
+                    <input type="text" name="startDate"
+                        value="{{ old('startDate', isset($model->startDate) ? convertDateTime($model->startDate) : null) }}"
                         class="form-control datepicker" placeholder="" autocomplete="off" />
                     <span><i class="fa fa-calendar"></i></span>
                 </div>
@@ -17,7 +18,8 @@
                 <label for="" class="control-label text-left">Ngày kết thúc <span
                         class="text-danger">(*)</span></label>
                 <div class="form-date datepicker">
-                    <input type="text" name="endDate" value="{{ old('endDate', $model->endDate ?? '') }}"
+                    <input type="text" name="endDate"
+                        value="{{ old('endDate', isset($model->endDate) ? convertDateTime($model->endDate) : null) }}"
                         class="form-control datepicker" placeholder="" autocomplete="off"
                         @if (old('neverEndDate', $model->neverEndDate ?? null) == 'accept') disabled @endif>
                     <span><i class="fa fa-calendar"></i></span>
@@ -37,24 +39,24 @@
             <h5>Nguồn khách hàng áp dụng</h5>
         </div>
         @php
-            $sourceStatus = old('source', $model->sourceStatus ?? null);
+            $sourceStatus = old('source', $model->discountInformation['source']['status'] ?? null);
         @endphp
         <div class="ibox-content">
             <div class="setting-value">
                 <div class="nav-setting-item uk-flex uk-flex-middle">
                     <input type="radio" value="all" name="source" id="allSource" class="chooseSource"
-                        {{ !old('source') || old('source', $model->sourceStatus ?? '') === 'all' ? 'checked' : '' }}>
+                        {{ !old('source') || old('source', $model->discountInformation['source']['status'] ?? '') === 'all' ? 'checked' : '' }}>
                     <label class="fix-label ml5" for="allSource">Áp dụng cho toàn bộ nguồn khách</label>
                 </div>
                 <div class="nav-setting-item uk-flex uk-flex-middle">
                     <input type="radio" value="choose" name="source" id="chooseSource" class="chooseSource"
-                        {{ old('source', $model->sourceStatus ?? '') === 'choose' ? 'checked' : '' }}>
+                        {{ old('source', $model->discountInformation['source']['status'] ?? '') === 'choose' ? 'checked' : '' }}>
                     <label class="fix-label ml5" for="chooseSource">Chọn nguồn khách áp dụng</label>
                 </div>
             </div>
             @if ($sourceStatus != 'all' && isset($sourceStatus))
                 @php
-                    $sourceValue = old('sourceValue', $model->sourceValue ?? []);
+                    $sourceValue = old('sourceValue', $model->discountInformation['source']['data'] ?? []);
                 @endphp
                 <div class="source-wrapper">
                     <select name="sourceValue[]" id="" class="multipleSelect2" multiple>
@@ -77,18 +79,18 @@
             <div class="setting-value">
                 <div class="nav-setting-item uk-flex uk-flex-middle">
                     <input class="chooseApply" type="radio" value="all" name="applyStatus" id="allApply"
-                        {{ !old('applyStatus') || old('applyStatus', $model->applyStatus ?? '') === 'all' ? 'checked' : '' }}>
+                        {{ !old('applyStatus') || old('applyStatus', $model->discountInformation['apply']['status'] ?? '') === 'all' ? 'checked' : '' }}>
                     <label class="fix-label ml5" for="allApply">Áp dụng cho toàn bộ đối tượng</label>
                 </div>
                 <div class="nav-setting-item uk-flex uk-flex-middle">
                     <input class="chooseApply" type="radio" value="choose" name="applyStatus" id="chooseApply"
-                        {{ old('applyStatus', $model->applyStatus ?? '') === 'choose' ? 'checked' : '' }}>
+                        {{ old('applyStatus', $model->discountInformation['apply']['status'] ?? '') === 'choose' ? 'checked' : '' }}>
                     <label class="fix-label ml5" for="chooseApply">Chọn đối tượng khách hàng</label>
                 </div>
             </div>
             @php
-                $applyStatus = old('source', $model->applyStatus ?? null);
-                $applyValue = old('applyValue', $model->applyValue ?? []);
+                $applyStatus = old('source', $model->discountInformation['apply']['status'] ?? null);
+                $applyValue = old('applyValue', $model->discountInformation['apply']['data'] ?? []);
             @endphp
             @if ($applyStatus != 'all' && isset($applyStatus))
                 <div class="apply-wrapper">
@@ -110,6 +112,7 @@
 <input type="hidden" class="conditionItemSelected" value="{{ json_encode($applyValue) }}">
 @if (count($applyValue))
     @foreach ($applyValue as $key => $val)
-        <input type="hidden" class="condition_input_{{ $val }}" value="{{ json_encode(old($val)) }}">
+        <input type="hidden" class="condition_input_{{ $val }}"
+            value="{{ json_encode(old($val, $model->discountInformation['apply']['condition'][$val] ?? null)) }}">
     @endforeach
 @endif

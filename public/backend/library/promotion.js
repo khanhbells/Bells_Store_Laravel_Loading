@@ -614,11 +614,16 @@
                 let couldSell = (typeof object.data.couldSell != 'undefined') ? couldSell : 0
                 let sku = object.data[i].sku
                 let price = object.data[i].price
-                let classBox = model + '_' + product_id + '_' + product_variant_id
-
+                let uuid = object.data[i].uuid
+                let classBox = model + '_' + product_id + '_' + uuid
                 let isChecked = ($('.boxWrapper .' + classBox + '').length) ? true : false
-                console.log(isChecked);
-                html += `<div class="search-object-item" data-productid="${product_id}" data-variant_id="${product_variant_id ? product_variant_id : ''}" data-name="${name}" data-type="Product">
+
+                html += `<div class="search-object-item" 
+                                data-uuid="${uuid}" 
+                                data-productid="${product_id}" 
+                                data-variant_id="${product_variant_id ? product_variant_id : ''}" 
+                                data-name="${name}" 
+                                data-type="Product">
                                 <div class="uk-flex uk-flex-middle uk-flex-space-between">
                                     <div class="object-info">
                                         <div class="uk-flex uk-flex-middle">
@@ -681,11 +686,12 @@
                 id: _this.attr('data-productid'),
                 product_variant_id: _this.attr('data-variant_id'),
                 name: _this.attr('data-name'),
+                uuid: _this.attr('data-uuid'),
                 type: objectType
             }
 
             if (objectType == 'Product') {
-                var classBox = $('.select-product-and-quantity').val() + '_' + objectItem.id + '_' + objectItem.product_variant_id
+                var classBox = $('.select-product-and-quantity').val() + '_' + objectItem.id + '_' + objectItem.uuid
             } else {
                 var classBox = $('.select-product-and-quantity').val() + '_' + objectItem.id
             }
@@ -761,14 +767,19 @@
             id: [],
             product_variant_id: [],
             name: [],
-            type: [] // Thêm mảng type vào preloadObject
+            type: [], // Thêm mảng type vào preloadObject
+            uuid: [],
+
         }
+        console.log(preloadObject);
+
 
         let objectArray = preloadObject.id.map((id, index) => ({
             id: id,
             product_variant_id: preloadObject.product_variant_id[index] || 'null',
             name: preloadObject.name[index],
-            type: preloadObject.type
+            type: preloadObject.type,
+            uuid: preloadObject.variant_uuid[index] || 'null',
         }))
         // console.log(objectArray);
 
@@ -789,9 +800,9 @@
         let model = $('.select-product-and-quantity').val()
         if (objectData.length) {
             for (let i = 0; i < objectData.length; i++) {
-                let { id, product_variant_id, name, type } = objectData[i]
+                let { id, product_variant_id, name, type, uuid } = objectData[i]
                 if (type == 'Product') {
-                    var classBox = `${model}_${id}_${product_variant_id}`
+                    var classBox = `${model}_${id}_${uuid}`
                 } else {
                     var classBox = `${model}_${id}`
                 }
@@ -814,6 +825,7 @@
                         <div class="hidden">
                             <input name="object[id][]" value="${id}">
                             <input name="object[product_variant_id][]" value="${product_variant_id}">
+                            <input name="object[variant_uuid][]" value="${uuid}">
                             <input name="object[name][]" value="${name}">
                             <input name="object[type]" value="${type}">
                         </div>

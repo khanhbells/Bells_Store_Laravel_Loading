@@ -8,4 +8,9 @@ use Illuminate\Database\Eloquent\Model;
 class System extends Model
 {
     use HasFactory;
+    protected $table = 'systems';
+    public function languages()
+    {
+        return $this->belongsTo(Language::class, 'language_id', 'id');
+    }
 }

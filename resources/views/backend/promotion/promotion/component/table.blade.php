@@ -18,10 +18,12 @@
             @foreach ($promotions as $key => $promotion)
                 @php
                     $startDate = convertDateTime($promotion->startDate);
-                    $endDate = convertDateTime($promotion->endDate);
+                    $endDate = $promotion->endDate != null ? convertDateTime($promotion->endDate) : null;
                     $status = '';
                     if ($promotion->endDate !== null && strtotime($promotion->endDate) - strtotime(now()) <= 0) {
                         $status = '<span class="text-danger text-small">- Hết hạn</span>';
+                    } elseif (isset($promotion->neverEndDate)) {
+                        $status = '<span class="text-danger text-small">- Vô hạn</span>';
                     }
                 @endphp
                 <tr>

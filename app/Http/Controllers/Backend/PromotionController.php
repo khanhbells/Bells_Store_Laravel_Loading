@@ -94,18 +94,12 @@ class PromotionController extends Controller
         try {
             $this->authorize('modules', 'promotion.update');
             $promotion = $this->promotionRepository->findById($id);
-            $promotion->description = $promotion->description[$this->language];
-            $modelClass = loadClass($promotion->model);
-            $promotionItem = convertArrayByKey($modelClass->findByCondition(
-                ...array_values($this->menuItemAgrument($promotion->model_id))
-            ), ['id', 'name.languages', 'image']);
-
+            $sources = $this->sourceRepository->all();
             $config = $this->configData();
             $template = 'backend.promotion.promotion.store';
-            $album = json_decode($promotion->album);
             $config['seo'] = __('message.promotion');
             $config['method'] = 'edit';
-            return view('backend.dashboard.layout', compact('template', 'config', 'promotion', 'album', 'promotionItem'));
+            return view('backend.dashboard.layout', compact('template', 'config', 'promotion', 'sources'));
         } catch (\Illuminate\Auth\Access\AuthorizationException $e) {
             return redirect()->back()->with('error', 'Bạn không có quyền truy cập vào chức năng này.');
         }

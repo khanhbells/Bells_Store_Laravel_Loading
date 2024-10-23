@@ -15,8 +15,8 @@ use App\Http\Controllers\Backend\PostCatalogueController;
 use App\Http\Controllers\Backend\PostController;
 use App\Http\Controllers\Backend\PermissionController;
 use App\Http\Controllers\Backend\GenerateController;
-use App\Http\Controllers\Backend\ProductCatalogueController;
-use App\Http\Controllers\Backend\ProductController;
+use App\Http\Controllers\Backend\Product\ProductCatalogueController;
+use App\Http\Controllers\Backend\Product\ProductController;
 use App\Http\Controllers\Backend\AttributeCatalogueController;
 use App\Http\Controllers\Backend\AttributeController;
 use App\Http\Controllers\Backend\SystemController;
@@ -29,6 +29,9 @@ use App\Http\Controllers\Ajax\MenuController as AjaxMenuController;
 use App\Http\Controllers\Ajax\SlideController as AjaxSlideController;
 use App\Http\Controllers\Ajax\ProductController as AjaxProductController;
 use App\Http\Controllers\Ajax\SourceController as AjaxSourceController;
+//FRONTEND
+use App\Http\Controllers\Frontend\HomeController;
+
 //USE CONTROLLER
 
 /*
@@ -42,9 +45,16 @@ use App\Http\Controllers\Ajax\SourceController as AjaxSourceController;
 |
 */
 
-Route::get('/', function () {
-    return view('welcome');
-});
+// Route::get('/', function () {
+//     return view('welcome');
+// });
+// FRONTEND ROUTES
+Route::get('/', [HomeController::class, 'index'])->name('home.index');
+
+
+
+
+
 //Login
 Route::get('admin', [AuthController::class, 'index'])->name('auth.admin')->middleware('login');
 Route::get('logout', [AuthController::class, 'logout'])->name('auth.logout');

@@ -89,6 +89,19 @@ if (!function_exists('renderDiscountInformation')) {
         return '<div><a href="' . route('promotion.edit', $promotion->id) . '">Xem chi tiết</a></div>';
     }
 }
+
+if (!function_exists('write_url')) {
+    function write_url(string $canonical = '', bool $fullDomain = true, $suffix = false)
+    {
+        if (strpos($canonical, 'http') !== false) {
+            return $canonical;
+        }
+        $fullUrl = (($fullDomain === true) ? config('app.url') : '') . $canonical . (($suffix === true) ? config('app.general.suffix') : '');
+        return $fullUrl;
+    }
+}
+
+//Đệ quy
 if (!function_exists('recursive')) {
     function recursive($data, $parentId = 0)
     {
@@ -106,6 +119,42 @@ if (!function_exists('recursive')) {
         return $temp;
     }
 }
+
+if (!function_exists('frontend_recursive_menu')) {
+    function frontend_recursive_menu($data, $parentId = 0, $count = 1)
+    {
+        $html = '';
+        if (count($data)) {
+            foreach ($data as $key => $val) {
+                $name = $val['item']->languages->first()->pivot->name;
+                $canonical = write_url($val['item']->languages->first()->pivot->canonical, true, true);
+                $ulClass = ($count >= 1) ? 'menu-level__' . ($count + 1) : '';
+
+                // Tạo thẻ li
+                $html .= '<li class="' . (($count == 1) ? 'children' : '') . '">';
+                $html .= '<a href="' . $canonical . '" title="' . $name . '">' . $name . '</a>';
+
+                // Nếu là cấp 3 trở xuống thì không tạo dropdown-menu
+                if (count($val['children'])) {
+                    if ($count < 2) {
+                        $html .= '<div class="dropdown-menu">';  // Chỉ tạo đến level 2
+                    }
+                    $html .= '<ul class="uk-list uk-clearfix menu-style ' . $ulClass . '">';
+                    $html .= frontend_recursive_menu($val['children'], $val['item']->parent_id, $count + 1);
+                    $html .= '</ul>';
+
+                    if ($count < 2) {
+                        $html .= '</div>';  // Đóng dropdown-menu
+                    }
+                }
+                $html .= '</li>';
+            }
+        }
+        return $html;
+    }
+}
+
+
 if (!function_exists('recursive_menu')) {
     function recursive_menu($data)
     {

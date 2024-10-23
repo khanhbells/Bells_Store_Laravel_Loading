@@ -20,7 +20,10 @@ class ProductVariant extends Model
         'album',
         'publish',
         'user_id',
+        'uuid',
     ];
+
+    protected $table = 'product_variants';
     public function products()
     {
         return $this->belongsTo(Product::class, 'product_id', 'id');

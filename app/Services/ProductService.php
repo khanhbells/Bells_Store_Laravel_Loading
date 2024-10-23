@@ -18,6 +18,7 @@ use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Str;
 use App\Helpers;
 use App\Models\ProductVariant;
+use Ramsey\Uuid\Uuid;
 
 /**
  * Class ProductService
@@ -122,15 +123,17 @@ class ProductService extends BaseService implements ProductServiceInterface
         }
         return $combines;
     }
-    private function createVariantArray(array $payload = []): array
+    private function createVariantArray(array $payload = [], $product): array
     {
         $variant = [];
         if (isset($payload['variant']['sku']) && count($payload['variant']['sku'])) {
             foreach ($payload['variant']['sku'] as $key => $val) {
+                $uuid = Uuid::uuid5(Uuid::NAMESPACE_DNS, $product->id . ', ' . $payload['productVariant']['id'][$key]);
                 // Xử lý album, loại bỏ phần '/laravelversion1.com/public'
                 $album = ($payload['variant']['album'][$key]) ?? '';
                 $album = str_replace('/laravelversion1.com/public', '', $album); // Loại bỏ phần đường dẫn
                 $variant[] = [
+                    'uuid' => $uuid,
                     'code' => ($payload['productVariant']['id'][$key]) ?? '',
                     'quantity' => ($payload['variant']['quantity'][$key]) ?? '',
                     'sku' => $val,
@@ -179,7 +182,7 @@ class ProductService extends BaseService implements ProductServiceInterface
     private function createVariant($product, $request, $languageId)
     {
         $payload = $request->only(['variant', 'productVariant', 'attribute']);
-        $variant = $this->createVariantArray($payload);
+        $variant = $this->createVariantArray($payload, $product);
         $variants = $product->product_variants()->createMany($variant);
         $variantId = $variants->pluck('id');
         $productVariantLanguage = [];
@@ -203,6 +206,7 @@ class ProductService extends BaseService implements ProductServiceInterface
             }
         }
         $variantLanguage = $this->productVariantLanguageRepository->createBatch($productVariantLanguage);
+
         $variantAttribute = $this->productVariantAttributeRepository->createBatch($variantAttribute);
 
 

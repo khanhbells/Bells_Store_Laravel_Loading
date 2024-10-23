@@ -7,6 +7,9 @@ use DateTime;
 use Illuminate\Support\ServiceProvider;
 use Illuminate\Support\Facades\Schema;
 use Illuminate\Support\Facades\Validator;
+use App\Http\ViewComposers\SystemComposer;
+use App\Http\ViewComposers\MenuComposer;
+use App\Models\Language;
 
 class AppServiceProvider extends ServiceProvider
 {
@@ -92,6 +95,9 @@ class AppServiceProvider extends ServiceProvider
      */
     public function boot()
     {
+        $locale = app()->getLocale();
+        $language = Language::where('canonical', $locale)->first();
+
         Validator::extend('custom_date_format', function ($attribute, $value, $parameters, $validator) {
             return DateTime::createFromFormat('d/m/Y H:i', $value) !== false;
         });
@@ -104,7 +110,18 @@ class AppServiceProvider extends ServiceProvider
             $endDate = Carbon::createFromFormat('d/m/Y H:i', $value);
             return $endDate->greaterThan($startDate) !== false;
         });
+
+        view()->composer('frontend.homepage.layout', function ($view) use ($language) {
+            $composerClasses = [
+                MenuComposer::class,
+                SystemComposer::class,
+
+            ];
+            foreach ($composerClasses as $key => $value) {
+                $composer = app()->make($value, ['language' => $language->id]);
+                $composer->compose($view);
+            }
+        });
         Schema::defaultStringLength(191);
-        //
     }
 }
