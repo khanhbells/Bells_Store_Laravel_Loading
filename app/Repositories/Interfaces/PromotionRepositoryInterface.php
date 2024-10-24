@@ -6,4 +6,7 @@ namespace App\Repositories\Interfaces;
  * Interface UserServiceInterface
  * @package App\Services\Interfaces
  */
-interface PromotionRepositoryInterface extends BaseRepositoryInterface {}
+interface PromotionRepositoryInterface extends BaseRepositoryInterface
+{
+    public function findByProduct(array $productId = []);
+}

@@ -9,6 +9,7 @@ use Illuminate\Support\Facades\Schema;
 use Illuminate\Support\Facades\Validator;
 use App\Http\ViewComposers\SystemComposer;
 use App\Http\ViewComposers\MenuComposer;
+use App\Http\ViewComposers\LanguageComposer;
 use App\Models\Language;
 
 class AppServiceProvider extends ServiceProvider
@@ -115,6 +116,7 @@ class AppServiceProvider extends ServiceProvider
             $composerClasses = [
                 MenuComposer::class,
                 SystemComposer::class,
+                LanguageComposer::class,
 
             ];
             foreach ($composerClasses as $key => $value) {

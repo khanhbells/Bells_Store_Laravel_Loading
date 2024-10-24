@@ -121,36 +121,39 @@ if (!function_exists('recursive')) {
 }
 
 if (!function_exists('frontend_recursive_menu')) {
-    function frontend_recursive_menu($data, $parentId = 0, $count = 1)
+    function frontend_recursive_menu(array $data = [], int $parentId = 0, int $count = 1, $type = 'html')
     {
         $html = '';
         if (count($data)) {
-            foreach ($data as $key => $val) {
-                $name = $val['item']->languages->first()->pivot->name;
-                $canonical = write_url($val['item']->languages->first()->pivot->canonical, true, true);
-                $ulClass = ($count >= 1) ? 'menu-level__' . ($count + 1) : '';
+            if ($type == 'html') {
+                foreach ($data as $key => $val) {
+                    $name = $val['item']->languages->first()->pivot->name;
+                    $canonical = write_url($val['item']->languages->first()->pivot->canonical, true, true);
+                    $ulClass = ($count >= 1) ? 'menu-level__' . ($count + 1) : '';
 
-                // Tạo thẻ li
-                $html .= '<li class="' . (($count == 1) ? 'children' : '') . '">';
-                $html .= '<a href="' . $canonical . '" title="' . $name . '">' . $name . '</a>';
+                    // Tạo thẻ li
+                    $html .= '<li class="' . (($count == 1) ? 'children' : '') . '">';
+                    $html .= '<a href="' . $canonical . '" title="' . $name . '">' . $name . '</a>';
 
-                // Nếu là cấp 3 trở xuống thì không tạo dropdown-menu
-                if (count($val['children'])) {
-                    if ($count < 2) {
-                        $html .= '<div class="dropdown-menu">';  // Chỉ tạo đến level 2
+                    // Nếu là cấp 3 trở xuống thì không tạo dropdown-menu
+                    if (count($val['children'])) {
+                        if ($count < 2) {
+                            $html .= '<div class="dropdown-menu">';  // Chỉ tạo đến level 2
+                        }
+                        $html .= '<ul class="uk-list uk-clearfix menu-style ' . $ulClass . '">';
+                        $html .= frontend_recursive_menu($val['children'], $val['item']->parent_id, $count + 1, $type);
+                        $html .= '</ul>';
+
+                        if ($count < 2) {
+                            $html .= '</div>';  // Đóng dropdown-menu
+                        }
                     }
-                    $html .= '<ul class="uk-list uk-clearfix menu-style ' . $ulClass . '">';
-                    $html .= frontend_recursive_menu($val['children'], $val['item']->parent_id, $count + 1);
-                    $html .= '</ul>';
-
-                    if ($count < 2) {
-                        $html .= '</div>';  // Đóng dropdown-menu
-                    }
+                    $html .= '</li>';
                 }
-                $html .= '</li>';
+                return $html;
             }
         }
-        return $html;
+        return $data;
     }
 }
 

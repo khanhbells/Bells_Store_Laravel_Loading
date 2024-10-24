@@ -11,5 +11,6 @@ return [
         '2' => 'follow',
     ],
     'suffix' => '.html',
+    'defaultPublish' => ['publish', '=', 2],
 
 ];

@@ -50,7 +50,9 @@ class PromotionService extends BaseService implements PromotionServiceInterface
             'endDate',
             'neverEndDate',
         );
-        // Chuyển đổi định dạng ngày tháng trước khi lưu
+        $payload['maxDiscountValue'] = convert_price($request->input(PromotionEnum::PRODUCT_AND_QUANTITY . '.maxDiscountValue') ?? 0) == 0 ? 0 : convert_price($request->input(PromotionEnum::PRODUCT_AND_QUANTITY . '.maxDiscountValue') ?? 0);
+        $payload['discountValue'] = convert_price($request->input(PromotionEnum::PRODUCT_AND_QUANTITY . '.discountValue'));
+        $payload['discountType'] = convert_price($request->input(PromotionEnum::PRODUCT_AND_QUANTITY . '.discountType'));
         $payload['startDate'] = Carbon::createFromFormat('d/m/Y H:i', $request->input('startDate'));
         if (isset($payload['endDate'])) {
             $payload['endDate'] = Carbon::createFromFormat('d/m/Y H:i', $request->input('endDate'));

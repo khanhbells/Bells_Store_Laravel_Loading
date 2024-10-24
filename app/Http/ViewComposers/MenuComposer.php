@@ -22,20 +22,21 @@ class MenuComposer
         $agrument = $this->agrument($this->language);
         $menuCatalogue = $this->menuCatalogueRepository->findByCondition(...$agrument);
         $menus = [];
+        $htmlType = ['menu-content'];
         if (count($menuCatalogue)) {
             foreach ($menuCatalogue as $key => $val) {
-                $menus[$val->keyword] = frontend_recursive_menu(recursive($val->menus));
+                $type = (in_array($val->keyword, $htmlType)) ? 'html' : 'array';
+                $menus[$val->keyword] = frontend_recursive_menu(recursive($val->menus), 0, 1, $type);
             }
         }
-        dd($menus);
         $view->with('menu', $menus);
     }
     private function agrument($language)
     {
         return [
-            // 'condition' => [
-            //     ['keyword', '=', 'menu-content']
-            // ],
+            'condition' => [
+                config('app.general.defaultPublish')
+            ],
             'flag' => true,
             'relation' => [
                 'menus' => function ($query) use ($language) {
