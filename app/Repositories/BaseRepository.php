@@ -7,6 +7,7 @@ use App\Models\Base;
 use App\Repositories\Interfaces\BaseRepositoryInterface;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Arr;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Validation\Rules\In;
 
 /**
@@ -158,5 +159,38 @@ class BaseRepository implements BaseRepositoryInterface
                 $query->where($alias . '.' . $val[0], $val[1], $val[2]);
             }
         })->get();
+    }
+
+    public function recursiveCategory(string $parameter = '', $table = '')
+    {
+        $table = $table . '_catalogues';
+        $query = "
+            WITH RECURSIVE category_tree AS (
+                SELECT id, parent_id, deleted_at
+                FROM $table
+                WHERE id IN (?)
+                UNION ALL
+                SELECT c.id, c.parent_id, c.deleted_at
+                FROM $table as c
+                JOIN category_tree as ct ON ct.id = c.parent_id
+            )
+            SELECT id FROM category_tree WHERE deleted_at IS NULL
+        ";
+
+        // Use parameter binding to prevent SQL injection
+        $results = DB::select($query, [$parameter]);
+        return $results;
+    }
+
+    public function findObjectByCategoryIds($catIds = [], $model)
+    {
+        // dd($catIds);
+        return $this->model->where(
+            [config('app.general.defaultPublish')],
+        )
+            ->join($model . '_catalogue_' . $model . ' as tb2', 'tb2.' . $model . '_id', '=', $model . 's.id')
+            ->whereIn('tb2.' . $model . '_catalogue_id', $catIds)
+            ->orderBy('order', 'desc')
+            ->get();
     }
 }

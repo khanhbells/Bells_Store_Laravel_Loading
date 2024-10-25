@@ -100,7 +100,6 @@ class PromotionRepository extends BaseRepository implements PromotionRepositoryI
             })
             ->whereIn('products.id', $productId)
             ->orderBy('discount', 'DESC')
-            ->get()
-            ->toArray();
+            ->get();
     }
 }

@@ -15,5 +15,6 @@ interface WidgetServiceInterface
     public function update($id, Request $request, $languageId);
     public function destroy($id);
     public function saveTranslate($request);
-    public function findWidgetByKeyword(string $keyword = '', int $language);
+    // public function findWidgetByKeyword(string $keyword = '', int $language);
+    public function getWidget(array $params = [], int $language);
 }

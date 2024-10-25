@@ -16,4 +16,5 @@ interface SlideServiceInterface
     public function destroy($id);
     public function convertSlideArray(array $slide = []): array;
     public function updateImage($id, $requestSlide, $languageId);
+    public function getSlide($array = [], $language = 1);
 }

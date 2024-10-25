@@ -1,11 +1,14 @@
-@if (count($slides->slideItems))
-    <div class="panel-slide page-setup" data-setting='{{ json_encode($slides->setting) }}'>
+@php
+    $slideKeyword = App\Enums\SlideEnum::BANNER;
+@endphp
+@if (count($slides[$slideKeyword]['item']))
+    <div class="panel-slide page-setup" data-setting='{{ json_encode($slides[$slideKeyword]['setting']) }}'>
         <div class="uk-container uk-container-center">
             <div class="swiper-container">
                 {{-- <div class="swiper-button-next"></div>
                 <div class="swiper-button-prev"></div> --}}
                 <div class="swiper-wrapper">
-                    @foreach ($slides->slideItems as $key => $val)
+                    @foreach ($slides[$slideKeyword]['item'] as $key => $val)
                         <div class="swiper-slide">
                             <div class="slide-item">
                                 <div class="slide-overlay">

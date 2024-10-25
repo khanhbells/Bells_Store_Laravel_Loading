@@ -6,6 +6,7 @@ use App\Services\Interfaces\ProductServiceInterface;
 use App\Services\BaseService;
 use App\Repositories\Interfaces\ProductRepositoryInterface as ProductRepository;
 use App\Repositories\Interfaces\RouterRepositoryInterface as RouterRepository;
+use App\Repositories\Interfaces\PromotionRepositoryInterface as PromotionRepository;
 use App\Repositories\Interfaces\ProductVariantLanguageRepositoryInterface as ProductVariantLanguageRepository;
 use App\Repositories\Interfaces\ProductVariantAttributeRepositoryInterface as ProductVariantAttributeRepository;
 use Illuminate\Support\Facades\DB;
@@ -30,17 +31,20 @@ class ProductService extends BaseService implements ProductServiceInterface
     protected $routerRepository;
     protected $productVariantLanguageRepository;
     protected $productVariantAttributeRepository;
+    protected $promotionRepository;
     public function __construct(
         ProductRepository $productRepository,
         RouterRepository $routerRepository,
         ProductVariantLanguageRepository $productVariantLanguageRepository,
-        ProductVariantAttributeRepository $productVariantAttributeRepository
+        ProductVariantAttributeRepository $productVariantAttributeRepository,
+        PromotionRepository $promotionRepository
     ) {
         $this->productRepository = $productRepository;
         $this->routerRepository = $routerRepository;
         $this->controllerName = 'ProductController';
         $this->productVariantLanguageRepository = $productVariantLanguageRepository;
         $this->productVariantAttributeRepository = $productVariantAttributeRepository;
+        $this->promotionRepository = $promotionRepository;
     }
     public function paginate($request, $languageId)
     {
@@ -359,5 +363,20 @@ class ProductService extends BaseService implements ProductServiceInterface
     private function payloadLanguage()
     {
         return  ['name', 'description', 'content', 'meta_title', 'meta_keyword', 'meta_description', 'canonical'];
+    }
+    public function combineProductAndPromotion($productId = [], $products)
+    {
+        $promotions = $this->promotionRepository->findByProduct($productId);
+        // pre($promotions);
+        if ($promotions) {
+            foreach ($products as $index => $product) {
+                foreach ($promotions as $key => $promotion) {
+                    if ($promotion->product_id == $product->id) {
+                        $products[$index]->promotions = $promotion;
+                    }
+                }
+            }
+        }
+        return $products;
     }
 }

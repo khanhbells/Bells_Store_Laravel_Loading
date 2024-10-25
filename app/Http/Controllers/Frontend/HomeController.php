@@ -6,6 +6,8 @@ use App\Http\Controllers\FrontendController;
 use Illuminate\Http\Request;
 use App\Repositories\Interfaces\SlideRepositoryInterface as SlideRepository;
 use App\Services\Interfaces\WidgetServiceInterface as WidgetService;
+use App\Services\Interfaces\SlideServiceInterface as SlideService;
+use App\Enums\SlideEnum;
 // use App\Models\User;
 use App\Models\Language;
 use App\Models\Attribute;
@@ -18,27 +20,34 @@ class HomeController extends FrontendController
     protected $language;
     protected $slideRepository;
     protected $widgetService;
+    protected $slideService;
 
     public function __construct(
         SlideRepository $slideRepository,
-        WidgetService $widgetService
+        WidgetService $widgetService,
+        SlideService $slideService,
     ) {
         $this->slideRepository = $slideRepository;
         $this->widgetService = $widgetService;
+        $this->slideService = $slideService;
         parent::__construct();
     }
     public function index()
     {
         $config = $this->config();
-        $widget = [
-            'category' => $this->widgetService->findWidgetByKeyword('category', $this->language, ['children' => true]),
-            // 'bai-viet' => $this->widgetService->findWidgetByKeyword('bai-viet', $this->language),
-        ];
-        $slides = $this->slideRepository->findByCondition(...$this->slideAgrument());
-        $slides->slideItems = $slides->item[$this->language];
+
+        $widgets = $this->widgetService->getWidget([
+            ['keyword' => 'category'],
+            ['keyword' => 'bai-viet', 'children' => true],
+            ['keyword' => 'category-highlight'],
+            ['keyword' => 'category-home', 'children' => true, 'promotion' => true, 'object' => true],
+        ], $this->language);
+
+        $slides = $this->slideService->getSlide([SlideEnum::BANNER, SlideEnum::BANNER_BODY], $this->language);
         return view('frontend.homepage.home.index', compact(
             'config',
             'slides',
+            'widgets',
         ));
     }
 

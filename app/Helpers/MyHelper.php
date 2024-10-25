@@ -91,8 +91,9 @@ if (!function_exists('renderDiscountInformation')) {
 }
 
 if (!function_exists('write_url')) {
-    function write_url(string $canonical = '', bool $fullDomain = true, $suffix = false)
+    function write_url($canonical = null, bool $fullDomain = true, $suffix = false)
     {
+        $canonical = ($canonical) ?? '';
         if (strpos($canonical, 'http') !== false) {
             return $canonical;
         }
@@ -231,5 +232,14 @@ if (!function_exists('convertArrayByKey')) {
             }
         }
         return $temp;
+    }
+}
+if (!function_exists('pre')) {
+    function pre($data)
+    {
+        echo '<pre>';
+        print_r($data);
+        echo '</pre>';
+        die(); // Hoặc có thể bỏ nếu không muốn dừng chương trình
     }
 }
