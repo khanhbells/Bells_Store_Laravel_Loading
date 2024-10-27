@@ -19,6 +19,7 @@ use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Str;
 use App\Helpers;
 use App\Models\ProductVariant;
+use Illuminate\Pagination\Paginator;
 use Ramsey\Uuid\Uuid;
 
 /**
@@ -46,9 +47,15 @@ class ProductService extends BaseService implements ProductServiceInterface
         $this->productVariantAttributeRepository = $productVariantAttributeRepository;
         $this->promotionRepository = $promotionRepository;
     }
-    public function paginate($request, $languageId)
+
+    public function paginate($request, $languageId, $productCatalogue = null, $page = 1, $extend = [])
     {
-        $perPage = $request->integer('perpage');
+        if (!is_null($productCatalogue)) {
+            Paginator::currentPageResolver(function () use ($page) {
+                return $page;
+            });
+        }
+        $perPage = (!is_null($productCatalogue)) ? 20 : 15;
         $condition = [
             'keyword' => addslashes($request->input('keyword')),
             'publish' => $request->input('publish', -1),
@@ -58,11 +65,11 @@ class ProductService extends BaseService implements ProductServiceInterface
             ]
         ];
         $paginationConfig = [
-            'path' => 'product/index'
+            'path' => ($extend['path']) ?? 'product/index',
         ];
         $orderBy = ['products.id', 'DESC'];
         $relations = ['product_catalogues'];
-        $rawQuery = $this->whereRaw($request, $languageId);
+        $rawQuery = $this->whereRaw($request, $languageId, $productCatalogue);
         $joins = [
             ['product_language as tb2', 'tb2.product_id', '=', 'products.id'],
             ['product_catalogue_product as tb3', 'products.id', '=', 'tb3.product_id']
@@ -78,6 +85,27 @@ class ProductService extends BaseService implements ProductServiceInterface
             $rawQuery
         );
         return $products;
+    }
+    private function whereRaw($request, $languageId, $productCatalogue = null)
+    {
+        $rawCondition = [];
+        if ($request->integer('product_catalogue_id') > 0 || !is_null($productCatalogue)) {
+            $catId = ($request->integer('product_catalogue_id') > 0) ? $request->integer('product_catalogue_id') : $productCatalogue->id;
+            $rawCondition['whereRaw'] =  [
+                [
+                    'tb3.product_catalogue_id IN (
+                        SELECT id
+                        FROM product_catalogues
+                        JOIN product_catalogue_language ON product_catalogues.id = product_catalogue_language.product_catalogue_id
+                        WHERE lft >= (SELECT lft FROM product_catalogues as pc WHERE pc.id = ?)
+                        AND rgt <= (SELECT rgt FROM product_catalogues as pc WHERE pc.id = ?)
+                        AND product_catalogue_language.language_id = ' . $languageId . '
+                    )',
+                    [$catId, $catId]
+                ]
+            ];
+        }
+        return $rawCondition;
     }
     public function create(Request $request, $languageId)
     {
@@ -330,31 +358,23 @@ class ProductService extends BaseService implements ProductServiceInterface
             return [$request->product_catalogue_id];
         }
     }
-    private function whereRaw($request, $languageId)
-    {
-        $rawCondition = [];
-        if ($request->integer('product_catalogue_id') > 0) {
-            $rawCondition['whereRaw'] =  [
-                [
-                    'tb3.product_catalogue_id IN (
-                        SELECT id
-                        FROM product_catalogues
-                        WHERE lft >= (SELECT lft FROM product_catalogues as pc WHERE pc.id = ?)
-                        AND rgt <= (SELECT rgt FROM product_catalogues as pc WHERE pc.id =?)
-                    )',
-                    [$request->integer('product_catalogue_id'), $request->integer('product_catalogue_id')]
-                ]
-            ];
-        }
-        return $rawCondition;
-    }
+
+
     private function convert_price(string $price = '')
     {
         return str_replace('.', '', $price);
     }
     private function paginateselect()
     {
-        return ['products.id', 'products.publish', 'products.image', 'products.order', 'tb2.name', 'tb2.canonical'];
+        return [
+            'products.id',
+            'products.publish',
+            'products.image',
+            'products.order',
+            'products.price',
+            'tb2.name',
+            'tb2.canonical'
+        ];
     }
     private function payload()
     {
@@ -366,8 +386,9 @@ class ProductService extends BaseService implements ProductServiceInterface
     }
     public function combineProductAndPromotion($productId = [], $products)
     {
+
         $promotions = $this->promotionRepository->findByProduct($productId);
-        // pre($promotions);
+        // dd($promotions->toArray());
         if ($promotions) {
             foreach ($products as $index => $product) {
                 foreach ($promotions as $key => $promotion) {
@@ -378,5 +399,9 @@ class ProductService extends BaseService implements ProductServiceInterface
             }
         }
         return $products;
+    }
+    public function paginateIndex(mixed $productCatalogue = null)
+    {
+        // $products = $this->productRepository->paginationIndex($productCatalogue);
     }
 }

@@ -45,6 +45,9 @@ class ProductCatalogue extends Model
         }
         return true;
     }
+
+    public function getNameByLanguage($id, $language) {}
+
     public function scopeKeyword($query, $keyword)
     {
         if (!empty($keyword)) {

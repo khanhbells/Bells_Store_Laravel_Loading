@@ -78,9 +78,11 @@ class WidgetService extends BaseService implements WidgetServiceInterface
         DB::beginTransaction();
 
         try {
+
             $payload = $request->only('name', 'keyword', 'short_code', 'description', 'album', 'model');
             $payload['model_id'] = $request->input('modelItem.id');
-            $payload['album'] = $this->formatAlbum($payload['album']);
+            $payload['album'] = $this->formatAlbum($payload['album'], true);
+            // dd($payload['album']);
             $payload['description'] = [
                 $languageId => $payload['description']
             ];
@@ -195,37 +197,34 @@ class WidgetService extends BaseService implements WidgetServiceInterface
                 $agrument = $this->widgetAgrument($widget, $language, $params[$key]);
                 $object = $class->findByCondition(...$agrument);
                 $model = lcfirst(str_replace('Catalogue', '', $widget->model));
+                $replace = $model . 's';
+                $service = $model . 'Service';
                 if (count($object) && strpos($widget->model, 'Catalogue')) {
-                    $objectId = $object->pluck('id')->toArray(); //DS ID cua danh muc cha
-                    if (isset($params[$key]['children']) && $params[$key]['children']) {
-                        //Đang lấy ra danh mục cấp 1
-                        $childrenAgrument = $this->childrenAgrument($objectId, $language);
-                        $object->childrens  = $class->findByCondition(...$childrenAgrument);
-
-                        // -------------------------------------------------------------
-
-                    }
-                    //-------------LAY SAN PHAM --------------------------
-
-                    // if (isset($params[$key]['object']) &&  $params[$key]['object'] === true) {
-                    // }
-                    $parameters = implode(',', $objectId);
-                    $childId = $class->recursiveCategory($parameters, $model);
-                    $ids = [];
-                    foreach ($childId as $child_id) {
-                        $ids[] = $child_id->id;
-                    }
                     $classRepo = loadClass(ucfirst($model));
-                    $replace = $model . 's';
-                    foreach ($object as $val) {
-                        if ($val->rgt - $val->lft > 1) {
-                            $val->{$replace} = $classRepo->findObjectByCategoryIds($ids, $model);
+                    foreach ($object as $objectKey => $objectValue) {
+                        if (isset($params[$key]['children']) && $params[$key]['children']) {
+                            $childrenAgrument = $this->childrenAgrument([$objectValue->id], $language);
+                            $objectValue->childrens  = $class->findByCondition(...$childrenAgrument);
+                        }
+                        //-------------LAY SAN PHAM --------------------------
+                        // $parameters[] = $objectValue->id;
+                        $childId = $class->recursiveCategory($objectValue->id, $model);
+                        $ids = [];
+                        foreach ($childId as $child_id) {
+                            $ids[] = $child_id->id;
+                        }
+                        if ($objectValue->rgt - $objectValue->lft > 1) {
+                            $objectValue->{$replace} = $classRepo->findObjectByCategoryIds($ids, $model, $language);
                         }
                         if (isset($params[$key]['promotion']) && $params[$key]['promotion'] == true) {
-                            $productId = $val->{$replace}->pluck('id')->toArray();
-                            $val->{$replace} = $this->productService->combineProductAndPromotion($productId, $val->{$replace});
+                            $productId = $objectValue->{$replace}->pluck('id')->toArray();
+                            $objectValue->{$replace} = $this->{$service}->combineProductAndPromotion($productId, $objectValue->{$replace});
                         }
+                        $widgets[$key]->object = $object;
                     }
+                } else {
+                    $productId = $object->pluck('id')->toArray();
+                    $object = $this->{$service}->combineProductAndPromotion($productId, $object);
                     $widget->object = $object;
                 }
                 $temp[$widget->keyword] = $widgets[$key];
@@ -243,20 +242,27 @@ class WidgetService extends BaseService implements WidgetServiceInterface
         ];
         $withCount = [];
 
-        if (strpos($widget->model, 'Catalogue') && isset($param['promotion'])) {
-
+        if (strpos($widget->model, 'Catalogue')) {
             $model = lcfirst(str_replace('Catalogue', '', $widget->model)) . 's';
-            $relation[$model] = function ($query) use ($param, $language) {
-                $query->whereHas('languages', function ($query) use ($language) {
-                    $query->where('language_id', $language);
-                });
-                $query->take(($param['limit']) ?? 8);
-                $query->orderBy('order', 'desc');
-            };
-
+            if (isset($param['object'])) {
+                $relation[$model] = function ($query) use ($param, $language) {
+                    $query->whereHas('languages', function ($query) use ($language) {
+                        $query->where('language_id', $language);
+                    });
+                    $query->take(($param['limit']) ?? 8);
+                    $query->orderBy('order', 'desc');
+                };
+            }
             if (isset($param['countObject'])) {
                 $withCount[] = $model;
             }
+        } else {
+            $model = lcfirst($widget->model . '_catalogues');
+            $relation[$model] = function ($query) use ($language) {
+                $query->with('languages', function ($query) use ($language) {
+                    $query->where('language_id', $language);
+                });
+            };
         }
         return [
             'condition' => [

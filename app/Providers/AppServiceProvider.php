@@ -11,6 +11,8 @@ use App\Http\ViewComposers\SystemComposer;
 use App\Http\ViewComposers\MenuComposer;
 use App\Http\ViewComposers\LanguageComposer;
 use App\Models\Language;
+use Flasher\Laravel\Http\Request;
+use Illuminate\Contracts\Pagination\LengthAwarePaginator;
 
 class AppServiceProvider extends ServiceProvider
 {
@@ -115,7 +117,7 @@ class AppServiceProvider extends ServiceProvider
         view()->composer('frontend.homepage.layout', function ($view) use ($language) {
             $composerClasses = [
                 MenuComposer::class,
-                SystemComposer::class,
+                // SystemComposer::class,
                 LanguageComposer::class,
 
             ];
@@ -124,6 +126,8 @@ class AppServiceProvider extends ServiceProvider
                 $composer->compose($view);
             }
         });
+
+
         Schema::defaultStringLength(191);
     }
 }

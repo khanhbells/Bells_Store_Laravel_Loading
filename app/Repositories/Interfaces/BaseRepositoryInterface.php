@@ -40,4 +40,5 @@ interface BaseRepositoryInterface
     public function updateOrInsert(array $payload = [], array $condition = []);
     public function findByWhereHas(array $condition = [], string $relation = '', string $alias = '');
     public function findWidgetItem(array $condition = [], int $language_id = 1, string $alias = '');
+    public function breadcrumb($model, $language);
 }

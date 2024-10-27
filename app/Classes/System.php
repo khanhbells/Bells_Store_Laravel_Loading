@@ -68,6 +68,17 @@ class System
 
             ]
         ];
+        $data['social'] = [
+            'label' => 'Cấu hình mạng xã hội dành cho trang chủ',
+            'description' => 'Cài đặt đầy đủ thông tin về mạng xã hội của trang chủ website. Bao gồm tiêu đề mạng xã hội, Từ khóa mạng xã hội, Mô tả mạng xã hội, Meta images',
+            'value' => [
+                'facebook' => ['type' => 'text', 'label' => 'Facebook'],
+                'youtube' => ['type' => 'text', 'label' => 'Youtube'],
+                'twitter' => ['type' => 'text', 'label' => 'Twitter'],
+                'tiktok' => ['type' => 'text', 'label' => 'Tiktok'],
+                'instagram' => ['type' => 'text', 'label' => 'Instagram'],
+            ]
+        ];
         return $data;
     }
 }

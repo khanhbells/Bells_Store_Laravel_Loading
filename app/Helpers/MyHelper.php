@@ -1,9 +1,70 @@
 <?php
 
-if (!function_exists('convert_price')) {
-    function convert_price(string $price = '')
+if (!function_exists('image')) {
+    function image(string $image = '')
     {
-        return str_replace('.', '', $price);
+        return $image;
+    }
+}
+if (!function_exists('convert_price')) {
+    function convert_price(string $price = '', $flag = false)
+    {
+        return ($flag == false) ? str_replace('.', '', $price) : number_format($price, 0, ',', '.');
+    }
+}
+
+if (!function_exists('getPercent')) {
+    function getPercent($product = null, $discountValue = 0)
+    {
+        return ($product->price > 0) ? round($discountValue / $product->price * 100) : 0;
+    }
+}
+if (!function_exists('getPromotionPrice')) {
+    function getPromotionPrice($priceMain = 0, $discountValue = 0, $discountType = '')
+    {
+        $price = 0;
+        if ($discountType == 'percent') {
+            $priceSale = $priceMain - ($priceMain * $discountValue / 100);
+        } else {
+            $priceSale = $priceMain - $discountValue;
+        }
+        return $priceSale;
+    }
+}
+if (!function_exists('getPrice')) {
+    function getPrice($product = null)
+    {
+        $result = [
+            'price' => $product->price,
+            'priceSale' => 0,
+            'percent' => 0,
+            'html' => ''
+        ];
+        if (isset($product->promotions) && count($product->promotions->toArray())) {
+            $result['percent'] = ($product->promotions->discountType == 'percent') ?
+                $product->promotions->discountValue : getPercent($product, $product->promotions->discountValue);
+            if ($product->promotions->discountValue > 0) {
+                $result['priceSale'] = getPromotionPrice($product->price, $product->promotions->discountValue, $product->promotions->discountType);
+            }
+        }
+        $result['html'] .= '<div class="price uk-flex uk-flex-bottom">';
+        $result['html'] .= '<div class="price-sale">' . (($result['priceSale'] > 0) ? convert_price($result['priceSale'], true) : convert_price($result['price'], true)) . 'đ</div>';
+        if ($result['priceSale'] > 0) {
+            $result['html'] .= '<div class="price-old">' . convert_price($result['price'], true) . 'đ</div>';
+        }
+        $result['html'] .= '</div>';
+        return $result;
+    }
+}
+
+
+if (!function_exists('getReview')) {
+    function getReview(string $product = '')
+    {
+        return [
+            'star' => rand(1, 5),
+            'count' => rand(0, 100)
+        ];
     }
 }
 if (!function_exists('convert_array')) {
@@ -90,6 +151,7 @@ if (!function_exists('renderDiscountInformation')) {
     }
 }
 
+//cấu hình đường dẫn
 if (!function_exists('write_url')) {
     function write_url($canonical = null, bool $fullDomain = true, $suffix = false)
     {
@@ -99,6 +161,20 @@ if (!function_exists('write_url')) {
         }
         $fullUrl = (($fullDomain === true) ? config('app.url') : '') . $canonical . (($suffix === true) ? config('app.general.suffix') : '');
         return $fullUrl;
+    }
+}
+//SEO
+if (!function_exists('seo')) {
+    function seo($model = null, $page = 1)
+    {
+        $canonical = ($page > 1) ? write_url($model->canonical, true, false) . '/trang-' . $page . config('app.general.suffix') : write_url($model->canonical, true, true);
+        return [
+            'meta_title' => $model->meta_title ?? $model->name,
+            'meta_keyword' => $model->meta_keyword  ?? '',
+            'meta_description' => $model->meta_description  ?? cut_string_and_decode($model->description, 168),
+            'meta_image' => $model->image,
+            'canonical' =>   $canonical
+        ];
     }
 }
 
@@ -241,5 +317,79 @@ if (!function_exists('pre')) {
         print_r($data);
         echo '</pre>';
         die(); // Hoặc có thể bỏ nếu không muốn dừng chương trình
+    }
+}
+
+if (!function_exists('renderQuickBuy')) {
+    function renderQuickBuy($product, string $canonical = '', string $name = '')
+    {
+        $class = 'btn-addCart';
+        $openModal = '';
+        if (isset($product->product_variants) && count($product->product_variants)) {
+            $class = '';
+            $canonical = '#popup';
+            $openModal = 'data-uk-modal';
+        }
+        $html = '<a href="' . $canonical . '" ' . $openModal . ' title="' . $name . '" class="' . $class . '">
+                        <svg width="25" height="25" viewBox="0 0 25 25" fill="none"
+                            xmlns="http://www.w3.org/2000/svg">
+                            <g>
+                                <path
+                                    d="M24.4941 3.36652H4.73614L4.69414 3.01552C4.60819 2.28593 4.25753 1.61325 3.70863 1.12499C3.15974 0.636739 2.45077 0.366858 1.71614 0.366516L0.494141 0.366516V2.36652H1.71614C1.96107 2.36655 2.19748 2.45647 2.38051 2.61923C2.56355 2.78199 2.68048 3.00626 2.70914 3.24952L4.29414 16.7175C4.38009 17.4471 4.73076 18.1198 5.27965 18.608C5.82855 19.0963 6.53751 19.3662 7.27214 19.3665H20.4941V17.3665H7.27214C7.02705 17.3665 6.79052 17.2764 6.60747 17.1134C6.42441 16.9505 6.30757 16.7259 6.27914 16.4825L6.14814 15.3665H22.3301L24.4941 3.36652ZM20.6581 13.3665H5.91314L4.97214 5.36652H22.1011L20.6581 13.3665Z"
+                                    fill="#253D4E"></path>
+                                <path
+                                    d="M7.49414 24.3665C8.59871 24.3665 9.49414 23.4711 9.49414 22.3665C9.49414 21.2619 8.59871 20.3665 7.49414 20.3665C6.38957 20.3665 5.49414 21.2619 5.49414 22.3665C5.49414 23.4711 6.38957 24.3665 7.49414 24.3665Z"
+                                    fill="#253D4E"></path>
+                                <path
+                                    d="M17.4941 24.3665C18.5987 24.3665 19.4941 23.4711 19.4941 22.3665C19.4941 21.2619 18.5987 20.3665 17.4941 20.3665C16.3896 20.3665 15.4941 21.2619 15.4941 22.3665C15.4941 23.4711 16.3896 24.3665 17.4941 24.3665Z"
+                                    fill="#253D4E"></path>
+                            </g>
+                            <defs>
+                                <clipPath>
+                                    <rect width="24" height="24" fill="white"
+                                        transform="translate(0.494141 0.366516)"></rect>
+                                </clipPath>
+                            </defs>
+                        </svg>
+                    </a>';
+        return $html;
+    }
+}
+
+
+if (!function_exists('cutnchar')) {
+    function cutnchar($str = null, $n = 320)
+    {
+        if ($str === null || strlen($str) <= $n) {
+            return $str;
+        }
+        // Lấy chuỗi cắt theo độ dài $n
+        $html = substr($str, 0, $n);
+
+        // Cắt đến dấu khoảng trắng cuối cùng để tránh cắt giữa chừng một từ
+        $html = substr($html, 0, strrpos($html, ' '));
+
+        // Thêm dấu "..." vào cuối chuỗi đã cắt
+        return $html . '...';
+    }
+}
+
+if (!function_exists('cut_string_and_decode')) {
+    function cut_string_and_decode($str = null, $n = 200)
+    {
+        if ($str === null) {
+            return '';
+        }
+
+        // Giải mã các ký tự HTML
+        $str = html_entity_decode($str);
+
+        // Xóa các thẻ HTML
+        $str = strip_tags($str);
+
+        // Cắt chuỗi theo số ký tự đã chỉ định
+        $str = cutnchar($str, $n);
+
+        return $str;
     }
 }

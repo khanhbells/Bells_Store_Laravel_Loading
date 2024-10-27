@@ -38,7 +38,7 @@ class BaseService implements BaseServiceInterface
     {
         return 1;
     }
-    public function formatAlbum($albumArray)
+    public function formatAlbum($albumArray, $flag = false)
     {
         foreach ($albumArray as &$image) {
             if (strpos($image, 'http://localhost:81/laravelversion1.com/public') !== false) {
@@ -47,7 +47,7 @@ class BaseService implements BaseServiceInterface
                 $image = str_replace('/laravelversion1.com/public', '', $image);
             }
         }
-        return (!empty($albumArray)) ? json_encode($albumArray) : ''; // Mã hóa lại thành chuỗi JSON
+        return (!empty($albumArray) && $flag == false) ? json_encode($albumArray) : $albumArray; // Mã hóa lại thành chuỗi JSON
     }
     public function formatImage($image)
     {

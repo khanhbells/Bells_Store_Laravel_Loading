@@ -11,6 +11,7 @@
     @include('frontend.component.footer')
     @include('frontend.component.popup')
     @include('frontend.component.script')
+    @include('frontend.component.popup')
 </body>
 
 </html>

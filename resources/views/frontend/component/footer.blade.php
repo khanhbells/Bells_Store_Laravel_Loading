@@ -76,11 +76,14 @@
                     <div class="uk-flex uk-flex-middle">
                         <div class="span">Follow us:</div>
                         <div class="social-list">
+                            @php
+                                $social = ['facebook', 'twitter', 'youtube'];
+                            @endphp
                             <div class="uk-flex uk-flex-middle">
-                                <a href="" class=""><i class="fa fa-facebook"></i></a>
-                                <a href="" class=""><i class="fa fa-twitter"></i></a>
-                                <a href="" class=""><i class="fa fa-skype"></i></a>
-                                <a href="" class=""><i class="fa fa-youtube"></i></a>
+                                @foreach ($social as $key => $val)
+                                    <a target="_blank" href="{{ $system['social_' . $val] }}" class=""><i
+                                            class="fa fa-{{ $val }}"></i></a>
+                                @endforeach
                             </div>
                         </div>
                     </div>

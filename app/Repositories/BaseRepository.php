@@ -176,21 +176,92 @@ class BaseRepository implements BaseRepositoryInterface
             )
             SELECT id FROM category_tree WHERE deleted_at IS NULL
         ";
-
         // Use parameter binding to prevent SQL injection
         $results = DB::select($query, [$parameter]);
         return $results;
     }
 
-    public function findObjectByCategoryIds($catIds = [], $model)
+    // public function recursiveCategory(array $parameter = [], $table = '')
+    // {
+    //     $table = $table . '_catalogues';
+
+    //     // Tạo placeholders cho từng giá trị trong mảng
+    //     $placeholders = implode(',', array_fill(0, count($parameter), '?'));
+
+    //     $query = "
+    //     WITH RECURSIVE category_tree AS (
+    //         SELECT 
+    //             id, 
+    //             parent_id, 
+    //             pcl.name,
+    //             CAST(id AS CHAR(200)) AS path
+    //         FROM $table
+    //         JOIN product_catalogue_language as pcl ON pcl.product_catalogue_id = id
+    //         WHERE id IN ($placeholders)
+
+    //         UNION ALL
+
+    //         SELECT 
+    //             c.id, 
+    //             c.parent_id, 
+    //             pcl.name,
+    //             CONCAT(ct.path, '-', c.id) AS path
+    //         FROM $table as c
+    //         JOIN product_catalogue_language as pcl ON pcl.product_catalogue_id = c.id
+    //         JOIN category_tree as ct ON ct.id = c.parent_id
+    //     )
+
+    //     SELECT id, name
+    //     FROM category_tree
+    //     ORDER BY path
+    // ";
+
+    //     // Thực thi truy vấn với các tham số đã cho
+    //     $results = DB::select($query, $parameter);
+    //     return $results;
+    // }
+
+
+    public function findObjectByCategoryIds($catIds = [], $model, $language)
     {
-        // dd($catIds);
-        return $this->model->where(
-            [config('app.general.defaultPublish')],
+        $query = $this->model->newQuery();
+        $query->select(
+            $model . 's.*'
         )
-            ->join($model . '_catalogue_' . $model . ' as tb2', 'tb2.' . $model . '_id', '=', $model . 's.id')
+            ->where(
+                [config('app.general.defaultPublish')],
+            )
+            ->with('languages', function ($query) use ($language) {
+                $query->where('language_id', $language);
+            })
+            ->with($model . '_catalogues', function ($query) use ($language) {
+                $query->with('languages', function ($query) use ($language) {
+                    $query->where('language_id', $language);
+                });
+            });
+
+        if ($model == 'product') {
+            $query->with('product_variants');
+        }
+
+        $query->join($model . '_catalogue_' . $model . ' as tb2', 'tb2.' . $model . '_id', '=', $model . 's.id')
             ->whereIn('tb2.' . $model . '_catalogue_id', $catIds)
             ->orderBy('order', 'desc')
+            ->limit(8)
             ->get();
+        return $query->get();
+    }
+
+    public function breadcrumb($model, $language)
+    {
+        return $this->findByCondition([
+            ['lft', '<=', $model->lft],
+            ['rgt', '>=', $model->rgt],
+            config('app.general.defaultPublish')
+        ], true, [
+            'languages' => function ($query) use ($language) {
+                $query->where('language_id', $language);
+            }
+        ], ['lft', 'asc']);
     }
 }

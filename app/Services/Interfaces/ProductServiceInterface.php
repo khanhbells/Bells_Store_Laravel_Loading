@@ -10,9 +10,10 @@ use Illuminate\Http\Request;
  */
 interface ProductServiceInterface extends BaseServiceInterface
 {
-    public function paginate($request, $languageId);
+    public function paginate($request, $languageId, $productCatalogue = null, $page, $extend = []);
     public function create(Request $request, $languageId);
     public function update($id, Request $request, $languageId);
     public function destroy($id);
     public function combineProductAndPromotion($productId = [], $products);
+    public function paginateIndex(mixed $productCatalogue = null);
 }

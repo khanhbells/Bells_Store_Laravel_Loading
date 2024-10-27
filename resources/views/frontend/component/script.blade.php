@@ -7,3 +7,4 @@
 <script src="https://unpkg.com/swiper/swiper-bundle.min.js"></script>
 <script src="{{ asset('frontend/resources/uikit/js/components/sticky.min.js') }}"></script>
 <script src="{{ asset('frontend/resources/function.js') }}"></script>
+<script src="{{ asset('frontend\core\plugins\jquery-nice-select-1.1.0\js\jquery.nice-select.js') }}"></script>

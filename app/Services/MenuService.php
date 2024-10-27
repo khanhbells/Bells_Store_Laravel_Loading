@@ -121,7 +121,7 @@ class MenuService extends BaseService implements MenuServiceInterface
                     $menuArray = [
                         'menu_catalogue_id' => $menu->menu_catalogue_id,
                         'parent_id' => $menu->id,
-                        'order' => $payload['menu']['order'][$key],
+                        'order' => (int)$payload['menu']['order'][$key],
                         'user_id' => Auth::id()
                     ];
 

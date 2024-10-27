@@ -97,7 +97,7 @@ class WidgetController extends Controller
 
             $config = $this->configData();
             $template = 'backend.widget.store';
-            $album = json_decode($widget->album);
+            $album = $widget->album;
             $config['seo'] = __('message.widget');
             $config['method'] = 'edit';
             return view('backend.dashboard.layout', compact('template', 'config', 'widget', 'album', 'widgetItem'));

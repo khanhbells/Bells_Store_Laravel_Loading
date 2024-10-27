@@ -31,6 +31,7 @@ use App\Http\Controllers\Ajax\ProductController as AjaxProductController;
 use App\Http\Controllers\Ajax\SourceController as AjaxSourceController;
 //FRONTEND
 use App\Http\Controllers\Frontend\HomeController;
+use App\Http\Controllers\Frontend\RouterController;
 
 //USE CONTROLLER
 
@@ -50,6 +51,8 @@ use App\Http\Controllers\Frontend\HomeController;
 // });
 // FRONTEND ROUTES
 Route::get('/', [HomeController::class, 'index'])->name('home.index');
+Route::get('{canonical}' . config('app.general.suffix'), [RouterController::class, 'index'])->name('router.index')->where('canonical', '[a-zA-Z0-9-]+');
+Route::get('{canonical}/trang-{page}' . config('app.general.suffix'), [RouterController::class, 'page'])->name('router.page')->where('canonical', '[a-zA-Z0-9-]+')->where('page', '[0-9]+');
 
 
 
