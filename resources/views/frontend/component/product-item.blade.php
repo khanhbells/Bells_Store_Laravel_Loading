@@ -3,6 +3,8 @@
     $canonical = write_url($product->languages->first()->pivot->canonical, true, true);
     $image = asset($product->image);
     $price = getPrice($product);
+    $catNames = $product->product_catalogues->first()->languages->first()->pivot->name;
+    $review = getReview($product);
     // $catNames = array_map(
     //     function ($category, $product) {
     //         $catName =
@@ -12,8 +14,6 @@
     //     $product->product_catalogues->toArray(),
     //     [$product],
     // )[0];
-    $catNames = $product->product_catalogues->first()->languages->first()->pivot->name;
-    $review = getReview($product);
 @endphp
 
 <div class="product-item product">

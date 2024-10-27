@@ -20,14 +20,15 @@ if (!function_exists('getPercent')) {
     }
 }
 if (!function_exists('getPromotionPrice')) {
-    function getPromotionPrice($priceMain = 0, $discountValue = 0, $discountType = '')
+    function getPromotionPrice($priceMain = 0, $discountValue = 0, $discountType = '', $maxDiscountValue = 0)
     {
-        $price = 0;
+        $value = 0;
         if ($discountType == 'percent') {
-            $priceSale = $priceMain - ($priceMain * $discountValue / 100);
+            $value = ($priceMain * $discountValue / 100);
         } else {
-            $priceSale = $priceMain - $discountValue;
+            $value = $discountValue;
         }
+        $priceSale = $priceMain - (($maxDiscountValue > 0) ? $maxDiscountValue : $value);
         return $priceSale;
     }
 }
@@ -40,16 +41,21 @@ if (!function_exists('getPrice')) {
             'percent' => 0,
             'html' => ''
         ];
-        if (isset($product->promotions) && count($product->promotions->toArray())) {
+        if (isset($product->promotions->discountType) && isset($product->promotions) && count($product->promotions->toArray())) {
             $result['percent'] = ($product->promotions->discountType == 'percent') ?
                 $product->promotions->discountValue : getPercent($product, $product->promotions->discountValue);
             if ($product->promotions->discountValue > 0) {
-                $result['priceSale'] = getPromotionPrice($product->price, $product->promotions->discountValue, $product->promotions->discountType);
+                $result['priceSale'] = getPromotionPrice(
+                    $product->price,
+                    $product->promotions->discountValue,
+                    $product->promotions->discountType,
+                    $product->promotions->maxDiscountValue
+                );
             }
         }
         $result['html'] .= '<div class="price uk-flex uk-flex-bottom">';
-        $result['html'] .= '<div class="price-sale">' . (($result['priceSale'] > 0) ? convert_price($result['priceSale'], true) : convert_price($result['price'], true)) . 'đ</div>';
-        if ($result['priceSale'] > 0) {
+        $result['html'] .= '<div class="price-sale">' . (($result['priceSale'] >= 0) ? convert_price($result['priceSale'], true) : convert_price($result['price'], true)) . 'đ</div>';
+        if ($result['priceSale'] >= 0) {
             $result['html'] .= '<div class="price-old">' . convert_price($result['price'], true) . 'đ</div>';
         }
         $result['html'] .= '</div>';

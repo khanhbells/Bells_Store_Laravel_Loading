@@ -15,5 +15,5 @@ interface ProductServiceInterface extends BaseServiceInterface
     public function update($id, Request $request, $languageId);
     public function destroy($id);
     public function combineProductAndPromotion($productId = [], $products);
-    public function paginateIndex(mixed $productCatalogue = null);
+    public function getAttribute($product, $language);
 }

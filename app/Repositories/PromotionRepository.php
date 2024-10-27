@@ -49,7 +49,10 @@ class PromotionRepository extends BaseRepository implements PromotionRepositoryI
             ->where('promotions.publish', 2)
             ->where('products.publish', 2)
             ->whereIn('products.id', $productId)
-            ->whereDate('promotions.endDate', '>=', now())
+            ->where(function ($query) {
+                $query->whereDate('promotions.endDate', '>=', now())
+                    ->orWhere('promotions.neverEndDate', 'accept');
+            })
             ->groupBy('products.id');
 
         return $this->model->select(
@@ -66,7 +69,10 @@ class PromotionRepository extends BaseRepository implements PromotionRepositoryI
             ->where('promotions.publish', 2)
             ->where('products.publish', 2)
             ->whereIn('products.id', $productId)
-            ->whereDate('promotions.endDate', '>=', now())
+            ->where(function ($query) {
+                $query->whereDate('promotions.endDate', '>=', now())
+                    ->orWhere('promotions.neverEndDate', 'accept');
+            })
             ->joinSub($discountSubquery, 'discounts', function ($join) {
                 $join->on('products.id', '=', 'discounts.product_id');
             })
