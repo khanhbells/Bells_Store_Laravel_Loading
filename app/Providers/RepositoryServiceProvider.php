@@ -60,6 +60,9 @@ class RepositoryServiceProvider extends ServiceProvider
         //ProductVariantAttribute
         'App\Repositories\Interfaces\ProductVariantAttributeRepositoryInterface' =>
         'App\Repositories\ProductVariantAttributeRepository',
+        //ProductVariant
+        'App\Repositories\Interfaces\ProductVariantRepositoryInterface' =>
+        'App\Repositories\ProductVariantRepository',
         //System
         'App\Repositories\Interfaces\SystemRepositoryInterface' =>
         'App\Repositories\SystemRepository',

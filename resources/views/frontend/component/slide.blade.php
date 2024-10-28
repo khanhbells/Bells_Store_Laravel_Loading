@@ -15,13 +15,13 @@
                                     <div class="slide-title">{!! $val['name'] !!}</div>
                                     <div class="slide-description">{!! $val['description'] !!}</div>
                                 </div>
-                                <div class="subcribe-form">
+                                {{-- <div class="subcribe-form">
                                     <form action="" class="uk-form form">
                                         <input type="text" name="email" value="" class="input-text"
                                             placeholder="Nhập vào Email Của bạn">
                                         <button type="submit" name="submit" class="btn-send">Subcribe</button>
                                     </form>
-                                </div>
+                                </div> --}}
                                 <span class="image"><img src="{{ asset($val['image']) }}"
                                         alt="{{ $val['name'] }}"></span>
                             </div>

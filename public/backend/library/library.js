@@ -185,6 +185,40 @@
         })
     }
 
+    HT.countType = () => {
+        // Đếm ký tự cho trường meta_title và cập nhật ngay khi trang tải
+        var titleCount = $('input[name="meta_title"]').val().length;
+        $('.count-meta-title').text(titleCount + ' ' + characterLabel);
+        $('input[name="meta_title"]').on('keyup', function () {
+            var count = $(this).val().length;
+            $('.count-meta-title').text(count + ' ' + characterLabel);
+        });
+
+        // Đếm ký tự cho trường meta_description và cập nhật ngay khi trang tải
+        var descriptionCount = $('textarea[name="meta_description"]').val().length;
+        $('.count-meta-description').text(descriptionCount + ' ' + characterLabel);
+        if (descriptionCount > 168) {
+            $('textarea[name="meta_description"]').addClass('red-border');
+            $('.count-meta-description').addClass('red-text');
+        } else {
+            $('textarea[name="meta_description"]').removeClass('red-border');
+            $('.count-meta-description').removeClass('red-text');
+        }
+
+        // Gắn sự kiện `keyup` để cập nhật khi người dùng nhập liệu
+        $('textarea[name="meta_description"]').on('keyup', function () {
+            var count = $(this).val().length;
+            $('.count-meta-description').text(count + ' ' + characterLabel);
+            if (count > 168) {
+                $(this).addClass('red-border');
+                $('.count-meta-description').addClass('red-text');
+            } else {
+                $(this).removeClass('red-border');
+                $('.count-meta-description').removeClass('red-text');
+            }
+        });
+    }
+
     $(document).ready(function () {
         HT.select2()
         HT.switchery()
@@ -195,6 +229,7 @@
         HT.sortui()
         HT.int()
         HT.setupDatepicker()
+        HT.countType()
 
 
     });

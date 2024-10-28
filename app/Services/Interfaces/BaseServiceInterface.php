@@ -11,4 +11,5 @@ use Illuminate\Http\Request;
 interface BaseServiceInterface
 {
     public function currentLanguage();
+    public function objectCount($objectCatalogues);
 }

@@ -9,4 +9,5 @@ namespace App\Repositories\Interfaces;
 interface PromotionRepositoryInterface extends BaseRepositoryInterface
 {
     public function findByProduct(array $productId = []);
+    public function findPromotionByVariantUuid($uuid);
 }

@@ -63,7 +63,9 @@ class ProductRepository extends BaseRepository implements ProductRepositoryInter
         $query->select([
             'products.id',
             'tb2.name',
+            'tb2.canonical',
             'tb3.uuid',
+            'tb3.code',
             'tb3.id as product_variant_id',
             DB::raw('CONCAT(tb2.name,"-",COALESCE(tb4.name,"default")) as variant_name'),
             DB::raw('COALESCE(tb3.sku,products.code) as sku'),

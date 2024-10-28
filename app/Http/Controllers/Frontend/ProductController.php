@@ -8,6 +8,7 @@ use Illuminate\Http\Request;
 use App\Models\Language;
 use App\Repositories\Interfaces\ProductCatalogueRepositoryInterface as ProductCatalogueRepository;
 use App\Services\Interfaces\ProductServiceInterface as ProductService;
+use App\Services\Interfaces\ProductCatalogueServiceInterface as ProductCatalogueService;
 use App\Repositories\Interfaces\ProductRepositoryInterface as ProductRepository;
 use App\Models\System;
 
@@ -18,21 +19,25 @@ class ProductController extends FrontendController
     protected $system;
     protected $productCatalogueRepository;
     protected $productService;
+    protected $productCatalogueService;
     protected $productRepository;
 
     public function __construct(
         ProductCatalogueRepository $productCatalogueRepository,
         ProductService $productService,
         ProductRepository $productRepository,
+        ProductCatalogueService $productCatalogueService,
     ) {
         parent::__construct();
         $this->productCatalogueRepository = $productCatalogueRepository;
         $this->productService = $productService;
         $this->productRepository = $productRepository;
+        $this->productCatalogueService = $productCatalogueService;
     }
     public function index($id, $request)
     {
         $config = $this->config();
+        $language = $this->language;
         $system = $this->system;
         $product = $this->productRepository->getProductById($id, $this->language);
         $product = $this->productService->combineProductAndPromotion([$id], $product, $flag = true);
@@ -41,6 +46,10 @@ class ProductController extends FrontendController
         $seo = seo($product);
         // -----------------------------------------------------------
         $product = $this->productService->getAttribute($product, $this->language);
+        $category = recursive($this->productCatalogueRepository->all(['languages' =>
+        function ($query) use ($language) {
+            $query->where('language_id', $language);
+        }], categorySelectRaw('product')));
         return view('frontend.product.product.index', compact(
             'config',
             'seo',
@@ -48,6 +57,7 @@ class ProductController extends FrontendController
             'system',
             'breadcrumb',
             'product',
+            'category',
         ));
     }
 

@@ -48,7 +48,7 @@
                         <label for="" class="control-label text-left">
                             <div class="uk-flex uk-flex-middle uk-flex-space-between">
                                 <span>{{ __('message.seo_meta_description') }}</span>
-                                <span class="count-meta-description">0 {{ __('message.character') }}</span>
+                                <span class="count-meta-description ">0 {{ __('message.character') }}</span>
                             </div>
                         </label>
                         <textarea type="text" name="meta_description" class="form-control" placeholder="" autocomplete="off"
@@ -75,3 +75,6 @@
         </div>
     </div>
 </div>
+<script>
+    var characterLabel = "{{ __('message.character') }}";
+</script>

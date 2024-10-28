@@ -47,9 +47,15 @@ class BaseRepository implements BaseRepositoryInterface
             ->withPath(env('APP_URL') . $extend['path']); // Thêm đường dẫn cho phân trang
     }
 
-    public function all(array $relation = [])
+    public function all(array $relation = [], string $selectRaw = '')
     {
-        return $this->model->with($relation)->get();
+        $query = $this->model->newQuery();
+        $query->select('*');
+        if (!empty($selectRaw)) {
+            $query->selectRaw($selectRaw);
+        }
+        $query->with($relation);
+        return $query->get();
     }
 
     public function create(array $payload = [])
@@ -180,46 +186,6 @@ class BaseRepository implements BaseRepositoryInterface
         $results = DB::select($query, [$parameter]);
         return $results;
     }
-
-    // public function recursiveCategory(array $parameter = [], $table = '')
-    // {
-    //     $table = $table . '_catalogues';
-
-    //     // Tạo placeholders cho từng giá trị trong mảng
-    //     $placeholders = implode(',', array_fill(0, count($parameter), '?'));
-
-    //     $query = "
-    //     WITH RECURSIVE category_tree AS (
-    //         SELECT 
-    //             id, 
-    //             parent_id, 
-    //             pcl.name,
-    //             CAST(id AS CHAR(200)) AS path
-    //         FROM $table
-    //         JOIN product_catalogue_language as pcl ON pcl.product_catalogue_id = id
-    //         WHERE id IN ($placeholders)
-
-    //         UNION ALL
-
-    //         SELECT 
-    //             c.id, 
-    //             c.parent_id, 
-    //             pcl.name,
-    //             CONCAT(ct.path, '-', c.id) AS path
-    //         FROM $table as c
-    //         JOIN product_catalogue_language as pcl ON pcl.product_catalogue_id = c.id
-    //         JOIN category_tree as ct ON ct.id = c.parent_id
-    //     )
-
-    //     SELECT id, name
-    //     FROM category_tree
-    //     ORDER BY path
-    // ";
-
-    //     // Thực thi truy vấn với các tham số đã cho
-    //     $results = DB::select($query, $parameter);
-    //     return $results;
-    // }
 
 
     public function findObjectByCategoryIds($catIds = [], $model, $language)

@@ -143,4 +143,9 @@ class BaseService implements BaseServiceInterface
             return false;
         }
     }
+    public function objectCount($objectCatalogues)
+    {
+        $catalogueId = $objectCatalogues->pluck('id');
+        dd($catalogueId);
+    }
 }

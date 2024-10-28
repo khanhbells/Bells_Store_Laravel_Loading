@@ -14,9 +14,9 @@ if (!function_exists('convert_price')) {
 }
 
 if (!function_exists('getPercent')) {
-    function getPercent($product = null, $discountValue = 0)
+    function getPercent($product = null, $discount = 0)
     {
-        return ($product->price > 0) ? round($discountValue / $product->price * 100) : 0;
+        return ($product->price > 0) ? round($discount / $product->price * 100) : 0;
     }
 }
 if (!function_exists('getPromotionPrice')) {
@@ -42,8 +42,8 @@ if (!function_exists('getPrice')) {
             'html' => ''
         ];
         if (isset($product->promotions->discountType) && isset($product->promotions) && count($product->promotions->toArray())) {
-            $result['percent'] = ($product->promotions->discountType == 'percent') ?
-                $product->promotions->discountValue : getPercent($product, $product->promotions->discountValue);
+            $result['percent'] = ($product->promotions->discountType == 'percent' && $product->promotions->maxDiscountValue == 0) ?
+                $product->promotions->discountValue : getPercent($product, $product->promotions->discount);
             if ($product->promotions->discountValue > 0) {
                 $result['priceSale'] = getPromotionPrice(
                     $product->price,
@@ -54,11 +54,38 @@ if (!function_exists('getPrice')) {
             }
         }
         $result['html'] .= '<div class="price uk-flex uk-flex-bottom">';
-        $result['html'] .= '<div class="price-sale">' . (($result['priceSale'] >= 0) ? convert_price($result['priceSale'], true) : convert_price($result['price'], true)) . 'đ</div>';
-        if ($result['priceSale'] >= 0) {
+        $result['html'] .= '<div class="price-sale">' . (($result['priceSale'] >= 0 && $result['percent'] != 0) ? convert_price($result['priceSale'], true) : convert_price($result['price'], true)) . 'đ</div>';
+        if ($result['priceSale'] >= 0 && $result['percent'] != 0) {
             $result['html'] .= '<div class="price-old">' . convert_price($result['price'], true) . 'đ</div>';
         }
         $result['html'] .= '</div>';
+        return $result;
+    }
+}
+if (!function_exists('getVariantPrice')) {
+    function getVariantPrice($variant = null, $variantPromotion)
+    {
+        $result = [
+            'price' => $variant->price,
+            'priceSale' => 0,
+            'percent' => 0,
+            'html' => '',
+        ];
+
+        if (!is_null($variantPromotion)) {
+            $result['percent'] = ($variantPromotion->discountType == 'percent' && $variantPromotion->maxDiscountValue == 0) ?
+                $variantPromotion->discountValue : getPercent($variant, $variantPromotion->discount);
+            $result['priceSale'] = getPromotionPrice(
+                $variant->price,
+                $variantPromotion->discountValue,
+                $variantPromotion->discountType,
+                $variantPromotion->maxDiscountValue
+            );
+        }
+        $result['html'] .= '<div class="price-sale">' . (($result['priceSale'] >= 0 && $result['percent'] != 0) ? convert_price($result['priceSale'], true) : convert_price($result['price'], true)) . 'đ</div>';
+        if ($result['priceSale'] >= 0 && $result['percent'] != 0) {
+            $result['html'] .= '<div class="price-old">' . convert_price($result['price'], true) . 'đ</div>';
+        }
         return $result;
     }
 }
@@ -397,5 +424,38 @@ if (!function_exists('cut_string_and_decode')) {
         $str = cutnchar($str, $n);
 
         return $str;
+    }
+}
+
+if (!function_exists('categorySelectRaw')) {
+    function categorySelectRaw($table = 'products')
+    {
+        $rawQuery = "
+        (
+                SELECT COUNT(id)
+                FROM {$table}s
+                JOIN {$table}_catalogue_{$table} as tb3 ON tb3.{$table}_id = {$table}s.id
+                WHERE tb3.{$table}_catalogue_id IN (
+                    SELECT id
+                    FROM {$table}_catalogues as parent_category
+                    WHERE lft >= (SELECT lft FROM {$table}_catalogues as pc WHERE pc.id = {$table}_catalogues.id)
+                    AND rgt <= (SELECT rgt FROM {$table}_catalogues as pc WHERE pc.id = {$table}_catalogues.id)
+                )
+            ) as {$table}s_count
+        ";
+        return $rawQuery;
+    }
+}
+if (!function_exists('sortString')) {
+    function sortString($string = '')
+    {
+        $extract = explode(',', $string);
+        sort($extract, SORT_NUMERIC);
+        $newArray = implode(',', $extract);
+
+        // Xóa tất cả dấu cách trong $newArray
+        $newArray = str_replace(' ', '', $newArray);
+
+        return $newArray;
     }
 }

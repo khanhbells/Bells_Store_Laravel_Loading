@@ -4576,3 +4576,57 @@ a.ui-button:active,
 .product-item .stars::before {
     letter-spacing: 0;
 }
+
+.ajax-search-result {
+    position: absolute;
+    top: 100%;
+    left: 0;
+    right: 0;
+    max-height: 200px;
+    overflow-y: auto;
+    background: #fff;
+    border: 1px solid #ddd;
+    /* display: none; */
+    /* Ẩn mặc định */
+    z-index: 10;
+}
+
+.ajax-search-result .search-item {
+    padding: 10px;
+    border-bottom: 1px solid #ddd;
+    cursor: pointer;
+}
+
+.ajax-search-result .search-item:hover {
+    background-color: #f0f0f0;
+}
+
+.search-object-item {
+    cursor: pointer;
+    margin-bottom: 10px;
+    padding-bottom: 10px;
+    border-bottom: 1px solid #ccc;
+}
+
+.search-object-item .image {
+    width: 52px;
+    height: 52px;
+    margin-right: 10px;
+    margin-left: 10px;
+}
+
+.object-name .name {
+    margin-bottom: 4px;
+}
+
+.object-name .jscode {
+    color: #1ab394;
+    font-size: 12px;
+}
+
+.object-extra-info .price {
+    font-weight: 700;
+    font-size: 18px;
+    margin-bottom: 6px;
+    margin-right: 10px;
+}

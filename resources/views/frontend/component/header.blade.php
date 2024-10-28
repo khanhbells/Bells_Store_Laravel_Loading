@@ -10,7 +10,8 @@
                                     $name = $val['item']->languages->first()->pivot->name;
                                     $canonical = write_url(
                                         $val['item']->languages->first()->pivot->canonical,
-                                        true . true,
+                                        true,
+                                        true,
                                     );
 
                                 @endphp
@@ -64,10 +65,13 @@
                 <div class="header-form">
                     <form action="" class="uk-form form search-form">
                         <div class="form-row">
-                            <input type="text" name="" class="input-text"
+                            <input type="text" name="" class="input-text keyword"
                                 placeholder="Tìm kiếm sản phẩm...">
+                            <div class="ajax-search-result">
+
+                            </div>
                         </div>
-                        <button type="submit" name="search" value="submit">Search</button>
+                        {{-- <button type="submit" name="search" value="submit">Search</button> --}}
                     </form>
                 </div>
             </div>
@@ -212,3 +216,7 @@
     </div>
 </div>
 </div>
+<script>
+    // Tạo đường dẫn asset từ PHP và truyền vào một biến JavaScript
+    let baseUrl = `{{ asset('') }}`;
+</script>
