@@ -83,9 +83,11 @@
                                         </div>
                                     </div>
                                     <div class="btn-group uk-flex uk-flex-middle">
-                                        <div class="btn-item btn-1"><a href="" title="">Add To Cart</a>
+                                        <div class="btn-item btn-1 addToCart" data-id="{{ $product->id }}"><a
+                                                href="" title="">Thêm vào
+                                                giỏ hàng</a>
                                         </div>
-                                        <div class="btn-item btn-2"><a href="" title="">Buy Now</a></div>
+                                        {{-- <div class="btn-item btn-2"><a href="" title="">Buy Now</a></div> --}}
                                     </div>
                                 </div>
                             </div>

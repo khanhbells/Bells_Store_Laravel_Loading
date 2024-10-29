@@ -16,7 +16,8 @@ if (!function_exists('convert_price')) {
 if (!function_exists('getPercent')) {
     function getPercent($product = null, $discount = 0)
     {
-        return ($product->price > 0) ? round($discount / $product->price * 100) : 0;
+        $percent = ($product->price > 0) ? round($discount / $product->price * 100, 2) : 0;
+        return $percent;
     }
 }
 if (!function_exists('getPromotionPrice')) {
@@ -457,5 +458,13 @@ if (!function_exists('sortString')) {
         $newArray = str_replace(' ', '', $newArray);
 
         return $newArray;
+    }
+}
+if (!function_exists('sortAttributeId')) {
+    function sortAttributeId(array $attributeId = [])
+    {
+        sort($attributeId, SORT_NUMERIC);
+        $attributeId = implode(',', $attributeId);
+        return $attributeId;
     }
 }

@@ -15,6 +15,7 @@
         "laravel/framework": "^9.0",
         "laravel/sanctum": "^2.14",
         "laravel/tinker": "^2.7",
+        "mindscms/laravelshoppingcart": "^2.1",
         "ramsey/uuid": "^4.7",
         "yoeunes/toastr": "^2.3"
     },

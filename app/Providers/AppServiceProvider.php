@@ -77,6 +77,9 @@ class AppServiceProvider extends ServiceProvider
         //Source
         'App\Services\Interfaces\SourceServiceInterface' =>
         'App\Services\SourceService',
+        //Cart
+        'App\Services\Interfaces\CartServiceInterface' =>
+        'App\Services\CartService',
     ];
     /**
      * Register any application services.

@@ -6,6 +6,7 @@
 <meta name="author" content="{{ $system['homepage_company'] }}">
 <meta name="copyright" content="{{ $system['homepage_company'] }}">
 <meta http-equiv="refresh" content="1800">
+<meta name="csrf-token" content="{{ csrf_token() }}" />
 <link rel="icon" href="{{ asset($system['homepage_favicon']) }}" type="image/png" sizes="30x30">
 {{-- google --}}
 <title>{{ $seo['meta_title'] }}</title>
@@ -35,4 +36,16 @@
 <link rel="stylesheet" href="{{ asset('frontend/resources/plugins/wow/css/libs/animate.css') }}">
 <link rel="stylesheet" href="{{ asset('frontend/resources/style.css') }}">
 <link rel="stylesheet" href="{{ asset('frontend\core\plugins\jquery-nice-select-1.1.0\css\nice-select.css') }}">
+<link rel="stylesheet" href="{{ asset('backend/css/plugins/toastr/toastr.min.css') }}">
+@php
+    $coreCss = [];
+    if (isset($config['css'])) {
+        foreach ($config['css'] as $key => $value) {
+            $coreCss[] = $value;
+        }
+    }
+@endphp
+@foreach ($coreCss as $item)
+    <link rel="stylesheet" href="{{ asset($item) }}">
+@endforeach
 <script src="{{ asset('frontend/resources/library/js/jquery.js') }}"></script>

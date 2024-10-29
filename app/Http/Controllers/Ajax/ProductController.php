@@ -109,8 +109,7 @@ class ProductController extends Controller
     {
         $get = $request->input();
         $attributeId = $get['attribute_id'];
-        sort($attributeId, SORT_NUMERIC);
-        $attributeId = implode(',', $attributeId);
+        $attributeId = sortAttributeId($attributeId);
         $variant = $this->productVariantRepository->findVariant($attributeId, $get['product_id'], $get['language_id']);
         $variantPromotion = $this->promotionRepository->findPromotionByVariantUuid($variant->uuid);
         $variantPrice = getVariantPrice($variant, $variantPromotion);

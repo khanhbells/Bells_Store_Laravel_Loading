@@ -29,9 +29,11 @@ use App\Http\Controllers\Ajax\MenuController as AjaxMenuController;
 use App\Http\Controllers\Ajax\SlideController as AjaxSlideController;
 use App\Http\Controllers\Ajax\ProductController as AjaxProductController;
 use App\Http\Controllers\Ajax\SourceController as AjaxSourceController;
+use App\Http\Controllers\Ajax\CartController as AjaxCartController;
 //FRONTEND
 use App\Http\Controllers\Frontend\HomeController;
 use App\Http\Controllers\Frontend\RouterController;
+use App\Http\Controllers\Frontend\CartController;
 
 //USE CONTROLLER
 
@@ -51,11 +53,13 @@ use App\Http\Controllers\Frontend\RouterController;
 // });
 // FRONTEND ROUTES
 Route::get('/', [HomeController::class, 'index'])->name('home.index');
+Route::get('thanh-toan' . config('app.general.suffix'), [CartController::class, 'checkout'])->name('cart.checkout');
 Route::get('{canonical}' . config('app.general.suffix'), [RouterController::class, 'index'])->name('router.index')->where('canonical', '[a-zA-Z0-9-]+');
 Route::get('{canonical}/trang-{page}' . config('app.general.suffix'), [RouterController::class, 'page'])->name('router.page')->where('canonical', '[a-zA-Z0-9-]+')->where('page', '[0-9]+');
 
 // FRONTEND AJAX
 Route::get('ajax/product/loadVariant', [AjaxProductController::class, 'loadVariant'])->name('ajax.loadVariant');
+Route::post('ajax/cart/create', [AjaxCartController::class, 'create'])->name('ajax.cart.create');
 
 
 

@@ -9,3 +9,14 @@
 <script src="{{ asset('frontend/resources/uikit/js/components/sticky.min.js') }}"></script>
 <script src="{{ asset('frontend/resources/function.js') }}"></script>
 <script src="{{ asset('frontend\core\plugins\jquery-nice-select-1.1.0\js\jquery.nice-select.js') }}"></script>
+@php
+    $coreScript = ['backend/js/plugins/toastr/toastr.min.js'];
+    if (isset($config['js'])) {
+        foreach ($config['js'] as $key => $val) {
+            array_push($coreScript, $val);
+        }
+    }
+@endphp
+@foreach ($coreScript as $item)
+    <script src="{{ asset($item) }}"></script>
+@endforeach
