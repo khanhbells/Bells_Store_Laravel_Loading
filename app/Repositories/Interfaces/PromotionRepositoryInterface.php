@@ -10,4 +10,5 @@ interface PromotionRepositoryInterface extends BaseRepositoryInterface
 {
     public function findByProduct(array $productId = []);
     public function findPromotionByVariantUuid($uuid);
+    public function getPromotionByCartTotal();
 }

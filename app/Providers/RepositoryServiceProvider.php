@@ -84,6 +84,9 @@ class RepositoryServiceProvider extends ServiceProvider
         //Source
         'App\Repositories\Interfaces\SourceRepositoryInterface' =>
         'App\Repositories\SourceRepository',
+        //Order
+        'App\Repositories\Interfaces\OrderRepositoryInterface' =>
+        'App\Repositories\OrderRepository',
     ];
     /**
      * Register services.

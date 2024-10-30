@@ -131,7 +131,7 @@
                             </a>
                         </div>
                         <div class="toolbox-item">
-                            <a href="" title="" class="uk-flex uk-flex-bottom">
+                            <a href="{{ route('cart.checkout') }}" title="" class="uk-flex uk-flex-bottom">
                                 <div class="icon">
                                     <svg width="25" height="25" viewBox="0 0 25 25" fill="none"
                                         xmlns="http://www.w3.org/2000/svg">
@@ -153,7 +153,7 @@
                                             </clipPath>
                                         </defs>
                                     </svg>
-                                    <span class="number">0</span>
+                                    <span class="number" id="cartTotalItem">0</span>
                                 </div>
                                 <div class="toolbox-text">Giỏ Hàng</div>
 

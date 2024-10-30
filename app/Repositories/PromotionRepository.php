@@ -133,4 +133,16 @@ class PromotionRepository extends BaseRepository implements PromotionRepositoryI
             ->orderBy('discount', 'desc') // Sắp xếp theo discount giảm dần
             ->first(); // Lấy bản ghi có discount cao nhất
     }
+    public function getPromotionByCartTotal()
+    {
+        return $this->model
+            ->where('promotions.publish', 2)
+            ->where('promotions.method', 'order_amount_range')
+            ->whereDate('promotions.startDate', '<=', now())
+            ->where(function ($query) {
+                $query->whereDate('promotions.endDate', '>=', now())
+                    ->orWhere('promotions.neverEndDate', 'accept');
+            })
+            ->get();
+    }
 }

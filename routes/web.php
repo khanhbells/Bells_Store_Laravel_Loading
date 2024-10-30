@@ -56,10 +56,13 @@ Route::get('/', [HomeController::class, 'index'])->name('home.index');
 Route::get('thanh-toan' . config('app.general.suffix'), [CartController::class, 'checkout'])->name('cart.checkout');
 Route::get('{canonical}' . config('app.general.suffix'), [RouterController::class, 'index'])->name('router.index')->where('canonical', '[a-zA-Z0-9-]+');
 Route::get('{canonical}/trang-{page}' . config('app.general.suffix'), [RouterController::class, 'page'])->name('router.page')->where('canonical', '[a-zA-Z0-9-]+')->where('page', '[0-9]+');
-
+Route::post('cart/create', [CartController::class, 'store'])->name('cart.store');
+Route::get('cart/{code}/success' . config('app.general.suffix'), [CartController::class, 'success'])->name('cart.success')->where(['id' => '[0-9]+']);
 // FRONTEND AJAX
 Route::get('ajax/product/loadVariant', [AjaxProductController::class, 'loadVariant'])->name('ajax.loadVariant');
 Route::post('ajax/cart/create', [AjaxCartController::class, 'create'])->name('ajax.cart.create');
+Route::post('ajax/cart/update', [AjaxCartController::class, 'update'])->name('ajax.cart.update');
+Route::post('ajax/cart/delete', [AjaxCartController::class, 'delete'])->name('ajax.cart.delete');
 
 
 

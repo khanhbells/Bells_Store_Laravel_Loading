@@ -11,5 +11,10 @@ use Illuminate\Http\Request;
 interface CartServiceInterface extends BaseServiceInterface
 {
     public function create(Request $request);
+    public function update(Request $request);
+    public function delete(Request $request);
+    public function reCaculateCart();
+    public function order($request);
+    public function cartPromotion($cartTotal);
     public function remakeCart($carts);
 }
