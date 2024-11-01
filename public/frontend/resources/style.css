@@ -2680,7 +2680,7 @@ a.ui-button:active,
 }
 
 .header-form {
-    width: 600px;
+    width: 750px;
     margin-left: 20px;
     position: relative;
 }
@@ -3461,7 +3461,7 @@ a.ui-button:active,
     position: absolute;
     right: 50px;
     bottom: 0;
-    max-width: 40%;
+    max-width: 35%;
 }
 
 .panel-group .group-title {
@@ -3687,11 +3687,11 @@ a.ui-button:active,
 }
 
 .page-breadcrumb.background {
-    background: #def9ec url('img/breadcrumb-background.png');
+    /* background: #def9ec url('img/breadcrumb-background.png'); */
     border-radius: 10px;
-    padding: 80px 20px;
-    margin-top: 20px;
-    margin-bottom: 20px;
+    /* padding: 80px 20px; */
+    /* margin-top: 20px; */
+    /* margin-bottom: 20px; */
 }
 
 .aside-panel {
@@ -4448,7 +4448,7 @@ a.ui-button:active,
 .discover-text>* {
     display: inline-block;
     padding: 10px 25px;
-    background: #2f5acf;
+    background: var(--primary-color);
     border-radius: 16px;
     cursor: pointer;
     color: #fff;
@@ -4497,7 +4497,7 @@ a.ui-button:active,
 
 .cart-success .table thead>tr th {
     color: #fff;
-    background: #2f5acf;
+    background: var(--primary-color);
     font-weight: 500;
     font-size: 14px;
     vertical-align: middle;
@@ -4644,4 +4644,12 @@ a.ui-button:active,
 .addToCart>* {
     color: #fff;
     font-weight: 500;
+}
+
+.text-center {
+    text-align: center !important;
+}
+
+.text-normal {
+    font-style: normal !important;
 }

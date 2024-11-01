@@ -149,7 +149,9 @@ class AttributeService extends BaseService implements AttributeServiceInterface
     private function uploadAttribute($attribute, $request)
     {
         $payload = $request->only($this->payload());
-        $payload['album'] = $this->formatAlbum($payload['album']);
+        if (isset($payload['album'])) {
+            $payload['album'] = $this->formatAlbum($payload['album']);
+        }
         $payload['image'] = $this->formatImage($payload['image']);
         // dd($payload);
         // Kiểm tra và xử lý cả hai trường hợp ảnh có tiền tố 'http://localhost:81/laravelversion1.com/public' hoặc '/laravelversion1.com/public'

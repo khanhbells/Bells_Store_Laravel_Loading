@@ -224,7 +224,9 @@ class WidgetService extends BaseService implements WidgetServiceInterface
                     }
                 } else {
                     $productId = $object->pluck('id')->toArray();
-                    $object = $this->{$service}->combineProductAndPromotion($productId, $object);
+                    if ($service == 'productService') {
+                        $object = $this->{$service}->combineProductAndPromotion($productId, $object);
+                    }
                     $widget->object = $object;
                 }
                 $temp[$widget->keyword] = $widgets[$key];
@@ -249,7 +251,7 @@ class WidgetService extends BaseService implements WidgetServiceInterface
                     $query->whereHas('languages', function ($query) use ($language) {
                         $query->where('language_id', $language);
                     });
-                    $query->take(($param['limit']) ?? 8);
+                    $query->take(($param['limit']) ?? 30);
                     $query->orderBy('order', 'desc');
                 };
             }

@@ -65,8 +65,8 @@
                                                 alt="{{ $name }}"></span>
                                         <div class="banner-overlay">
                                             <div class="banner-title">{!! $description !!}</div>
-                                            <a class="btn-shop" href="{{ $canonical }}" title="{{ $name }}">Mua
-                                                ngay</a>
+                                            {{-- <a class="btn-shop" href="{{ $canonical }}" title="{{ $name }}">Mua
+                                                ngay</a> --}}
                                         </div>
                                     </div>
                                 </div>
@@ -131,75 +131,87 @@
                 </div>
             @endforeach
         @endif
-        @php
-            $image = $widgets['bestseller']->album ? $widgets['bestseller']->album[0] : '';
-            $description = $widgets['bestseller']->description[$config['language']];
-            $title = $widgets['bestseller']->name;
-        @endphp
-        <div class="panel-bestseller">
-            <div class="uk-container uk-container-center">
-                <div class="panel-head">
-                    <div class="uk-flex uk-flex-middle uk-flex-space-between">
-                        <h2 class="heading-1"><span>{{ $title }}</span></h2>
-                        @include('frontend.component.catalogue', [
-                            'category' => $widgets['category-highlight'],
-                        ])
-                    </div>
-                </div>
-                <div class="panel-body">
-                    <div class="uk-grid uk-grid-medium">
-                        <div class="uk-width-large-1-4">
-                            <div class="best-seller-banner">
-                                <a class="image img-cover"><img src="{{ asset($image) }}" alt="{{ asset($image) }}"></a>
-                                <div class="banner-title">{!! $description !!}</div>
-                            </div>
+        @if (isset($widgets['bestseller']))
+            <div class="panel-bestseller">
+                @php
+                    $image = $widgets['bestseller']->album ? $widgets['bestseller']->album[0] : '';
+                    $description = $widgets['bestseller']->description[$config['language']];
+                    $title = $widgets['bestseller']->name;
+                @endphp
+                <div class="uk-container uk-container-center">
+                    <div class="panel-head">
+                        <div class="uk-flex uk-flex-middle uk-flex-space-between">
+                            <h2 class="heading-1"><span>{{ $title }}</span></h2>
+                            @include('frontend.component.catalogue', [
+                                'category' => $widgets['category-highlight'],
+                            ])
                         </div>
-                        <div class="uk-width-large-3-4">
-                            @if (!is_null($widgets['bestseller']->object))
-                                <div class="product-wrapper">
-                                    <div class="swiper-button-next"></div>
-                                    <div class="swiper-button-prev"></div>
-                                    <div class="swiper-container">
-                                        <div class="swiper-wrapper">
-                                            @foreach ($widgets['bestseller']->object as $key => $val)
-                                                <div class="swiper-slide">
-                                                    @include('frontend.component.product-item', [
-                                                        'product' => $val,
-                                                    ])
-                                                </div>
-                                            @endforeach
+                    </div>
+                    <div class="panel-body">
+                        <div class="uk-grid uk-grid-medium">
+                            <div class="uk-width-large-1-4">
+                                <div class="best-seller-banner">
+                                    <a class="image img-cover"><img src="{{ asset($image) }}"
+                                            alt="{{ asset($image) }}"></a>
+                                    <div class="banner-title">{!! $description !!}</div>
+                                </div>
+                            </div>
+                            <div class="uk-width-large-3-4">
+                                @if (!is_null($widgets['bestseller']->object))
+                                    <div class="product-wrapper">
+                                        <div class="swiper-button-next"></div>
+                                        <div class="swiper-button-prev"></div>
+                                        <div class="swiper-container">
+                                            <div class="swiper-wrapper">
+                                                @foreach ($widgets['bestseller']->object as $key => $val)
+                                                    <div class="swiper-slide">
+                                                        @include('frontend.component.product-item', [
+                                                            'product' => $val,
+                                                        ])
+                                                    </div>
+                                                @endforeach
+                                            </div>
                                         </div>
                                     </div>
-                                </div>
-                            @endif
+                                @endif
+                            </div>
                         </div>
                     </div>
                 </div>
             </div>
-        </div>
-        <div class="panel-deal page-setup">
-            <div class="uk-container uk-container-center">
-                <div class="panel-head">
-                    <div class="uk-flex uk-flex-middle uk-flex-space-between">
-                        <h2 class="heading-1"><span>Giảm giá trong ngày</span></h2>
-                    </div>
-                </div>
-                <div class="panel-body">
-                    <div class="uk-grid uk-grid-medium">
-                        <?php for($i = 0; $i<=3; $i++){  ?>
-                        <div class="uk-width-large-1-4">
-                            @include('frontend.component.product-item-2')
+        @endif
+        @if (isset($widgets['bai-viet']))
+            <div class="panel-deal page-setup">
+                @php
+                    $title = $widgets['bai-viet']->name;
+                @endphp
+                <div class="uk-container uk-container-center">
+                    <div class="panel-head">
+                        <div class="uk-flex uk-flex-middle uk-flex-space-between">
+                            <h2 class="heading-1"><span>{{ $title }}</span></h2>
                         </div>
-                        <?php }  ?>
                     </div>
+                    @if (!is_null($widgets['bai-viet']->object))
+                        <div class="panel-body">
+                            <div class="uk-grid uk-grid-medium">
+                                @foreach ($widgets['bai-viet']->object as $key => $val)
+                                    <div class="uk-width-large-1-4">
+                                        @include('frontend.component.post-item', [
+                                            'post' => $val,
+                                        ])
+                                    </div>
+                                @endforeach
+                            </div>
+                        </div>
+                    @endif
                 </div>
             </div>
-        </div>
+        @endif
         <div class="uk-container uk-container-center">
             <div class="panel-group">
                 <div class="panel-body">
-                    <div class="group-title">Stay home & get your daily <br> needs from our shop</div>
-                    <div class="group-description">Start Your Daily Shopping with Nest Mart</div>
+                    <div class="group-title">"Việc gì khó có Bells Store"</div>
+                    <div class="group-description">Bắt đầu mua sắm hàng ngày của bạn với Bells Store</div>
                     <span class="image img-scaledowm"><img src="{{ asset('frontend/resources/img/banner-9-min.png') }}"
                             alt=""></span>
                 </div>

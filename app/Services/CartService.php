@@ -2,6 +2,7 @@
 
 namespace App\Services;
 
+use App\Mail\OrderMail;
 use App\Services\Interfaces\CartServiceInterface;
 use App\Services\Interfaces\ProductServiceInterface;
 use App\Repositories\Interfaces\ProductVariantRepositoryInterface  as ProductVariantRepository;
@@ -15,6 +16,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
 use Exception;
 use Gloudemans\Shoppingcart\Facades\Cart;
+use Illuminate\Support\Facades\Mail;
 
 /**
  * Class AttributeCatalogueService
@@ -27,6 +29,9 @@ class CartService extends BaseService implements CartServiceInterface
     protected $productVariantRepository;
     protected $promotionRepository;
     protected $orderRepository;
+    protected $priceOriginal;
+    protected $image;
+
     public function __construct(
         ProductRepository $productReopsitory,
         ProductVariantRepository $productVariantRepository,
@@ -40,6 +45,28 @@ class CartService extends BaseService implements CartServiceInterface
         $this->productService = $productService;
         $this->orderRepository = $orderRepository;
     }
+
+    public function setPriceOriginal($priceOriginal)
+    {
+        $this->priceOriginal = $priceOriginal;
+        return $this;
+    }
+    public function getPriceOriginal()
+    {
+        return $this->priceOriginal;
+    }
+
+    public function setImage($image)
+    {
+        $this->image = $image;
+        return $this;
+    }
+
+    public function getImage()
+    {
+        return $this->image;
+    }
+
     public function create(Request $request, $language = 1)
     {
         try {
@@ -124,20 +151,16 @@ class CartService extends BaseService implements CartServiceInterface
                     ]
                 )->keyBy('id');
             }
-
-
             foreach ($carts as $keyCart => $cart) {
                 $explode = explode('_', $cart->id);
                 $objectId = $explode[1] ?? $explode[0];
                 if (isset($objects['variants'][$objectId])) {
                     $variantItem = $objects['variants'][$objectId];
                     $variantImage = explode(',', $variantItem->album)[0] ?? null;
-                    $cart->image = $variantImage;
-                    $cart->priceOriginal = $variantItem->price;
+                    $cart->setImage($variantImage)->setPriceOriginal($variantItem->price);
                 } elseif (isset($objects['products'][$objectId])) {
                     $productItem = $objects['products'][$objectId];
-                    $cart->image = $productItem->image;
-                    $cart->priceOriginal = $productItem->price;
+                    $cart->setImage($productItem->image)->setPriceOriginal($productItem->price);
                 }
             }
         }
@@ -174,17 +197,18 @@ class CartService extends BaseService implements CartServiceInterface
         }
     }
 
-    public function order($request)
+    public function order($request, $system)
     {
         DB::beginTransaction();
 
         try {
             $payload = $this->request($request);
-            $order = $this->orderRepository->create($payload);
+            $order = $this->orderRepository->create($payload, ['products']);
             if ($order->id > 0) {
                 $this->createOrderProduct($payload, $order, $request);
                 $this->paymentOnline($payload['method']);
-                // Cart::instance('shopping')->destroy();
+                $this->mail($order, $system);
+                Cart::instance('shopping')->destroy();
             }
 
             DB::commit();
@@ -201,6 +225,23 @@ class CartService extends BaseService implements CartServiceInterface
                 'flag' => FALSE
             ];
         }
+    }
+
+    private function mail($order, $system)
+    {
+        $to = $order->email;
+        $cc = $system['contact_email'];
+        $carts = Cart::instance('shopping')->content();
+        $carts = $this->remakeCart($carts);
+        $cartCaculate = $this->cartAndPromotion();
+        $cartPromotion = $this->cartPromotion($cartCaculate['cartTotal']);
+        $data = [
+            'order' => $order,
+            'carts' => $carts,
+            'cartCaculate' => $cartCaculate,
+            'cartPromotion' => $cartPromotion
+        ];
+        Mail::to($to)->cc($cc)->send(new OrderMail($data));
     }
 
     private function paymentOnline($method = '')
@@ -229,9 +270,11 @@ class CartService extends BaseService implements CartServiceInterface
     }
     private function createOrderProduct($payload, $order, $request)
     {
+        $carts = Cart::instance('shopping')->content();
+        $carts = $this->remakeCart($carts);
         $temp = [];
-        if (!is_null($payload['cart']['detail'])) {
-            foreach ($payload['cart']['detail'] as $key => $val) {
+        if (!is_null($carts)) {
+            foreach ($carts as $key => $val) {
                 $extract = explode('_', $val->id);
                 $temp[] = [
                     'product_id' => $extract[0],
@@ -248,17 +291,15 @@ class CartService extends BaseService implements CartServiceInterface
     }
     private function request($request)
     {
-        $carts = Cart::instance('shopping')->content();
-        $carts = $this->remakeCart($carts);
         $cartCaculate = $this->reCaculateCart();
         $cartPromotion = $this->cartPromotion($cartCaculate['cartTotal']);
         $cartCaculate['cartTotal'] = $cartCaculate['cartTotal'] - $cartPromotion['discount'];
         $payload = $request->except(['_token', 'voucher', 'create']);
         $payload['code'] = time();
         $payload['cart'] = $cartCaculate;
-        $payload['cart']['detail'] = $carts;
         $payload['promotion']['discount'] = $cartPromotion['discount'];
         $payload['promotion']['name'] = $cartPromotion['selectedPromotion']->name;
+        $payload['promotion']['code'] = $cartPromotion['selectedPromotion']->code;
         $payload['promotion']['startDate'] = $cartPromotion['selectedPromotion']->startDate;
         $payload['promotion']['endDate'] = ($cartPromotion['selectedPromotion']->endDate != null) ? $cartPromotion['selectedPromotion']->endDate : $cartPromotion['selectedPromotion']->neverEndDate;
         $payload['confirm'] = 'pending';

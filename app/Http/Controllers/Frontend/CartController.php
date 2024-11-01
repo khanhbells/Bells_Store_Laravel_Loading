@@ -9,8 +9,11 @@ use App\Repositories\SystemRepository;
 use Gloudemans\Shoppingcart\Facades\Cart;
 use App\Repositories\Interfaces\ProvinceRepositoryInterface as ProvinceRepository;
 use App\Repositories\Interfaces\PromotionRepositoryInterface as PromotionRepository;
+use App\Repositories\Interfaces\OrderRepositoryInterface as OrderRepository;
 use App\Http\Requests\StoreCartRequest;
 use App\Services\Interfaces\CartServiceInterface as CartService;
+use App\Mail\OrderMail;
+use Illuminate\Support\Facades\Mail;
 
 // use App\Repositories\Interfaces\languageRepositoryInterface as LanguageRepository;
 //Neu muon view hieu duoc controller thi phai compact
@@ -19,15 +22,18 @@ class CartController extends FrontendController
     protected $provinceRepository;
     protected $cartService;
     protected $promotionRepository;
+    protected $orderRepository;
     public function __construct(
         ProvinceRepository $provinceRepository,
         CartService $cartService,
         PromotionRepository $promotionRepository,
+        OrderRepository $orderRepository,
     ) {
         parent::__construct();
         $this->provinceRepository = $provinceRepository;
         $this->cartService = $cartService;
         $this->promotionRepository = $promotionRepository;
+        $this->orderRepository = $orderRepository;
     }
     public function checkout()
     {
@@ -59,8 +65,8 @@ class CartController extends FrontendController
 
     public function store(StoreCartRequest $request)
     {
-        $order = $this->cartService->order($request);
-
+        $system = $this->system;
+        $order = $this->cartService->order($request, $system);
         if ($order['flag']) {
             return redirect()->route('cart.success', ['code' => $order['order']->code])->with('success', 'Đặt hàng thành công');
         }
@@ -69,6 +75,10 @@ class CartController extends FrontendController
 
     public function success($code)
     {
+
+        $order = $this->orderRepository->findByCondition([
+            ['code', '=', $code],
+        ], false, ['products']);
         $config = $this->config();
         $system = $this->system;
         $seo = [
@@ -82,8 +92,10 @@ class CartController extends FrontendController
             'config',
             'seo',
             'system',
+            'order',
         ));
     }
+
 
     public function config()
     {

@@ -264,7 +264,7 @@ table strong {
 }
 
 .sortui .ui-state-default {
-    width: calc(20% - 2px);
+    width: calc(12% - 2px);
     float: left;
     padding-left: 10px;
     margin: 0 0 10px 0;

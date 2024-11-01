@@ -10,7 +10,7 @@ use App\Traits\QueryScopes;
 
 class OrderPayment extends Model
 {
-    use HasFactory, SoftDeletes, QueryScopes;
+    use HasFactory;
     protected $guarded = [];
     protected $casts = [
         'payment_detail' => 'json',

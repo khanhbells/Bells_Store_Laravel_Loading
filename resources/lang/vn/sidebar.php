@@ -67,10 +67,10 @@ return [
                     'title' => 'Khuyến mại',
                     'route' => 'promotion.index' // chỉ dùng tên route
                 ],
-                [
-                    'title' => 'Nguồn khách',
-                    'route' => 'source.index' // chỉ dùng tên route
-                ],
+                // [
+                //     'title' => 'Nguồn khách',
+                //     'route' => 'source.index' // chỉ dùng tên route
+                // ],
             ]
         ],
         // promotion coupon
