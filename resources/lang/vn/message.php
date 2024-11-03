@@ -16,6 +16,16 @@ return [
         ],
 
     ],
+    'order' => [
+        'index' => [
+            'title' => 'Quản lý đơn hàng',
+            'table' => 'Danh sách đơn hàng',
+        ],
+        'create' => [
+            'title' => 'Thêm đơn hàng mới',
+        ],
+
+    ],
     'product' => [
         'index' => [
             'title' => 'Quản lý sản phẩm',

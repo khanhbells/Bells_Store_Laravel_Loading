@@ -298,10 +298,11 @@ class CartService extends BaseService implements CartServiceInterface
         $payload['code'] = time();
         $payload['cart'] = $cartCaculate;
         $payload['promotion']['discount'] = $cartPromotion['discount'];
-        $payload['promotion']['name'] = $cartPromotion['selectedPromotion']->name;
-        $payload['promotion']['code'] = $cartPromotion['selectedPromotion']->code;
-        $payload['promotion']['startDate'] = $cartPromotion['selectedPromotion']->startDate;
-        $payload['promotion']['endDate'] = ($cartPromotion['selectedPromotion']->endDate != null) ? $cartPromotion['selectedPromotion']->endDate : $cartPromotion['selectedPromotion']->neverEndDate;
+        $payload['promotion']['name'] = $cartPromotion['selectedPromotion']->name ?? null;
+
+        $payload['promotion']['code'] = $cartPromotion['selectedPromotion']->code ?? null;
+        $payload['promotion']['startDate'] = $cartPromotion['selectedPromotion']->startDate ?? null;
+        $payload['promotion']['endDate'] = ($cartPromotion['selectedPromotion'] != '' && $cartPromotion['selectedPromotion']->endDate != null) ? $cartPromotion['selectedPromotion']->endDate : ($cartPromotion['selectedPromotion']->neverEndDate ?? null);
         $payload['confirm'] = 'pending';
         $payload['delivery'] = 'pending';
         $payload['payment'] = 'unpaid';

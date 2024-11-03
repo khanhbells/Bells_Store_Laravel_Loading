@@ -76,7 +76,16 @@
                 </div>
             </div>
         @endif
-
+        <div class="uk-container uk-container-center">
+            <div class="panel-group">
+                <div class="panel-body">
+                    <div class="group-title">"Việc gì khó có Bells Store"</div>
+                    <div class="group-description">Bắt đầu mua sắm hàng ngày của bạn với Bells Store</div>
+                    <span class="image img-scaledowm"><img src="{{ asset('frontend/resources/img/mauanh.png') }}"
+                            alt=""></span>
+                </div>
+            </div>
+        </div>
         @if (!is_null($widgets['category-home']))
             @foreach ($widgets['category-home']->object as $category)
                 @php
@@ -207,16 +216,7 @@
                 </div>
             </div>
         @endif
-        <div class="uk-container uk-container-center">
-            <div class="panel-group">
-                <div class="panel-body">
-                    <div class="group-title">"Việc gì khó có Bells Store"</div>
-                    <div class="group-description">Bắt đầu mua sắm hàng ngày của bạn với Bells Store</div>
-                    <span class="image img-scaledowm"><img src="{{ asset('frontend/resources/img/banner-9-min.png') }}"
-                            alt=""></span>
-                </div>
-            </div>
-        </div>
+
         <div class="panel-commit">
             <div class="uk-container uk-container-center">
                 <div class="uk-grid uk-grid-medium">

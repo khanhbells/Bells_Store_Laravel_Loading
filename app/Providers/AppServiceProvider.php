@@ -80,6 +80,9 @@ class AppServiceProvider extends ServiceProvider
         //Cart
         'App\Services\Interfaces\CartServiceInterface' =>
         'App\Services\CartService',
+        //Cart
+        'App\Services\Interfaces\OrderServiceInterface' =>
+        'App\Services\OrderService',
     ];
     /**
      * Register any application services.

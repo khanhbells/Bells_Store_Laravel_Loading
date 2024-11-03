@@ -188,9 +188,13 @@
                                 @endforeach
                             </tbody>
                             <tfoot>
+                                @php
+                                    $codeSale = $data['cartPromotion']['selectedPromotion']->code ?? 'Không';
+                                @endphp
                                 <tr>
                                     <td colspan="4">Mã giảm giá</td>
-                                    <td><strong>{{ $data['cartPromotion']['selectedPromotion']->code }}</strong></td>
+                                    <td><strong>{{ $codeSale }}</strong>
+                                    </td>
                                 </tr>
 
                                 <tr>

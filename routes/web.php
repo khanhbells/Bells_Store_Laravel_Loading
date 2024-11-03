@@ -25,6 +25,7 @@ use App\Http\Controllers\Backend\SlideController;
 use App\Http\Controllers\Backend\WidgetController;
 use App\Http\Controllers\Backend\PromotionController;
 use App\Http\Controllers\Backend\SourceController;
+use App\Http\Controllers\Backend\OrderController;
 use App\Http\Controllers\Ajax\MenuController as AjaxMenuController;
 use App\Http\Controllers\Ajax\SlideController as AjaxSlideController;
 use App\Http\Controllers\Ajax\ProductController as AjaxProductController;
@@ -306,6 +307,11 @@ Route::group(['middleware' => ['admin', 'locale', 'backend_default_locale']], fu
         Route::post('{id}/update', [SourceController::class, 'update'])->where(['id' => '[0-9]+'])->name('source.update');
         Route::get('{id}/delete', [SourceController::class, 'delete'])->where(['id' => '[0-9]+'])->name('source.delete');
         Route::post('{id}/destroy', [SourceController::class, 'destroy'])->where(['id' => '[0-9]+'])->name('source.destroy');
+    });
+    Route::group(['prefix' => 'order'], function () {
+        Route::get('index', [OrderController::class, 'index'])->name('order.index');
+        Route::get('{id}/edit', [OrderController::class, 'edit'])->where(['id' => '[0-9]+'])->name('order.edit');
+        Route::post('{id}/update', [OrderController::class, 'update'])->where(['id' => '[0-9]+'])->name('order.update');
     });
     //NEW MODULE
 });

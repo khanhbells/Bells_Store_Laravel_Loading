@@ -177,12 +177,14 @@
         return str;
     }
     HT.setupDatepicker = () => {
-        $('.datepicker').datetimepicker({
-            timepicker: true,
-            format: 'd/m/Y H:i',
-            // value: new Date(),
-            minDate: new Date(),
-        })
+        if ($('.datepicker').length > 0) {
+            $('.datepicker').datetimepicker({
+                timepicker: true,
+                format: 'd/m/Y H:i',
+                // value: new Date(),
+                minDate: new Date(),
+            })
+        }
     }
 
     HT.countType = () => {
@@ -221,6 +223,17 @@
         }
     }
 
+    HT.setupDateRangePicker = () => {
+        if ($('.rangepicker').length > 0) {
+            $('.rangepicker').daterangepicker({
+                timePicker: true,
+                locale: {
+                    format: 'dd-mm-yy'
+                }
+            })
+        }
+    }
+
     $(document).ready(function () {
         HT.select2()
         HT.switchery()
@@ -231,8 +244,8 @@
         HT.sortui()
         HT.int()
         HT.countType()
+        HT.setupDateRangePicker();
         HT.setupDatepicker()
-
 
     });
 

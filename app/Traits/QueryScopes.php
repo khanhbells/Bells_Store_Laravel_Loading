@@ -5,10 +5,22 @@ namespace App\Traits;
 
 trait QueryScopes
 {
-    public function scopeKeyword($query, $keyword)
+    public function scopeKeyword($query, $keyword, $fieldSearch = [], $whereHas = [])
     {
         if (!empty($keyword)) {
-            $query->where('name', 'LIKE', '%' . $keyword . '%');
+            if (count($fieldSearch)) {
+                foreach ($fieldSearch as $key => $val) {
+                    $query->orWhere->orwhere($val, 'LIKE', '%' . $keyword . '%');
+                }
+            } else {
+                $query->where('name', 'LIKE', '%' . $keyword . '%');
+            }
+        }
+        if (isset($whereHas) && count($whereHas)) {
+            $field = $whereHas['field'];
+            $query->orWhereHas($whereHas['relation'], function ($query) use ($field, $keyword) {
+                $query->where($field, 'LIKE', '%' . $keyword . '%');
+            });
         }
         return $query;
     }
@@ -69,6 +81,30 @@ trait QueryScopes
     {
         if (isset($orderBy) && !empty($orderBy)) {
             $query->orderBy($orderBy[0], $orderBy[1]);
+        }
+        return $query;
+    }
+    public function scopeCustomDropdownFilter($query, $conditon)
+    {
+        if (count($conditon)) {
+            foreach ($conditon as $key => $val) {
+                if ($val != '' && $val != 'none') {
+                    $query->where($key, '=', $val);
+                }
+            }
+        }
+        return $query;
+    }
+
+    public function scopeCustomerCreatedAt($query, $conditon)
+    {
+        if (!empty($conditon)) {
+            $explode = explode('-', $conditon);
+            $explode = array_map('trim', $explode);
+            $startDate = convertDateTime($explode[0], 'Y-m-d 00:00:00', 'm/d/Y');
+            $endDate = convertDateTime($explode[1], 'Y-m-d 23:59:59', 'm/d/Y');
+            $query->whereDate('created_at', '>=', $startDate);
+            $query->whereDate('created_at', '<=', $endDate);
         }
         return $query;
     }

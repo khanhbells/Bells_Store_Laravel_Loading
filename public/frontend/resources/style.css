@@ -3455,13 +3455,14 @@ a.ui-button:active,
     border-radius: 20px 20px 20px 20px !important;
     position: relative;
     margin-bottom: 40px;
+    margin-top: 40px;
 }
 
 .panel-group .image {
     position: absolute;
     right: 50px;
     bottom: 0;
-    max-width: 35%;
+    max-width: 45%;
 }
 
 .panel-group .group-title {
@@ -3475,7 +3476,8 @@ a.ui-button:active,
 .panel-group .group-description {
     font-size: 16px;
     font-weight: 600;
-    color: var(--text-color)
+    color: var(--text-color);
+
 }
 
 @media (max-width: 500px) {

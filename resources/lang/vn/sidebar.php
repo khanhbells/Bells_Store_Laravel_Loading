@@ -73,6 +73,21 @@ return [
                 // ],
             ]
         ],
+        [
+            'title' => 'Quản lý đơn hàng',
+            'icon' => 'fa fa-calendar-check-o',
+            'name' => ['order'],
+            'subModule' => [
+                [
+                    'title' => 'Đơn hàng',
+                    'route' => 'order.index' // chỉ dùng tên route
+                ],
+                // [
+                //     'title' => 'Nguồn khách',
+                //     'route' => 'source.index' // chỉ dùng tên route
+                // ],
+            ]
+        ],
         // promotion coupon
         // [
         //     'title' => 'Quản lý hình ảnh',
