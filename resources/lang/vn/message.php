@@ -21,8 +21,8 @@ return [
             'title' => 'Quản lý đơn hàng',
             'table' => 'Danh sách đơn hàng',
         ],
-        'create' => [
-            'title' => 'Thêm đơn hàng mới',
+        'detail' => [
+            'title' => 'Chi tiết đơn hàng',
         ],
 
     ],

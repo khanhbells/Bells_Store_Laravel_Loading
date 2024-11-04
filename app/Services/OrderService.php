@@ -4,6 +4,8 @@ namespace App\Services;
 
 use App\Services\Interfaces\OrderServiceInterface;
 use App\Repositories\Interfaces\OrderRepositoryInterface as OrderRepository;
+use App\Repositories\Interfaces\ProductVariantRepositoryInterface  as ProductVariantRepository;
+use App\Repositories\Interfaces\ProductRepositoryInterface  as ProductRepository;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Carbon;
@@ -19,9 +21,16 @@ use Illuminate\Support\Facades\Auth;
 class OrderService implements OrderServiceInterface
 {
     protected $orderRepository;
-    public function __construct(OrderRepository $orderRepository)
-    {
+    protected $productVariantRepository;
+    protected $productRepository;
+    public function __construct(
+        OrderRepository $orderRepository,
+        ProductVariantRepository $productVariantRepository,
+        ProductRepository $productRepository
+    ) {
         $this->orderRepository = $orderRepository;
+        $this->productVariantRepository = $productVariantRepository;
+        $this->productRepository = $productRepository;
     }
 
     public function paginate($request)
@@ -42,6 +51,23 @@ class OrderService implements OrderServiceInterface
         );
         return $orders;
     }
+
+    public function getOrderItemImage($order)
+    {
+        foreach ($order->products as $key => $val) {
+            $uuid = $val->pivot->uuid;
+            if (!is_null($uuid)) {
+                $variant = $this->productVariantRepository->findByCondition([
+                    ['uuid', '=', $uuid]
+                ]);
+                $variantImage = explode(',', $variant->album)[0] ?? null;
+                $val->image = $variantImage;
+            }
+        }
+        return $order;
+    }
+
+
     private function paginateselect()
     {
         return ['*'];

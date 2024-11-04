@@ -308,10 +308,10 @@ Route::group(['middleware' => ['admin', 'locale', 'backend_default_locale']], fu
         Route::get('{id}/delete', [SourceController::class, 'delete'])->where(['id' => '[0-9]+'])->name('source.delete');
         Route::post('{id}/destroy', [SourceController::class, 'destroy'])->where(['id' => '[0-9]+'])->name('source.destroy');
     });
+    //Order
     Route::group(['prefix' => 'order'], function () {
         Route::get('index', [OrderController::class, 'index'])->name('order.index');
-        Route::get('{id}/edit', [OrderController::class, 'edit'])->where(['id' => '[0-9]+'])->name('order.edit');
-        Route::post('{id}/update', [OrderController::class, 'update'])->where(['id' => '[0-9]+'])->name('order.update');
+        Route::get('{id}/detail', [OrderController::class, 'detail'])->where(['id' => '[0-9]+'])->name('order.detail');
     });
     //NEW MODULE
 });

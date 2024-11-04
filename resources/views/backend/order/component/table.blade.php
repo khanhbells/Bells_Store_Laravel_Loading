@@ -25,8 +25,8 @@
             @foreach ($orders as $order)
                 <tr>
                     <td><input type="checkbox" value="{{ $order->id }}" class="input-checkbox checkBoxItem"></td>
-                    <td style="color: blue;cursor: pointer;">
-                        {{ $order->code }}
+                    <td style="cursor: pointer;">
+                        <a href="{{ route('order.detail', ['id' => $order->id]) }}"> {{ $order->code }}</a>
                     </td>
                     <td>
                         {{ convertDateTime($order->created_at, 'H:i d-m-Y') }}

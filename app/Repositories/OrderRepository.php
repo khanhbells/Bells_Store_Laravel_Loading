@@ -43,4 +43,18 @@ class OrderRepository extends BaseRepository implements OrderRepositoryInterface
             ->withQueryString() // Giữ lại các query string của URL
             ->withPath(env('APP_URL') . $extend['path']); // Thêm đường dẫn cho phân trang
     }
+    public function getOrderById($id)
+    {
+        return $this->model->select([
+            'orders.*',
+            'provinces.name as province_name',
+            'districts.name as district_name',
+            'wards.name as ward_name',
+        ])->distinct()
+            ->join('provinces', 'orders.province_id', '=', 'provinces.code')
+            ->join('districts', 'orders.district_id', '=', 'districts.code')
+            ->join('wards', 'orders.ward_id', '=', 'wards.code')
+            ->with('products')
+            ->find($id);
+    }
 }

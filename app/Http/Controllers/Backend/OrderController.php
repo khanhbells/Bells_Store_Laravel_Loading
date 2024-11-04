@@ -49,4 +49,17 @@ class OrderController extends Controller
             return redirect()->back()->with('error', 'Bạn không có quyền truy cập vào chức năng này.');
         }
     }
+    public function detail(Request $request, $id)
+    {
+        $order = $this->orderRepository->getOrderById($id, ['products']);
+        $order = $this->orderService->getOrderItemImage($order);
+        $config['seo'] = __('message.order');
+        // dd($config['seo']);
+        $template = 'backend.order.detail';
+        return view('backend.dashboard.layout', compact(
+            'template',
+            'config',
+            'order',
+        ));
+    }
 }

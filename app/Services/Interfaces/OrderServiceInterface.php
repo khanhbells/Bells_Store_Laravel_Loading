@@ -11,4 +11,5 @@ use Illuminate\Http\Request;
 interface OrderServiceInterface
 {
     public function paginate($request);
+    public function getOrderItemImage($order);
 }

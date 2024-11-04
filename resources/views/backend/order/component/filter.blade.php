@@ -5,7 +5,7 @@
                 @include('backend.dashboard.component.perpage')
                 <div class="date-item-box">
                     <input type="text" name="created_at" value="{{ request('created_at') ?: old('created_at') }}"
-                        class="rangepicker form-control">
+                        class="rangepicker form-control" readonly placeholder="Nhấn để chọn ngày">
                 </div>
             </div>
             <div class="action">

@@ -571,10 +571,14 @@
 
     HT.productVariant = () => {
         variant = JSON.parse(atob(variant))
+        console.log(variant);
+
         const findIndexVariantBySku = (sku) => variant.sku.findIndex((item) => item === sku)
         $('.variant-row').each(function (index, value) {
             let _this = $(this)
-            let variantKey = _this.attr('class').match(/tr-variant-(\d+-\d+)/)[1];
+            console.log(_this.attr('class'));
+            let variantKey = _this.attr('class').match(/tr-variant-(\d+(?:-\d+)?)/);
+            variantKey = variantKey ? variantKey[1] : null;
             let dataIndex = variant.sku.findIndex(sku => sku.includes(variantKey))
 
 
@@ -622,13 +626,11 @@
         HT.cancleVariantUpdate()
         HT.saveVariantUpdate()
         HT.select2();
-        setTimeout(function () {
-            HT.setupSelectMultiple(
-                () => {
-                    HT.productVariant()
-                }
-            )
-        }, 100);
+        HT.setupSelectMultiple(
+            () => {
+                HT.productVariant()
+            }
+        );
 
 
     });

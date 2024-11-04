@@ -51,7 +51,7 @@ class ProductController extends Controller
         try {
             $this->authorize('modules', 'product.index');
             $languageId = $this->language;
-            $products = $this->productService->paginate($request, $this->language);
+            $products = $this->productService->paginate($request, $languageId, null, 1, []);
             $config = [
                 'js' => [
                     'backend/js/plugins/switchery/switchery.js',
@@ -99,6 +99,7 @@ class ProductController extends Controller
         try {
             $this->authorize('modules', 'product.update');
             $product = $this->productRepository->getProductById($id, $this->language);
+            // dd(json_decode($product->variant, true));
             $attributeCatalogue = $this->attributeCatalogueRepository->getAll($this->language);
             $config = $this->configData();
             $dropdown = $this->nestedset->Dropdown();
