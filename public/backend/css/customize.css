@@ -1209,7 +1209,7 @@ div.fix-label {
 }
 
 .table-order td {
-    padding: 6px 10px;
+    padding: 6px 0px;
     padding-left: 0;
 }
 
@@ -1359,4 +1359,8 @@ div.edit {
 
 .updateBadge {
     cursor: pointer;
+}
+
+.img-payment img {
+    width: 50px;
 }

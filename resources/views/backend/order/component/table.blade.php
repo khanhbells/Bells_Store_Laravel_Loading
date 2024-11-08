@@ -79,8 +79,9 @@
                     @endforeach
 
                     <td class="text-center">
-                        <img src="{{ array_column(__('payment.method'), 'image', 'name')[$order->method] ?? '-' }}"
-                            alt="">
+                        <span class="img-payment"><img
+                                src="{{ array_column(__('payment.method'), 'image', 'name')[$order->method] ?? '-' }}"
+                                alt=""></span>
                         <input type="hidden" class="confirm" value="{{ $order->confirm }}">
                     </td>
                 </tr>

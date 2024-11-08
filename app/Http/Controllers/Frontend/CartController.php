@@ -2,6 +2,8 @@
 
 namespace App\Http\Controllers\Frontend;
 
+use App\Classes\Vnpay;
+use App\Classes\Momo;
 use App\Http\Controllers\FrontendController;
 use Illuminate\Http\Request;
 use App\Enums\SlideEnum;
@@ -23,17 +25,23 @@ class CartController extends FrontendController
     protected $cartService;
     protected $promotionRepository;
     protected $orderRepository;
+    protected $vnpay;
+    protected $momo;
     public function __construct(
         ProvinceRepository $provinceRepository,
         CartService $cartService,
         PromotionRepository $promotionRepository,
         OrderRepository $orderRepository,
+        Vnpay $vnpay,
+        Momo $momo,
     ) {
         parent::__construct();
         $this->provinceRepository = $provinceRepository;
         $this->cartService = $cartService;
         $this->promotionRepository = $promotionRepository;
         $this->orderRepository = $orderRepository;
+        $this->vnpay = $vnpay;
+        $this->momo = $momo;
     }
     public function checkout()
     {
@@ -68,6 +76,10 @@ class CartController extends FrontendController
         $system = $this->system;
         $order = $this->cartService->order($request, $system);
         if ($order['flag']) {
+            $response = $this->paymentMethod($order);
+            if ($response['errorCode'] == 0) {
+                return redirect()->away($response['url']);
+            }
             return redirect()->route('cart.success', ['code' => $order['order']->code])->with('success', 'Đặt hàng thành công');
         }
         return redirect()->route('cart.checkout')->with('error', 'Đặt hàng không thành công. Hãy thử lại!');
@@ -94,6 +106,23 @@ class CartController extends FrontendController
             'system',
             'order',
         ));
+    }
+
+    public function paymentMethod($order = null)
+    {
+        switch ($order['order']->method) {
+            case 'vnpay':
+                $response = $this->vnpay->payment($order['order']);
+                break;
+            case 'momo':
+                $response = $this->momo->payment($order['order']);
+                break;
+
+            default:
+                # code...
+                break;
+        }
+        return $response;
     }
 
 

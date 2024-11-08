@@ -73,7 +73,7 @@
                                 </tr>
                                 <tr class="total-payment">
                                     <td colspan="4"><span>Tổng thanh toán</span></td>
-                                    <td><strong>{{ convert_price($order->cart['cartTotal'], true) }}</strong></td>
+                                    <td><strong>{{ convert_price($order->cart['cartTotal'], true) }}đ</strong></td>
                                 </tr>
                             </tfoot>
                         </table>
@@ -90,6 +90,7 @@
                     <div>Hình thức thanh toán:
                         <span>{{ array_column(__('payment.method'), 'title', 'name')[$order->method] ?? '-' }}</span>
                     </div>
+                    @include($template ?? '')
                 </div>
             </div>
         </div>

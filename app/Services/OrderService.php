@@ -74,6 +74,26 @@ class OrderService implements OrderServiceInterface
             abort(500, 'Đã xảy ra lỗi trong quá trình tạo bản ghi.');
         }
     }
+    public function updatePaymentOnline($payload, $order)
+    {
+        DB::beginTransaction();
+        try {
+            $this->orderRepository->update($order->id, $payload);
+            DB::commit();
+            return true;
+        } catch (Exception $e) {
+            DB::rollBack();
+
+            // In ra lỗi để debug
+            dd($e);
+
+            // Ghi lỗi vào log
+            Log::error($e->getMessage());
+
+            // Trả về mã lỗi 500
+            abort(500, 'Đã xảy ra lỗi trong quá trình tạo bản ghi.');
+        }
+    }
 
     public function getOrderItemImage($order)
     {

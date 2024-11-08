@@ -206,9 +206,8 @@ class CartService extends BaseService implements CartServiceInterface
             $order = $this->orderRepository->create($payload, ['products']);
             if ($order->id > 0) {
                 $this->createOrderProduct($payload, $order, $request);
-                $this->paymentOnline($payload['method']);
                 $this->mail($order, $system);
-                Cart::instance('shopping')->destroy();
+                // Cart::instance('shopping')->destroy();
             }
 
             DB::commit();
@@ -244,30 +243,7 @@ class CartService extends BaseService implements CartServiceInterface
         Mail::to($to)->cc($cc)->send(new OrderMail($data));
     }
 
-    private function paymentOnline($method = '')
-    {
-        // switch ($method) {
-        //     case 'zalo':
-        //         $this->zaloPay();
-        //         break;
-        //     case 'momo':
-        //         $this->momoPay();
-        //         break;
-        //     case 'shopee':
-        //         $this->shopeePay();
-        //         break;
-        //     case 'vnpay':
-        //         $this->vnPay();
-        //         break;
-        //     case 'paypal':
-        //         $this->paypal();
-        //         break;
 
-        //     default:
-        //         # code...
-        //         break;
-        // }
-    }
     private function createOrderProduct($payload, $order, $request)
     {
         $carts = Cart::instance('shopping')->content();

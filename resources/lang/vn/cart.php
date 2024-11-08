@@ -10,7 +10,8 @@ return [
     'payment' => [
         'none' => 'Chọn tình trạng thanh toán',
         'unpaid' => 'Chưa thanh toán',
-        'paid' => 'Đã thanh toán'
+        'paid' => 'Đã thanh toán',
+        'failed' => 'Không thành công',
     ],
     'delivery' => [
         'none' => 'Chọn tình trạng giao hàng',

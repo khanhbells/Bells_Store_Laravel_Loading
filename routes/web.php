@@ -1,5 +1,6 @@
 <?php
 
+use App\Classes\Vnpay;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\Ajax\DashboardController as AjaxDashboardController;
 use App\Http\Controllers\Ajax\LocationController;
@@ -36,6 +37,8 @@ use App\Http\Controllers\Ajax\OrderController as AjaxOrderController;
 use App\Http\Controllers\Frontend\HomeController;
 use App\Http\Controllers\Frontend\RouterController;
 use App\Http\Controllers\Frontend\CartController;
+use App\Http\Controllers\Frontend\VnpayController;
+use App\Http\Controllers\Frontend\MomoController;
 
 //USE CONTROLLER
 
@@ -65,6 +68,12 @@ Route::get('ajax/product/loadVariant', [AjaxProductController::class, 'loadVaria
 Route::post('ajax/cart/create', [AjaxCartController::class, 'create'])->name('ajax.cart.create');
 Route::post('ajax/cart/update', [AjaxCartController::class, 'update'])->name('ajax.cart.update');
 Route::post('ajax/cart/delete', [AjaxCartController::class, 'delete'])->name('ajax.cart.delete');
+// VNPAY
+Route::get('return/vnpay' . config('app.general.suffix'), [VnpayController::class, 'vnpay_return'])->name('vnpay.vnpay_return');
+Route::get('return/vnpay_ipn' . config('app.general.suffix'), [VnpayController::class, 'vnpay_ipn'])->name('vnpay.vnpay_ipn');
+// MOMO
+Route::get('return/momo' . config('app.general.suffix'), [MomoController::class, 'momo_return'])->name('momo.momo_return');
+Route::get('return/ipn' . config('app.general.suffix'), [MomoController::class, 'momo_ipn'])->name('momo.momo_ipn');
 
 
 
