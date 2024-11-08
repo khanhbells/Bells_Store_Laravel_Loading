@@ -51,9 +51,9 @@ class OrderRepository extends BaseRepository implements OrderRepositoryInterface
             'districts.name as district_name',
             'wards.name as ward_name',
         ])->distinct()
-            ->join('provinces', 'orders.province_id', '=', 'provinces.code')
-            ->join('districts', 'orders.district_id', '=', 'districts.code')
-            ->join('wards', 'orders.ward_id', '=', 'wards.code')
+            ->leftJoin('provinces', 'orders.province_id', '=', 'provinces.code')
+            ->leftJoin('districts', 'orders.district_id', '=', 'districts.code')
+            ->leftJoin('wards', 'orders.ward_id', '=', 'wards.code')
             ->with('products')
             ->find($id);
     }

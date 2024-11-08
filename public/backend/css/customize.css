@@ -1274,7 +1274,8 @@ div.fix-label {
     font-size: 13px;
 }
 
-.payment-confirm button {
+.payment-confirm button,
+button.confirm {
     position: relative;
     -webkit-box-sizing: border-box;
     box-sizing: border-box;
@@ -1321,4 +1322,41 @@ div.fix-label {
 
 .customer-line:not(:last-child) {
     margin-bottom: 10px;
+}
+
+div.edit {
+    cursor: pointer;
+}
+
+.order-aside label {
+    display: block !important;
+}
+
+.order-aside .select2-container {
+    width: 100% !important;
+}
+
+.order-aside .select2-container .select2-selection--single {
+    height: 40px !important;
+}
+
+.order-aside .select2-container--default .select2-selection--single .select2-selection__rendered {
+    line-height: 40px !important;
+}
+
+.order-aside .select2-container--default .select2-selection--single .select2-selection__arrow {
+    height: 38px !important;
+}
+
+.cancle-badge {
+    padding: 3px 7px;
+    background: #000;
+    color: #fff;
+    border-radius: 50px;
+    font-weight: 500;
+    font-size: 12px !important;
+}
+
+.updateBadge {
+    cursor: pointer;
 }

@@ -14,9 +14,9 @@
             <th class="text-right">Giảm giá</th>
             <th class="text-right">Phí ship</th>
             <th class="text-right">Tổng cuối</th>
-            <th class="text-center">Giao hàng</th>
             <th class="text-center">Trạng thái</th>
             <th class="text-center">Thanh toán</th>
+            <th class="text-center">Giao hàng</th>
             <th class="text-center">Hình thức</th>
         </tr>
     </thead>
@@ -46,17 +46,42 @@
                     <td class="text-right " style="color: blue;font-weight:600">
                         {{ convert_price($order->cart['cartTotal'], true) }}đ
                     </td>
-                    <td>
-                        {{ __('cart.delivery')[$order->delivery] }}
+                    <td class="text-center">
+                        {!! $order->confirm == 'pending'
+                            ? '<span class="text-warning">' . __('cart.confirm')[$order->confirm] . '</span>'
+                            : ($order->confirm == 'confirm'
+                                ? '<span class="text-success">' . __('cart.confirm')[$order->confirm] . '</span>'
+                                : '<span class="cancle-badge text-danger">' . __('cart.confirm')[$order->confirm] . '</span>') !!}
                     </td>
-                    <td>
-                        {{ __('cart.confirm')[$order->confirm] }}
-                    </td>
-                    <td>
-                        {{ __('cart.payment')[$order->payment] }}
-                    </td>
-                    <td>
-                        {{ array_column(__('payment.method'), 'title', 'name')[$order->method] ?? '-' }}
+                    @foreach (__('cart') as $keyItem => $item)
+                        @if ($keyItem == 'confirm')
+                            @continue;
+                        @endif
+                        <td class="text-center">
+                            @if ($order->confirm != 'cancle')
+                                <select name="{{ $keyItem }}" class="setupSelect2 updateBadge"
+                                    data-field="{{ $keyItem }}">
+                                    @foreach ($item as $keyOption => $option)
+                                        @if ($keyOption == 'none')
+                                            @continue;
+                                        @endif
+                                        <option {{ $keyOption == $order->{$keyItem} ? 'selected' : '' }}
+                                            value="{{ $keyOption }}">
+                                            {{ $option }}
+                                        </option>
+                                    @endforeach
+                                </select>
+                            @else
+                                -
+                            @endif
+                            <input type="hidden" class="changerOrderStatus" value="{{ $order->{$keyItem} }}">
+                        </td>
+                    @endforeach
+
+                    <td class="text-center">
+                        <img src="{{ array_column(__('payment.method'), 'image', 'name')[$order->method] ?? '-' }}"
+                            alt="">
+                        <input type="hidden" class="confirm" value="{{ $order->confirm }}">
                     </td>
                 </tr>
             @endforeach

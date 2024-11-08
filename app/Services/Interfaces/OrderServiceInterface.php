@@ -12,4 +12,5 @@ interface OrderServiceInterface
 {
     public function paginate($request);
     public function getOrderItemImage($order);
+    public function update($request);
 }

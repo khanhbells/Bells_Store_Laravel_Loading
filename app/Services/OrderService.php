@@ -52,6 +52,29 @@ class OrderService implements OrderServiceInterface
         return $orders;
     }
 
+    public function update($request)
+    {
+        DB::beginTransaction();
+        try {
+            $id  = $request->input('id');
+            $payload = $request->input('payload');
+            $this->orderRepository->update($id, $payload);
+            DB::commit();
+            return true;
+        } catch (Exception $e) {
+            DB::rollBack();
+
+            // In ra lỗi để debug
+            dd($e);
+
+            // Ghi lỗi vào log
+            Log::error($e->getMessage());
+
+            // Trả về mã lỗi 500
+            abort(500, 'Đã xảy ra lỗi trong quá trình tạo bản ghi.');
+        }
+    }
+
     public function getOrderItemImage($order)
     {
         foreach ($order->products as $key => $val) {

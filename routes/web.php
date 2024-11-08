@@ -31,6 +31,7 @@ use App\Http\Controllers\Ajax\SlideController as AjaxSlideController;
 use App\Http\Controllers\Ajax\ProductController as AjaxProductController;
 use App\Http\Controllers\Ajax\SourceController as AjaxSourceController;
 use App\Http\Controllers\Ajax\CartController as AjaxCartController;
+use App\Http\Controllers\Ajax\OrderController as AjaxOrderController;
 //FRONTEND
 use App\Http\Controllers\Frontend\HomeController;
 use App\Http\Controllers\Frontend\RouterController;
@@ -83,7 +84,7 @@ Route::get('dashboard/index', [DashboardController::class, 'index'])->name('dash
 
 
 
-//Ajax
+//Backend Ajax
 Route::get('ajax/location/getLocation', [LocationController::class, 'getLocation'])->name('ajax.location.index');
 Route::post('ajax/dashboard/changeStatus', [AjaxDashboardController::class, 'changeStatus'])->name('ajax.dashboard.changeStatus');
 Route::post('ajax/dashboard/changeStatusAll', [AjaxDashboardController::class, 'changeStatusAll'])->name('ajax.dashboard.changeStatusAll');
@@ -98,6 +99,7 @@ Route::post('ajax/menu/drag', [AjaxMenuController::class, 'drag'])->name('ajax.m
 Route::post('ajax/slide/updateImage', [AjaxSlideController::class, 'updateImage'])->name('ajax.slide.updateImage');
 Route::get('ajax/product/loadProductPromotion', [AjaxProductController::class, 'loadProductPromotion'])->name('ajax.loadProductPromotion');
 Route::get('ajax/source/getAllSource', [AjaxSourceController::class, 'getAllSource'])->name('ajax.getAllSource');
+Route::post('ajax/order/update', [AjaxOrderController::class, 'update'])->name('ajax.order.update');
 
 
 
