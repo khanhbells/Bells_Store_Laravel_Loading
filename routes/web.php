@@ -37,8 +37,9 @@ use App\Http\Controllers\Ajax\OrderController as AjaxOrderController;
 use App\Http\Controllers\Frontend\HomeController;
 use App\Http\Controllers\Frontend\RouterController;
 use App\Http\Controllers\Frontend\CartController;
-use App\Http\Controllers\Frontend\VnpayController;
-use App\Http\Controllers\Frontend\MomoController;
+use App\Http\Controllers\Frontend\Payment\VnpayController;
+use App\Http\Controllers\Frontend\Payment\MomoController;
+use App\Http\Controllers\Frontend\Payment\PaypalController;
 
 //USE CONTROLLER
 
@@ -74,6 +75,9 @@ Route::get('return/vnpay_ipn' . config('app.general.suffix'), [VnpayController::
 // MOMO
 Route::get('return/momo' . config('app.general.suffix'), [MomoController::class, 'momo_return'])->name('momo.momo_return');
 Route::get('return/ipn' . config('app.general.suffix'), [MomoController::class, 'momo_ipn'])->name('momo.momo_ipn');
+// PAYPAL
+Route::get('paypal/success' . config('app.general.suffix'), [PaypalController::class, 'success'])->name('paypal.success');
+Route::get('paypal/cancel' . config('app.general.suffix'), [PaypalController::class, 'cancel'])->name('paypal.cancel');
 
 
 

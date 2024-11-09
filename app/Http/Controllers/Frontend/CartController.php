@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Frontend;
 
 use App\Classes\Vnpay;
 use App\Classes\Momo;
+use App\Classes\Paypal;
 use App\Http\Controllers\FrontendController;
 use Illuminate\Http\Request;
 use App\Enums\SlideEnum;
@@ -27,6 +28,7 @@ class CartController extends FrontendController
     protected $orderRepository;
     protected $vnpay;
     protected $momo;
+    protected $paypal;
     public function __construct(
         ProvinceRepository $provinceRepository,
         CartService $cartService,
@@ -34,6 +36,7 @@ class CartController extends FrontendController
         OrderRepository $orderRepository,
         Vnpay $vnpay,
         Momo $momo,
+        Paypal $paypal,
     ) {
         parent::__construct();
         $this->provinceRepository = $provinceRepository;
@@ -42,6 +45,7 @@ class CartController extends FrontendController
         $this->orderRepository = $orderRepository;
         $this->vnpay = $vnpay;
         $this->momo = $momo;
+        $this->paypal = $paypal;
     }
     public function checkout()
     {
@@ -110,18 +114,8 @@ class CartController extends FrontendController
 
     public function paymentMethod($order = null)
     {
-        switch ($order['order']->method) {
-            case 'vnpay':
-                $response = $this->vnpay->payment($order['order']);
-                break;
-            case 'momo':
-                $response = $this->momo->payment($order['order']);
-                break;
-
-            default:
-                # code...
-                break;
-        }
+        $class = $order['order']->method;
+        $response = $this->{$class}->payment($order['order']);
         return $response;
     }
 

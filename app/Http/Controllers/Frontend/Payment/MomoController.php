@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Http\Controllers\Frontend;
+namespace App\Http\Controllers\Frontend\Payment;
 
 use App\Http\Controllers\FrontendController;
 use Exception;

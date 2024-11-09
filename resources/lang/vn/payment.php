@@ -26,6 +26,11 @@ return [
             'image' => 'frontend/resources/core/img/vnpay.webp',
             'title' => 'Thanh toán qua ví điện tử VNPAY'
         ],
+        [
+            'name' => 'paypal',
+            'image' => 'frontend/resources/core/img/paypal.ico',
+            'title' => 'Thanh toán qua ví điện tử Paypal'
+        ],
     ],
     'return' => 'Nếu bạn không hày lòng với sản phẩm của chúng tôi? Bạn hoàn toàn có thể trả lại sản phẩm <a href="" title="Tại đây">Tại đây</a>'
 ];
