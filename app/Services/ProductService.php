@@ -11,6 +11,7 @@ use App\Repositories\Interfaces\ProductVariantLanguageRepositoryInterface as Pro
 use App\Repositories\Interfaces\ProductVariantAttributeRepositoryInterface as ProductVariantAttributeRepository;
 use App\Repositories\Interfaces\AttributeCatalogueRepositoryInterface as AttributeCatalogueRepository;
 use App\Repositories\Interfaces\AttributeRepositoryInterface as AttributeRepository;
+use App\Services\Interfaces\ProductCatalogueServiceInterface as ProductCatalogueService;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Carbon;
@@ -37,6 +38,7 @@ class ProductService extends BaseService implements ProductServiceInterface
     protected $promotionRepository;
     protected $attributeCatalogueRepository;
     protected $attributeRepository;
+    protected $productCatalogueService;
     public function __construct(
         ProductRepository $productRepository,
         RouterRepository $routerRepository,
@@ -45,6 +47,7 @@ class ProductService extends BaseService implements ProductServiceInterface
         PromotionRepository $promotionRepository,
         AttributeCatalogueRepository $attributeCatalogueRepository,
         AttributeRepository $attributeRepository,
+        ProductCatalogueService $productCatalogueService,
     ) {
         $this->productRepository = $productRepository;
         $this->routerRepository = $routerRepository;
@@ -54,6 +57,7 @@ class ProductService extends BaseService implements ProductServiceInterface
         $this->promotionRepository = $promotionRepository;
         $this->attributeCatalogueRepository = $attributeCatalogueRepository;
         $this->attributeRepository = $attributeRepository;
+        $this->productCatalogueService = $productCatalogueService;
     }
 
     public function paginate($request, $languageId, $productCatalogue = null, $page = 1, $extend = [])
@@ -125,10 +129,10 @@ class ProductService extends BaseService implements ProductServiceInterface
                 $this->uploadLanguageForProduct($product, $request, $languageId);
                 $this->updateCatalogueForproduct($product, $request);
                 $this->createRouter($product, $request, $this->controllerName, $languageId);
-
                 if ($request->input('attribute')) {
                     $this->createVariant($product, $request, $languageId);
                 }
+                $this->productCatalogueService->setAttribute($product);
             }
 
             DB::commit();
@@ -198,8 +202,8 @@ class ProductService extends BaseService implements ProductServiceInterface
         DB::beginTransaction();
         try {
 
-            $product = $this->productRepository->findById($id);
-            if ($this->uploadProduct($product, $request)) {
+            $product = $this->uploadProduct($id, $request);
+            if ($product) {
                 $this->uploadLanguageForProduct($product, $request, $languageId);
                 $this->updateCatalogueForProduct($product, $request);
                 $this->updateRouter($product, $request, $this->controllerName, $languageId);
@@ -211,6 +215,7 @@ class ProductService extends BaseService implements ProductServiceInterface
                 if ($request->input('attribute')) {
                     $this->createVariant($product, $request, $languageId);
                 }
+                $this->productCatalogueService->setAttribute($product);
             }
             DB::commit();
             return true;
@@ -253,7 +258,7 @@ class ProductService extends BaseService implements ProductServiceInterface
         $variantAttribute = $this->productVariantAttributeRepository->createBatch($variantAttribute);
 
 
-        // dd($attributesCombines);
+        // dd($variantAttribute);
     }
 
 
@@ -328,7 +333,7 @@ class ProductService extends BaseService implements ProductServiceInterface
 
 
 
-    public function uploadProduct($product, $request)
+    public function uploadProduct($id, $request)
     {
         $payload = $request->only($this->payload());
         $payload['price'] = str_replace('.', '', $payload['price']);
@@ -341,7 +346,7 @@ class ProductService extends BaseService implements ProductServiceInterface
         $payload['price'] = $this->convert_price($payload['price']);
         // dd($payload);
         // Kiểm tra và xử lý cả hai trường hợp ảnh có tiền tố 'http://localhost:81/laravelversion1.com/public' hoặc '/laravelversion1.com/public'
-        return $this->productRepository->update($product->id, $payload);
+        return $this->productRepository->update($id, $payload);
     }
     private function uploadLanguageForProduct($product, $request, $languageId)
     {

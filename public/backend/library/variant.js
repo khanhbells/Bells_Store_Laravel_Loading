@@ -564,7 +564,9 @@
                         }
                     });
                 }
-                HT.getSelect2(_this)
+                setTimeout(function () {
+                    HT.getSelect2(_this)
+                }, 50);
             })
         }
     }
@@ -628,7 +630,9 @@
         HT.select2();
         HT.setupSelectMultiple(
             () => {
-                HT.productVariant()
+                setTimeout(function () {
+                    HT.productVariant()
+                }, 300);
             }
         );
 

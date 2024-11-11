@@ -5,6 +5,8 @@ namespace App\Services;
 use App\Services\Interfaces\ProductCatalogueServiceInterface;
 use App\Services\BaseService;
 use App\Repositories\Interfaces\ProductCatalogueRepositoryInterface as ProductCatalogueRepository;
+use App\Repositories\Interfaces\AttributeCatalogueRepositoryInterface as AttributeCatalogueRepository;
+use App\Repositories\Interfaces\AttributeRepositoryInterface as AttributeRepository;
 use App\Repositories\Interfaces\RouterRepositoryInterface as RouterRepository;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
@@ -23,13 +25,22 @@ use Illuminate\Support\Str;
 class ProductCatalogueService extends BaseService implements ProductCatalogueServiceInterface
 {
     protected $productCatalogueRepository;
+    protected $attributeCatalogueRepository;
+    protected $attributeRepository;
     protected $nestedset;
     protected $language;
     protected $routerRepository;
     protected $controllerName = 'ProductCatalogueController';
-    public function __construct(ProductCatalogueRepository $productCatalogueRepository, Nestedsetbie $nestedset, RouterRepository $routerRepository)
-    {
+    public function __construct(
+        ProductCatalogueRepository $productCatalogueRepository,
+        AttributeCatalogueRepository $attributeCatalogueRepository,
+        AttributeRepository $attributeRepository,
+        Nestedsetbie $nestedset,
+        RouterRepository $routerRepository
+    ) {
         $this->productCatalogueRepository = $productCatalogueRepository;
+        $this->attributeCatalogueRepository = $attributeCatalogueRepository;
+        $this->attributeRepository = $attributeRepository;
         $this->routerRepository = $routerRepository;
         // $this->nestedset = new Nestedsetbie([
         //     'table' => 'product_catalogues',
@@ -197,6 +208,83 @@ class ProductCatalogueService extends BaseService implements ProductCatalogueSer
         $payload['product_catalogue_id'] = $productCatalogue->id;
         return $payload;
     }
+
+    public function setAttribute($product)
+    {
+        $attribute = $product->attribute;
+        // dd($attribute);
+        $productCatalogueId = $product->product_catalogue_id;
+        $productCatalogue = $this->productCatalogueRepository->findById($productCatalogueId);
+
+        if (!is_array($productCatalogue->attribute)) {
+            $payload['attribute'] = $attribute;
+        } else {
+            $mergeArray = $productCatalogue->attribute;
+            foreach ($attribute as $key => $val) {
+                if (!isset($mergeArray[$key])) {
+                    $mergeArray[$key] = $val;
+                } else {
+                    $mergeArray[$key] = array_values(array_unique(array_merge($mergeArray[$key], $val)));
+                }
+            }
+            // dd($mergeArray);
+            $flatAttributeArray = array_merge(...$mergeArray);
+
+            $attributeList = $this->attributeRepository->findAttributeProductVariant($flatAttributeArray, $productCatalogue->id);
+
+            $payload['attribute'] = array_map(function ($newArray) use ($attributeList) {
+                return array_intersect($newArray, $attributeList->all());
+            }, $mergeArray);
+        }
+        $result = $this->productCatalogueRepository->update($productCatalogueId, $payload);
+        return $result;
+    }
+
+    public function getFilterList(array $attribute = [], $languageId)
+    {
+        $attributeCatalogueId = array_keys($attribute);
+        $attributeId = array_unique(array_merge(...$attribute));
+        $attributeCatalogues = $this->attributeCatalogueRepository->findByCondition(
+            [
+                config('app.general.defaultPublish')
+            ],
+            true,
+            ['languages' => function ($query) use ($languageId) {
+                $query->where('language_id', $languageId);
+            }],
+            ['id', 'asc'],
+            [
+                'whereIn' => $attributeCatalogueId,
+                'whereInField' => 'id'
+            ]
+        );
+        $attributes = $this->attributeRepository->findByCondition(
+            [
+                config('app.general.defaultPublish')
+            ],
+            true,
+            ['languages' => function ($query) use ($languageId) {
+                $query->where('language_id', $languageId);
+            }],
+            ['id', 'asc'],
+            [
+                'whereIn' => $attributeId,
+                'whereInField' => 'id'
+            ]
+        );
+        foreach ($attributeCatalogues as $key => $val) {
+            $attributeItem = [];
+            foreach ($attributes as $index => $item) {
+                if ($item->attribute_catalogue_id == $val->id) {
+                    $attributeItem[] = $item;
+                }
+            }
+            $val->setAttribute('attributes', $attributeItem);
+        }
+        return $attributeCatalogues;
+    }
+
+
     private function paginateselect()
     {
         return [

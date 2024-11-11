@@ -14,4 +14,6 @@ interface ProductCatalogueServiceInterface extends BaseServiceInterface
     public function create(Request $request, $languageId);
     public function update($id, Request $request, $languageId);
     public function destroy($id, $languageId);
+    public function setAttribute($product);
+    public function getFilterList(array $attribute = [], $languageId);
 }

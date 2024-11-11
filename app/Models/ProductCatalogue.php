@@ -21,9 +21,13 @@ class ProductCatalogue extends Model
         'publish',
         'order',
         'user_id',
-        'follow'
+        'follow',
+        'attribute',
     ];
     protected $table = 'product_catalogues';
+    protected $casts = [
+        'attribute' => 'json'
+    ];
     public function languages()
     {
         return $this->belongsToMany(Language::class, 'product_catalogue_language', 'product_catalogue_id', 'language_id')->withPivot('name', 'canonical', 'meta_title', 'meta_keyword', 'meta_description', 'description', 'content')->withTimestamps();
