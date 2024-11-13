@@ -26,6 +26,16 @@ return [
         ],
 
     ],
+    'review' => [
+        'index' => [
+            'title' => 'Quản lý đánh giá',
+            'table' => 'Danh sách đánh giá',
+        ],
+        'delete' => [
+            'title' => 'Xoá sản phẩm',
+        ],
+
+    ],
     'product' => [
         'index' => [
             'title' => 'Quản lý sản phẩm',

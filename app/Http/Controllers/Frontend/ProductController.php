@@ -10,6 +10,7 @@ use App\Repositories\Interfaces\ProductCatalogueRepositoryInterface as ProductCa
 use App\Services\Interfaces\ProductServiceInterface as ProductService;
 use App\Services\Interfaces\ProductCatalogueServiceInterface as ProductCatalogueService;
 use App\Repositories\Interfaces\ProductRepositoryInterface as ProductRepository;
+use App\Repositories\Interfaces\ReviewRepositoryInterface as ReviewRepository;
 use App\Models\System;
 
 // use App\Repositories\Interfaces\languageRepositoryInterface as LanguageRepository;
@@ -21,18 +22,21 @@ class ProductController extends FrontendController
     protected $productService;
     protected $productCatalogueService;
     protected $productRepository;
+    protected $reviewRepository;
 
     public function __construct(
         ProductCatalogueRepository $productCatalogueRepository,
         ProductService $productService,
         ProductRepository $productRepository,
         ProductCatalogueService $productCatalogueService,
+        ReviewRepository $reviewRepository,
     ) {
         parent::__construct();
         $this->productCatalogueRepository = $productCatalogueRepository;
         $this->productService = $productService;
         $this->productRepository = $productRepository;
         $this->productCatalogueService = $productCatalogueService;
+        $this->reviewRepository = $reviewRepository;
     }
     public function index($id, $request)
     {
@@ -50,6 +54,7 @@ class ProductController extends FrontendController
         function ($query) use ($language) {
             $query->where('language_id', $language);
         }], categorySelectRaw('product')));
+        // $reviews = $this->reviewRepository->getReview($product->id, 'App\Product');
         return view('frontend.product.product.index', compact(
             'config',
             'seo',
@@ -68,6 +73,10 @@ class ProductController extends FrontendController
             'js' => [
                 'frontend/core/library/cart.js',
                 'frontend/core/library/product.js',
+                'frontend/core/library/review.js',
+            ],
+            'css' => [
+                'frontend/core/css/product.css',
             ]
         ];
     }

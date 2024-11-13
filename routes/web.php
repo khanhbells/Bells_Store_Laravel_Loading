@@ -27,12 +27,14 @@ use App\Http\Controllers\Backend\WidgetController;
 use App\Http\Controllers\Backend\PromotionController;
 use App\Http\Controllers\Backend\SourceController;
 use App\Http\Controllers\Backend\OrderController;
+use App\Http\Controllers\Backend\ReviewController;
 use App\Http\Controllers\Ajax\MenuController as AjaxMenuController;
 use App\Http\Controllers\Ajax\SlideController as AjaxSlideController;
 use App\Http\Controllers\Ajax\ProductController as AjaxProductController;
 use App\Http\Controllers\Ajax\SourceController as AjaxSourceController;
 use App\Http\Controllers\Ajax\CartController as AjaxCartController;
 use App\Http\Controllers\Ajax\OrderController as AjaxOrderController;
+use App\Http\Controllers\Ajax\ReviewController as AjaxReviewController;
 //FRONTEND
 use App\Http\Controllers\Frontend\HomeController;
 use App\Http\Controllers\Frontend\RouterController;
@@ -69,6 +71,7 @@ Route::get('ajax/product/loadVariant', [AjaxProductController::class, 'loadVaria
 Route::post('ajax/cart/create', [AjaxCartController::class, 'create'])->name('ajax.cart.create');
 Route::post('ajax/cart/update', [AjaxCartController::class, 'update'])->name('ajax.cart.update');
 Route::post('ajax/cart/delete', [AjaxCartController::class, 'delete'])->name('ajax.cart.delete');
+Route::post('ajax/review/create', [AjaxReviewController::class, 'create'])->name('ajax.review.delete');
 // VNPAY
 Route::get('return/vnpay' . config('app.general.suffix'), [VnpayController::class, 'vnpay_return'])->name('vnpay.vnpay_return');
 Route::get('return/vnpay_ipn' . config('app.general.suffix'), [VnpayController::class, 'vnpay_ipn'])->name('vnpay.vnpay_ipn');
@@ -327,6 +330,12 @@ Route::group(['middleware' => ['admin', 'locale', 'backend_default_locale']], fu
     Route::group(['prefix' => 'order'], function () {
         Route::get('index', [OrderController::class, 'index'])->name('order.index');
         Route::get('{id}/detail', [OrderController::class, 'detail'])->where(['id' => '[0-9]+'])->name('order.detail');
+    });
+    //Review
+    Route::group(['prefix' => 'review'], function () {
+        Route::get('index', [ReviewController::class, 'index'])->name('review.index');
+        Route::get('{id}/delete', [ReviewController::class, 'delete'])->where(['id' => '[0-9]+'])->name('review.delete');
+        Route::post('{id}/destroy', [ReviewController::class, 'destroy'])->where(['id' => '[0-9]+'])->name('review.destroy');
     });
     //NEW MODULE
 });

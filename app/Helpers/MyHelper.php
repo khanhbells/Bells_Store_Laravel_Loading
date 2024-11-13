@@ -521,3 +521,29 @@ if (!function_exists('execPostRequest')) {
         return $result;
     }
 }
+if (!function_exists('getReviewName')) {
+    function getReviewName($string)
+    {
+        $words = explode(' ', $string);
+        $initialize = '';
+        foreach ($words as $key => $val) {
+            $initialize .= strtoupper(substr($val, 0, 1));
+        }
+        return $initialize;
+    }
+}
+if (!function_exists('generateStar')) {
+    function generateStar($rating)
+    {
+        $rating = max(1, min(5, $rating));
+        $output = '<div class="review-star">';
+        for ($i = 1; $i <= $rating; $i++) {
+            $output .= '<i class="fa fa-star"></i>';
+        }
+        for ($i = $rating + 1; $i <= 5; $i++) {
+            $output .= '<i class="fa fa-star-o"></i>';
+        }
+        $output .= '</div>';
+        return $output;
+    }
+}

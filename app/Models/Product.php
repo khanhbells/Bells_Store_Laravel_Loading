@@ -52,4 +52,8 @@ class Product extends Model
     {
         return $this->belongsToMany(Order::class, 'order_product', 'product_id', 'order_id')->withPivot('uuid', 'name', 'qty', 'price', 'priceOriginal', 'option');
     }
+    public function reviews()
+    {
+        return $this->morphMany(Review::class, 'reviewable');
+    }
 }

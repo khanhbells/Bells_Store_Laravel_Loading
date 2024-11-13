@@ -94,6 +94,10 @@
                         </div>
                     </div>
                 </div>
+                @include('frontend.product.product.component.review', [
+                    'model' => $product,
+                    'reviewable' => 'App\Models\Product',
+                ])
             </div>
         </div>
         <div class="uk-width-large-1-4">

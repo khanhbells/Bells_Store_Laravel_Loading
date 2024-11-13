@@ -162,6 +162,15 @@
 
     }
 
+    HT.chooseReviewStar = () => {
+        $(document).on('mouseOver click', '.popup-rating label', function () {
+            let _this = $(this)
+            let title = _this.attr('title')
+            $('.rate-text').removeClass('hidden').html(title)
+
+        })
+    }
+
 
     $(document).ready(function () {
         /* CORE JS */
@@ -169,6 +178,7 @@
         HT.mySwiper()
         HT.selectVariantProduct()
         HT.loadProductVariant()
+        HT.chooseReviewStar()
     });
 
 })(jQuery);

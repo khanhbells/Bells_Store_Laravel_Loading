@@ -6,8 +6,8 @@
                 'model' => $productCatalogue,
                 'breadcrumb' => $breadcrumb,
             ])
-            <div class="panel-head">
-                @include('frontend.component.product-detail', [
+            <div class="panel-body">
+                @include('frontend.product.product.component.detail', [
                     'product' => $product,
                     'productCatalogue' => $productCatalogue,
                 ])

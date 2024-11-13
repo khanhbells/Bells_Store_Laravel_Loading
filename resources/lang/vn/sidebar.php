@@ -121,6 +121,18 @@ return [
             ]
         ],
         [
+            'title' => 'Quản lý đánh giá',
+            'icon' => 'fa fa-comments-o',
+            'name' => ['reviews'],
+            'subModule' => [
+                [
+                    'title' => 'Đánh giá',
+                    'route' => 'review.index' // chỉ dùng tên route
+                ]
+
+            ]
+        ],
+        [
             'title' => 'Quản lý menu',
             'icon' => 'fa fa-bars',
             'name' => ['menu'],
