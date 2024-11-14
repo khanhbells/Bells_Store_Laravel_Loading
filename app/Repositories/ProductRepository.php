@@ -85,4 +85,66 @@ class ProductRepository extends BaseRepository implements ProductRepositoryInter
         $query->orderBy('id', 'desc');
         return $query->paginate(10);
     }
+
+    public function filter($param, $perPage)
+    {
+        $query = $this->model->newQuery();
+        // Chọn các trường cần thiết và sử dụng hàm tổng hợp MAX cho các cột cần thiết
+        $query->select(
+            'products.id',
+            DB::raw('MAX(products.price) as price'),
+            DB::raw('MAX(products.image) as image'),
+        );
+
+
+        // Thêm các trường khác từ $param['select']
+        if (isset($param['select']) && count($param['select'])) {
+            foreach ($param['select'] as $key => $val) {
+                if (!is_null($val)) {
+                    $query->selectRaw($val);
+                }
+            }
+        }
+
+        // Thực hiện join
+        if (isset($param['join']) && count($param['join'])) {
+            foreach ($param['join'] as $key => $val) {
+                if (!is_null($val)) {
+                    $query->leftJoin($val[0], $val[1], $val[2], $val[3]);
+                }
+            }
+        }
+
+        $query->where('products.publish', '=', 2);
+
+        // Điều kiện where
+        if (isset($param['where']) && count($param['where'])) {
+            foreach ($param['where'] as $key => $val) {
+                if (!is_null($val)) {
+                    $query->where($val);
+                }
+            }
+        }
+
+        // Điều kiện whereRaw
+        if (isset($param['whereRaw']) && count($param['whereRaw'])) {
+            $query->whereRaw($param['whereRaw'][0][0], $param['whereRaw'][0][1]);
+        }
+
+
+        // Điều kiện having
+        if (isset($param['having']) && count($param['having'])) {
+            foreach ($param['having'] as $key => $val) {
+                if (!is_null($val)) {
+                    $query->having($val);
+                }
+            }
+        }
+        $query->groupBy('products.id'); // Nhóm theo products.id
+        $query->with(['reviews', 'languages', 'product_catalogues']);
+
+        // Kết quả cuối cùng
+        return $query->paginate($perPage);
+        // return $query->toSql(); // Debug SQL
+    }
 }

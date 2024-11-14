@@ -14,7 +14,7 @@
                     <div class="filter-text">
                         Hiển thị
                     </div>
-                    <select class="nice-select" name="perpage " id="perpage">
+                    <select class="nice-select" name="perpage" id="perpage">
                         @for ($i = 20; $i <= 100; $i += 20)
                             <option value="{{ $i }}">{{ $i }} sản phẩm</option>
                         @endfor
