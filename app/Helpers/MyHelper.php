@@ -547,3 +547,48 @@ if (!function_exists('generateStar')) {
         return $output;
     }
 }
+
+if (!function_exists('convertRevenueChartData')) {
+    function convertRevenueChartData($chartData, $data = 'monthly_revenue', $label = 'month', $text = 'Tháng')
+    {
+        $newArray = [];
+        if (!is_null($chartData) && count($chartData)) {
+            foreach ($chartData as $key => $val) {
+                $newArray['data'][] = $val->{$data};
+                $newArray['label'][] = $text . ' ' . $val->{$label};
+            }
+        }
+        return $newArray;
+    }
+}
+
+if (!function_exists('growHtml')) {
+    function growHtml($grow)
+    {
+        if ($grow >= 0) {
+            return '<div class="stat-percent font-bold text-success">' . $grow . '% <i
+                            class="fa fa-level-up"></i></div>';
+        } else {
+            return '<div class="stat-percent font-bold text-danger">' . $grow . '% <i
+                            class="fa fa-level-down"></i></div>';
+        }
+    }
+}
+
+if (!function_exists('growth')) {
+    function growth($currentValue, $previousValue)
+    {
+        $divison = ($previousValue == 0) ? 1 : $previousValue;
+        $grow = ($currentValue - $previousValue) / $divison * 100;
+        return number_format($grow, 0);
+    }
+}
+
+if (!function_exists('cancelRate')) {
+    function cancelRate($totalOrders, $canceledOrders)
+    {
+        $divisor = ($totalOrders == 0) ? 1 : $totalOrders;
+        $rate = ($canceledOrders / $divisor) * 100;
+        return number_format($rate, 0);
+    }
+}

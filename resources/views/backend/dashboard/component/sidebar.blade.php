@@ -27,9 +27,15 @@
                 </div>
             </li>
             @foreach (__('sidebar.module') as $key => $val)
-                <li class="{{ in_array($segment, $val['name']) ? 'active' : '' }}">
-                    <a href=""><i class="{{ $val['icon'] }}"></i> <span
-                            class="nav-label">{{ $val['title'] }}</span> <span class="fa arrow"></span></a>
+                <li
+                    class="{{ isset($val['class']) ? $val['class'] : '' }} {{ in_array($segment, $val['name']) ? 'active' : '' }}">
+                    <a href="{{ route('dashboard.index') }}">
+                        <i class="{{ $val['icon'] }}"></i>
+                        <span class="nav-label">{{ $val['title'] }}</span>
+                        @if (isset($val['subModule']))
+                            <span class="fa arrow"></span>
+                        @endif
+                    </a>
 
                     @if (isset($val['subModule']))
                         @foreach ($val['subModule'] as $module)

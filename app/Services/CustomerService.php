@@ -66,6 +66,7 @@ class CustomerService implements CustomerServiceInterface
             return false;
         }
     }
+
     public function update($id, Request $request)
     {
         DB::beginTransaction();
@@ -135,6 +136,13 @@ class CustomerService implements CustomerServiceInterface
         $carbonDate = Carbon::createFromFormat('Y-m-d', $birthday);
         $birthday = $carbonDate->format('Y-m-d H:i:s');
         return $birthday;
+    }
+
+    public function statistic()
+    {
+        return [
+            'totalCustomers' => $this->customerRepository->totalCustomer(),
+        ];
     }
     private function paginateselect()
     {

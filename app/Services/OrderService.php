@@ -103,12 +103,83 @@ class OrderService implements OrderServiceInterface
                 $variant = $this->productVariantRepository->findByCondition([
                     ['uuid', '=', $uuid]
                 ]);
-                $variantImage = explode(',', $variant->album)[0] ?? null;
-                $val->image = $variantImage;
+
+                // Kiểm tra xem `album` có tồn tại và không rỗng
+                if (!empty($variant->album)) {
+                    // Kiểm tra nếu `album` có dấu phẩy
+                    if (strpos($variant->album, ',') !== false) {
+                        // Nếu có dấu phẩy, tách thành mảng
+                        $albumArray = explode(',', $variant->album);
+                        $variantImage = $albumArray[0] ?? null;
+                    } else {
+                        // Nếu không có dấu phẩy, sử dụng trực tiếp `album` như một hình ảnh duy nhất
+                        $variantImage = $variant->album;
+                    }
+
+                    $val->image = $variantImage;
+                }
             }
         }
         return $order;
     }
+
+    public function statistic()
+    {
+        $month = now()->month;
+        $year = now()->year;
+        $previousMonth = ($month == 1) ? 12 : $month - 1;
+        $previousYear = ($month == 1) ? $year - 1 : $year;
+
+        $orderCurrentMonth = $this->orderRepository->getOrderByTime($month, $year);
+        $orderPreviousMonth = $this->orderRepository->getOrderByTime($previousMonth, $previousYear);
+
+        return [
+            'orderCurrentMonth' => $orderCurrentMonth,
+            'orderPreviousMonth' => $orderPreviousMonth,
+            'grow' => growth($orderCurrentMonth, $orderPreviousMonth),
+            'totalOrders' => $this->orderRepository->getTotalOrders(),
+            'cancleOrders' => $this->orderRepository->getCancleOrders(),
+            'revenue' => $this->orderRepository->revenueOrders(),
+            'revenueChart' => convertRevenueChartData($this->orderRepository->revenueByYear($year)),
+        ];
+    }
+
+    public function ajaxOrderChart($request)
+    {
+        $type = $request->input('chartType');
+        switch ($type) {
+            case 1:
+                $year = now()->year;
+                $response = convertRevenueChartData($this->orderRepository->revenueByYear($year));
+                break;
+            case 7:
+                $response = convertRevenueChartData($this->orderRepository->revenue7Day(), 'daily_revenue', 'date', 'Ngày');
+                break;
+            case 30:
+                $currentMonth = now()->month;
+                $currentYear = now()->year;
+                $dayInMonth = Carbon::createFromDate($currentYear, $currentMonth, 1)->daysInMonth;
+                $allDays = range(1, $dayInMonth);
+                $temp = $this->orderRepository->revenueCurrentMonth($currentMonth, $currentYear);
+
+                $label = [];
+                $data = [];
+                $temp2 = array_map(function ($day) use ($temp, &$label, &$data) {
+                    $found = collect($temp)->first(function ($record) use ($day) {
+                        return $record['day'] == $day;
+                    });
+                    $label[] = 'Ngày ' . $day;
+                    $data[] = $found ? $found['daily_revenue'] : 0;
+                }, $allDays);
+                $response = [
+                    'label' => $label,
+                    'data' => $data
+                ];
+                break;
+        }
+        return $response;
+    }
+
 
 
     private function paginateselect()

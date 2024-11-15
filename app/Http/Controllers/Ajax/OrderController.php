@@ -34,4 +34,10 @@ class OrderController extends Controller
             'messages' => 'Cập nhật dữ liệu không thành công! Hãy thử lại'
         ]);
     }
+
+    public function chart(Request $request)
+    {
+        $chart = $this->orderService->ajaxOrderChart($request);
+        return response()->json($chart);
+    }
 }

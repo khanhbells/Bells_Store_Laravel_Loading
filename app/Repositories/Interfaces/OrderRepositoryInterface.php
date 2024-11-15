@@ -9,4 +9,5 @@ namespace App\Repositories\Interfaces;
 interface OrderRepositoryInterface extends BaseRepositoryInterface
 {
     public function getOrderById($id);
+    public function getOrderByTime($month, $year);
 }

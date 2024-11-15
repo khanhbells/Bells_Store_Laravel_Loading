@@ -14,4 +14,5 @@ interface CustomerServiceInterface
     public function create(Request $request);
     public function update($id, Request $request);
     public function destroy($id);
+    public function statistic();
 }
