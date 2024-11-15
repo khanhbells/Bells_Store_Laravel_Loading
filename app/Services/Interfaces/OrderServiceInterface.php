@@ -14,4 +14,5 @@ interface OrderServiceInterface
     public function getOrderItemImage($order);
     public function update($request);
     public function statistic();
+    public function ajaxOrderChart($request);
 }
